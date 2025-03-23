@@ -2,7 +2,10 @@
   "name": "@thdk/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "nx": {},
+  "scripts": {
+    "all": "nx run-many --target build lint test"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
