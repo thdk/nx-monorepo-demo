@@ -16,7 +16,9 @@
           "format": [
             "cjs"
           ],
-          "bundle": false,
+          "bundle": true,
+          "thirdParty": true,
+          "generatePackageJson": false,
           "main": "apps/app-1/src/main.ts",
           "tsConfig": "apps/app-1/tsconfig.app.json",
           "assets": [
@@ -64,7 +66,8 @@
         "options": {
           "passWithNoTests": true
         }
-      }
+      },
+      "docker-build": {}
     }
   }
 }
