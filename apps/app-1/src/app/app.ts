@@ -1,27 +1,17 @@
-import * as path from 'path';
 import { FastifyInstance } from 'fastify';
-import AutoLoad from '@fastify/autoload';
+import sensible from './plugins/sensible';
+import rootRoute from './routes/root';
 
 /* eslint-disable-next-line */
 export interface AppOptions {}
 
-export async function app(fastify: FastifyInstance, opts: AppOptions) {
-  // Place here your custom code!
+export async function app(fastify: FastifyInstance) {
+  // Load general plugins
+  fastify.register(sensible);
 
-  // Do not touch the following lines
+  // Load domain/feature plugins
+  // ...
 
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'plugins'),
-    options: { ...opts },
-  });
-
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'routes'),
-    options: { ...opts },
-  });
+  // TODO: Don't load routes here, instead load them from domain/feature plugins
+  fastify.register(rootRoute);
 }
