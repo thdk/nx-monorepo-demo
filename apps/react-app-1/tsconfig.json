@@ -3,6 +3,9 @@
   "include": [],
   "references": [
     {
+      "path": "../../packages/lib-b"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

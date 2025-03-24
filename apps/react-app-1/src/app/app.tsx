@@ -1,5 +1,6 @@
 // Uncomment this line to use CSS modules
 // import styles from './app.module.css';
+import { libB } from '@thdk/lib-b';
 import NxWelcome from './nx-welcome';
 
 import { Route, Routes, Link } from 'react-router-dom';
@@ -18,7 +19,7 @@ export function App() {
       <div role="navigation">
         <ul>
           <li>
-            <Link to="/">Home</Link>
+            <Link to="/">Home ${libB()}</Link>
           </li>
           <li>
             <Link to="/page-2">Page 2</Link>
