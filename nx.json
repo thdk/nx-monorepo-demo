@@ -51,6 +51,17 @@
     },
     "test": {
       "dependsOn": ["^build"]
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx ./scripts/docker-build.ts"
+      },
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {}
+      }
     }
   }
 }
