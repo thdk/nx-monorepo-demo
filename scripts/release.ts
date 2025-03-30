@@ -3,7 +3,7 @@ import yargs from 'yargs';
 
 const options = await yargs(process.argv.slice(2))
   .version(false) // don't use the default meaning of version in yargs
-  .option('dryRun', {
+  .option('dry-run', {
     alias: 'd',
     description:
       'Whether or not to perform a dry-run of the release process, defaults to true',
@@ -29,9 +29,10 @@ await releaseVersion({
   specifier: options.preid ? 'preminor' : 'minor',
   dryRun: options.dryRun,
   verbose: options.verbose,
-  gitCommit: false,
+  gitCommit: true,
   gitTag: true,
-  gitPush: false,
+  gitPush: true,
+  gitRemote: 'origin',
   stageChanges: true,
   groups: ['releases'],
   preid: options.preid,
