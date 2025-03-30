@@ -109,5 +109,73 @@
         "linter": "eslint"
       }
     }
+  },
+  "release": {
+    "git": {
+      "tag": true,
+      "commit": false,
+      "push": false
+    },
+    "groups": {
+      "releases": {
+        "version": {
+          "generatorOptions": {
+            "packageRoot": "{projectRoot}"
+          }
+        },
+        "changelog": {
+          "automaticFromRef": true,
+          "workspaceChangelog": false,
+          "projectChangelogs": false
+        },
+        "projects": ["tag:release"],
+        "projectsRelationship": "independent",
+        "releaseTagPattern": "release/{projectName}@{version}"
+      }
+    },
+    "conventionalCommits": {
+      "types": {
+        "fix": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "Bug Fixes"
+          }
+        },
+        "feat": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "New Features"
+          }
+        },
+        "docs": {
+          "semverBump": "patch",
+          "changelog": {
+            "title": "Documentation Updates"
+          }
+        },
+        "build": {
+          "semverBump": "minor",
+          "changelog": {
+            "title": "Other Updates"
+          }
+        },
+        "chore": {
+          "semverBump": "none",
+          "changelog": false
+        },
+        "style": {
+          "semverBump": "patch",
+          "changelog": false
+        }
+      }
+    },
+    "version": {
+      "generatorOptions": {
+        "specifierSource": "conventional-commits",
+        "currentVersionResolver": "disk",
+        "skipLockFileUpdate": true,
+        "updateDependents": "auto"
+      }
+    }
   }
 }

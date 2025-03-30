@@ -2,7 +2,16 @@
   "name": "@thdk/source",
   "version": "0.0.0",
   "license": "MIT",
-  "nx": {},
+  "nx": {
+    "targets": {
+      "release-custom": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "tsx ./scripts/release.ts"
+        }
+      }
+    }
+  },
   "scripts": {
     "all": "nx run-many --target build lint test"
   },
@@ -55,6 +64,7 @@
     "typescript-eslint": "^8.19.0",
     "vite": "^6.0.0",
     "vitest": "^3.0.0",
+    "yargs": "^17.7.2",
     "zx": "^8.4.1"
   },
   "workspaces": [
