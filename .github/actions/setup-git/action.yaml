@@ -1,0 +1,22 @@
+name: 'Setup git'
+description: 'Configures git user and outputs useful variables'
+
+outputs:
+  branch-name:
+    description: 'Branch name'
+    value: ${{ steps.git.outputs.branch-name }}
+  commit-sha-short:
+    description: 'Short commit sha of HEAD'
+    value: ${{ steps.git.outputs.sha-short }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set git config and variables
+      shell: bash
+      id: git
+      run: |
+        git config --global user.name 'Github Action'
+        git config --global user.email 'github-action@users.noreply.github.com'
+        echo "branch-name=$(echo ${{ github.head_ref || github.ref_name }})" >> $GITHUB_OUTPUT
+        echo "sha-short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
