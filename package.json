@@ -9,6 +9,14 @@
         "options": {
           "command": "tsx ./scripts/release.ts"
         }
+      },
+      "local-registry": {
+        "executor": "@nx/js:verdaccio",
+        "options": {
+          "port": 4873,
+          "config": ".verdaccio/config.yml",
+          "storage": "tmp/local-registry/storage"
+        }
       }
     }
   },
@@ -18,6 +26,7 @@
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@nx/devkit": "^20.7.1",
     "@nx/esbuild": "20.7.1",
     "@nx/eslint": "20.7.1",
     "@nx/eslint-plugin": "20.7.1",
@@ -62,6 +71,7 @@
     "tsx": "^4.19.3",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
+    "verdaccio": "^6.0.5",
     "vite": "^6.0.0",
     "vitest": "^3.0.0",
     "yargs": "^17.7.2",

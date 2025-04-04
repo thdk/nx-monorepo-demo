@@ -9,6 +9,7 @@ on:
 permissions:
   actions: read
   contents: write
+  packages: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -57,16 +58,20 @@ jobs:
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx tsx ${{ github.workspace }}/scripts/release.ts \
               --verbose \
+              --changelogs true \
               --dryRun false
           else
             npx tsx ${{ github.workspace }}/scripts/release.ts \
               --verbose \
+              --changelogs true \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
               --git-tag false \
               --git-push false \
               --git-commit false \
               --dryRun false
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Containerize affected applications
         run: npx nx affected --targets docker-build --exclude-task-dependencies

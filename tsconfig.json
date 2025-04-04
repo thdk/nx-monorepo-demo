@@ -17,6 +17,9 @@
     },
     {
       "path": "./apps/react-app-1"
+    },
+    {
+      "path": "./packages/lib-c"
     }
   ]
 }

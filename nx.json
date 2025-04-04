@@ -74,7 +74,7 @@
       "inputs": ["production", "^production"]
     },
     "test": {
-      "dependsOn": ["^build", "^build"]
+      "dependsOn": ["^build"]
     },
     "docker-build": {
       "dependsOn": ["build"],
@@ -111,22 +111,29 @@
     }
   },
   "release": {
-    "git": {
-      "tag": true,
-      "commit": false,
-      "push": false
-    },
     "groups": {
+      "packages": {
+        "projects": ["tag:npm:public"],
+        "releaseTagPattern": "{projectName}@{version}",
+        "projectsRelationship": "independent",
+        "version": {
+          "generatorOptions": {
+            "specifierSource": "conventional-commits",
+            "currentVersionResolver": "git-tag",
+            "fallbackCurrentVersionResolver": "disk",
+            "packageRoot": "{projectRoot}"
+          },
+          "groupPreVersionCommand": "npx nx run-many --target build --projects tag:npm:public"
+        },
+        "changelog": {
+          "projectChangelogs": true
+        }
+      },
       "releases": {
         "version": {
           "generatorOptions": {
             "packageRoot": "{projectRoot}"
           }
-        },
-        "changelog": {
-          "automaticFromRef": true,
-          "workspaceChangelog": false,
-          "projectChangelogs": false
         },
         "projects": ["tag:release"],
         "projectsRelationship": "independent",
@@ -171,11 +178,13 @@
     },
     "version": {
       "generatorOptions": {
-        "specifierSource": "conventional-commits",
         "currentVersionResolver": "disk",
         "skipLockFileUpdate": true,
         "updateDependents": "auto"
       }
+    },
+    "changelog": {
+      "automaticFromRef": true
     }
   }
 }

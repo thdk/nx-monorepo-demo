@@ -1,8 +1,7 @@
 {
-  "name": "@thdk/scripts",
+  "name": "@thdk/lib-c",
   "version": "0.0.1",
-  "private": true,
-  "type": "module",
+  "registry": "https://github.com/thdk/nx-monorepo-demo",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,11 +13,11 @@
       "default": "./dist/index.js"
     }
   },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ],
   "dependencies": {
-    "tslib": "^2.3.0",
-    "zx": "^8.4.1",
-    "yargs": "^17.7.2",
-    "@nx/devkit": "^20.7.1",
-    "nx": "20.7.1"
+    "tslib": "^2.3.0"
   }
 }
