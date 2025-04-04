@@ -59,7 +59,8 @@ jobs:
             npx tsx ${{ github.workspace }}/scripts/release.ts \
               --verbose \
               --changelogs true \
-              --dryRun false
+              --npm-dist-tag latest \
+              --dry-run false
           else
             npx tsx ${{ github.workspace }}/scripts/release.ts \
               --verbose \
@@ -68,7 +69,8 @@ jobs:
               --git-tag false \
               --git-push false \
               --git-commit false \
-              --dryRun false
+              --npm-dist-tag next \
+              --dry-run false
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
