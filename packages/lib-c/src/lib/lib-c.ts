@@ -1,3 +1,3 @@
 export function libC(): string {
-  return 'lib-c';
+  return 'library-c';
 }
