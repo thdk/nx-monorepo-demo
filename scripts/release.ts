@@ -1,4 +1,4 @@
-import { releaseVersion } from 'nx/release';
+import { releaseChangelog, releasePublish, releaseVersion } from 'nx/release';
 import yargs from 'yargs';
 import { $ } from 'zx';
 
@@ -17,6 +17,17 @@ const options = await yargs(process.argv.slice(2))
     description: 'Whether or not to enable verbose logging, defaults to false',
     type: 'boolean',
     default: false,
+  })
+  .option('changelogs', {
+    description:
+      'Whether or not project changelogs should be generated, defaults to false',
+    type: 'boolean',
+    default: false,
+  })
+  .option('npmDistTag', {
+    description: 'Which npm dist tag to use when publishing, defaults to next',
+    type: 'string',
+    default: 'next',
   })
   .option('preid', {
     description:
@@ -64,6 +75,50 @@ try {
   }
 }
 
+// Release group: packages
+const { projectsVersionData } = await releaseVersion({
+  dryRun: options.dryRun,
+  verbose: options.verbose,
+  gitCommit: false,
+  gitTag: true,
+  gitPush: false,
+  stageChanges: false,
+  preid: options.preid,
+  groups: ['packages'],
+});
+
+// Find the projects that have received a version bump
+const versionedProjects = Object.entries(projectsVersionData).reduce<string[]>(
+  (acc, [project, versionData]) => {
+    if (versionData.newVersion !== null) {
+      acc.push(project);
+    }
+    return acc;
+  },
+  []
+);
+
+if (options.changelogs && versionedProjects.length > 0) {
+  await releaseChangelog({
+    versionData: projectsVersionData,
+    dryRun: options.dryRun,
+    verbose: options.verbose,
+    projects: versionedProjects,
+    gitCommit: false,
+    gitTag: false,
+    gitPush: false,
+  });
+} else {
+  output.log({
+    title: 'Changelogs',
+    bodyLines: [
+      versionedProjects.length
+        ? 'Skipping changelog generation. Use --changelogs to enable changelog generation.'
+        : 'No versioned projects found. Changelog generation skipped.',
+    ],
+  });
+}
+
 // Release group: releases
 //   Make sure to run group as final version group since it will update the lock file
 //   with all changes from other groups as well.
@@ -94,6 +149,33 @@ if (!options.dryRun) {
   if (options.gitPush) {
     await $`git push --follow-tags`;
   }
+} else if (options.gitCommit || options.gitPush) {
+  output.warn({
+    title: 'Skipping Git Operations',
+    bodyLines: [
+      'Git operations are skipped in dry-run mode. If any changes were made they will not be commited nor will any tags be pushed.',
+    ],
+  });
 }
 
-process.exit(0);
+// Publish packages when required
+if (!versionedProjects.length) {
+  output.log({
+    title: 'No versioned projects',
+    bodyLines: ['No versioned projects found. Skipping publish.'],
+  });
+  process.exit(0);
+}
+
+const publishResults = await releasePublish({
+  dryRun: options.dryRun,
+  verbose: options.verbose,
+  groups: ['packages'],
+  tag: options.npmDistTag,
+  projects: versionedProjects,
+});
+
+process.exit(
+  // publishResults contains a map of project names and their exit codes
+  Object.values(publishResults).every((result) => result.code === 0) ? 0 : 1
+);

@@ -1,6 +1,7 @@
 {
   "name": "@thdk/lib-c",
   "version": "0.0.1",
+  "registry": "https://github.com/thdk/nx-monorepo-demo",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
