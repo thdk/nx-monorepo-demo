@@ -3,9 +3,11 @@
 This is a repo with the sole purpose to demo how Nx can be used to manage a monorepo.
 Idea is to add sample libraries and applications using all kinds of different setups.
 
-## Applications
+## Projects in this repo
 
-### app-1
+### Applications
+
+#### app-1
 
 - **env:**: node
 - **framework:**: fastify
@@ -16,7 +18,7 @@ Idea is to add sample libraries and applications using all kinds of different se
 - **local dependencies:**
 - **local dependants:**
 
-### react-app-1
+#### react-app-1
 
 - **env:**: browser
 - **framework:** react
@@ -25,38 +27,53 @@ Idea is to add sample libraries and applications using all kinds of different se
 - **local dependencies:**
 - **local dependants:**
 
-## Libraries
+### Libraries
 
-### lib-a
+#### lib-a
 
 - **bundler:** tsc
 - **published:** false
 - **local dependencies:**
 - **local dependants:**
 
-### lib-b
+#### lib-b
 
 - **bundler:** esbuild
 - **published:** false
 - **local dependencies:**
 - **local dependants:**
 
-### lib-c
+#### lib-c
 
 - **bundler:** tsc
 - **published:** true
 - **local dependencies:**
 - **local dependants:**
 
-## Other projects
+### Other projects
 
-### scripts
+#### scripts
 
 Contains utility scripts (typescript files) for managing projects in this repo.
 
 - `release.ts`
 - `docker-build.ts`
 
-### releases/thdk
+#### releases/thdk
 
 A project with the sole function of keeping a single version across multiple applications.
+
+## Development
+
+```sh
+# Install dependencies
+npm install
+```
+
+```sh
+# Run all relevant targets (build, lint, test, ...) for every project
+npx nx run-all
+
+# Run all relevant targets (build, lint, test, ...) for affected projects only
+npx nx run-affected
+```

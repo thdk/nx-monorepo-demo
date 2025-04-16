@@ -5,10 +5,16 @@
   "license": "MIT",
   "nx": {
     "targets": {
-      "all": {
+      "run-all": {
         "executor": "nx:run-commands",
         "options": {
           "command": "npx nx run-many --target build lint test syncpack"
+        }
+      },
+      "run-affected": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npx nx affected --target build lint test syncpack"
         }
       },
       "release-custom": {
