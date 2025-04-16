@@ -1,5 +1,7 @@
 # Nx monorepo demo
 
+[![CI](https://github.com/thdk/nx-monorepo-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/thdk/nx-monorepo-demo/actions/workflows/ci.yml)
+
 This is a repo with the sole purpose to demo how Nx can be used to manage a monorepo.
 Idea is to add sample libraries and applications using all kinds of different setups.
 
