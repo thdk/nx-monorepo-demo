@@ -1,9 +1,9 @@
 {
   "name": "@thdk/lib-c",
   "version": "0.2.0",
-  "dependencies": {
-    "tslib": "^2.8.1"
-  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -12,12 +12,12 @@
       "default": "./dist/index.js"
     }
   },
+  "dependencies": {
+    "tslib": "^2.8.1"
+  },
   "files": [
     "dist",
     "!**/*.tsbuildinfo"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "registry": "https://github.com/thdk/nx-monorepo-demo",
-  "types": "./dist/index.d.ts"
+  "registry": "https://github.com/thdk/nx-monorepo-demo"
 }
