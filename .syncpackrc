@@ -1,0 +1,45 @@
+{
+  "semverGroups": [
+    {
+      "range": "",
+      "dependencyTypes": [
+        "dev",
+        "prod",
+        "resolutions",
+        "overrides",
+        "pnpmOverrides",
+        "local"
+      ],
+      "dependencies": [
+        "**"
+      ],
+      "packages": [
+        "@thdk/source"
+      ]
+    },
+    {
+      "range": "^",
+      "dependencyTypes": [
+        "prod",
+        "dev",
+        "peer"
+      ],
+      "dependencies": [
+        "**"
+      ],
+      "packages": [
+        "**"
+      ]
+    }
+  ],
+  "sortFirst": [
+    "name",
+    "description",
+    "version",
+    "private",
+    "author",
+    "license",
+    "nx",
+    "scripts"
+  ]
+}

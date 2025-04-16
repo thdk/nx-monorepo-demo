@@ -2,10 +2,13 @@
   "name": "@thdk/scripts",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@nx/devkit": "^20.7.1",
+    "nx": "^20.7.1",
+    "tslib": "^2.8.1",
+    "yargs": "^17.7.2",
+    "zx": "^8.4.1"
+  },
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -14,11 +17,8 @@
       "default": "./dist/index.js"
     }
   },
-  "dependencies": {
-    "tslib": "^2.3.0",
-    "zx": "^8.4.1",
-    "yargs": "^17.7.2",
-    "@nx/devkit": "^20.7.1",
-    "nx": "20.7.1"
-  }
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "type": "module",
+  "types": "./dist/index.d.ts"
 }
