@@ -44,7 +44,7 @@ jobs:
           cache: 'npm'
 
       - name: Update npm version
-        run: npm update
+        run: npm install -g npm@11.3.0
 
       - run: npm ci --prefer-offline --no-audit
       - uses: nrwl/nx-set-shas@v4
