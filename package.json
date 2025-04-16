@@ -5,6 +5,12 @@
   "license": "MIT",
   "nx": {
     "targets": {
+      "all": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "npx nx run-many --target=build --target=lint --target=test"
+        }
+      },
       "release-custom": {
         "executor": "nx:run-commands",
         "options": {
@@ -34,9 +40,6 @@
         }
       }
     }
-  },
-  "scripts": {
-    "all": "nx run-many --target build lint test"
   },
   "dependencies": {
     "@fastify/autoload": "6.0.3",
