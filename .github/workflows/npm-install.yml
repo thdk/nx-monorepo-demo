@@ -26,6 +26,11 @@ jobs:
           echo "npm version: $(npm --version)"
           echo "node version: $(node --version)"
 
+      - name: Update version of pacakge
+        run: |
+          npm version minor --no-git-tag-version
+          git checkout package-lock.json
+
       # - name: Install dependencies
       #   run: npm ci --prefer-offline --no-audit
 
