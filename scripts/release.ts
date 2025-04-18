@@ -82,9 +82,12 @@ const { projectsVersionData } = await releaseVersion({
   gitCommit: false,
   gitTag: true,
   gitPush: false,
-  stageChanges: false,
+  stageChanges: true,
   preid: options.preid,
   groups: ['packages'],
+  generatorOptionsOverrides: {
+    skipLockFileUpdate: true,
+  },
 });
 
 // Find the projects that have received a version bump
@@ -107,6 +110,7 @@ if (options.changelogs && versionedProjects.length > 0) {
     gitCommit: false,
     gitTag: false,
     gitPush: false,
+    stageChanges: true,
   });
 } else {
   output.log({
@@ -126,7 +130,7 @@ await releaseVersion({
   specifier: options.preid ? 'preminor' : 'minor',
   dryRun: options.dryRun,
   verbose: options.verbose,
-  stageChanges: false,
+  stageChanges: true,
   gitCommit: false,
   gitTag: options.gitTag,
   gitPush: false,
@@ -140,9 +144,9 @@ await releaseVersion({
 
 if (!options.dryRun) {
   await $`npm install --package-lock-only`;
+  await $`git add package-lock.json`;
 
   if (options.gitCommit) {
-    await $`git add .`;
     await $`git commit -m "chore: release"`;
   }
 
