@@ -40,8 +40,14 @@ jobs:
       # Cache node_modules
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.14.0
           cache: 'npm'
+
+      - name: Update npm version
+        run: |
+          npm install -g npm@11.3.0
+          echo "npm version: $(npm --version)"
+          echo "node version: $(node --version)"
 
       - run: npm ci --prefer-offline --no-audit
       - uses: nrwl/nx-set-shas@v4

@@ -82,6 +82,9 @@ const { projectsVersionData } = await releaseVersion({
   gitCommit: false,
   gitTag: true,
   gitPush: false,
+  // Don't stage version changes, we'll use git tags to resolve the latest version when needed
+  // This allows us to skip updating the lock file after versioning (this is usually done with `npm install`)
+  // but that seems to give an inconsistent lock file.
   stageChanges: false,
   preid: options.preid,
   groups: ['packages'],
@@ -98,8 +101,9 @@ const versionedProjects = Object.entries(projectsVersionData).reduce<string[]>(
   []
 );
 
+let changelogResults;
 if (options.changelogs && versionedProjects.length > 0) {
-  await releaseChangelog({
+  changelogResults = await releaseChangelog({
     versionData: projectsVersionData,
     dryRun: options.dryRun,
     verbose: options.verbose,
@@ -107,6 +111,7 @@ if (options.changelogs && versionedProjects.length > 0) {
     gitCommit: false,
     gitTag: false,
     gitPush: false,
+    stageChanges: true,
   });
 } else {
   output.log({
@@ -126,7 +131,7 @@ await releaseVersion({
   specifier: options.preid ? 'preminor' : 'minor',
   dryRun: options.dryRun,
   verbose: options.verbose,
-  stageChanges: false,
+  stageChanges: false, // Don't commit version changes, we'll use git tags to resolve the latest version when needed
   gitCommit: false,
   gitTag: options.gitTag,
   gitPush: false,
@@ -139,11 +144,20 @@ await releaseVersion({
 });
 
 if (!options.dryRun) {
-  await $`npm install --package-lock-only`;
+  // Can't run `npm install` in CI since it will give an different lock file
+  // await $`npm install --package-lock-only`;
 
   if (options.gitCommit) {
-    await $`git add .`;
-    await $`git commit -m "chore: release"`;
+    // Can we have any uncommitted changes here?
+    if (
+      // Check for project changelogs
+      (changelogResults?.projectChangelogs &&
+        Object.keys(changelogResults.projectChangelogs).length > 0) ||
+      // Check for workspace changelog
+      changelogResults?.workspaceChangelog
+    ) {
+      await $`git commit -m "chore: release"`;
+    }
   }
 
   if (options.gitPush) {
