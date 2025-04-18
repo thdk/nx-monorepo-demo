@@ -49,4 +49,4 @@ jobs:
       - name: Diff lockfile
         run: |
           git status
-          git diff package-lock.json
+          git --no-pager diff package-lock.json

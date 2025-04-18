@@ -87,7 +87,7 @@ jobs:
       - name: Diff lockfile
         run: |
           git status
-          git diff
+          git --no-pager diff package-lock.json
 
       - name: Containerize affected applications
         run: npx nx affected --targets docker-build --exclude-task-dependencies

@@ -122,7 +122,8 @@
             "specifierSource": "conventional-commits",
             "currentVersionResolver": "git-tag",
             "fallbackCurrentVersionResolver": "disk",
-            "packageRoot": "{projectRoot}"
+            "packageRoot": "{projectRoot}",
+            "skipLockFileUpdate": true
           },
           "groupPreVersionCommand": "npx nx run-many --target build --projects tag:npm:public"
         },
@@ -133,7 +134,8 @@
       "releases": {
         "version": {
           "generatorOptions": {
-            "packageRoot": "{projectRoot}"
+            "packageRoot": "{projectRoot}",
+            "skipLockFileUpdate": true
           }
         },
         "projects": ["tag:release"],
