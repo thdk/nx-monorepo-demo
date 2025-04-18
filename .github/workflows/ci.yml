@@ -84,5 +84,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Diff lockfile
+        run: |
+          git status
+          git diff
+
       - name: Containerize affected applications
         run: npx nx affected --targets docker-build --exclude-task-dependencies
