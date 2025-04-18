@@ -26,22 +26,22 @@ jobs:
           echo "npm version: $(npm --version)"
           echo "node version: $(node --version)"
 
-      - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+      # - name: Install dependencies
+      #   run: npm ci --prefer-offline --no-audit
 
-      - name: Version
-        run: |
-          npx tsx ${{ github.workspace }}/scripts/release.ts \
-            --verbose \
-            --changelogs true \
-            --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-            --git-tag false \
-            --git-push false \
-            --git-commit false \
-            --npm-dist-tag next \
-            --dry-run false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Version
+      #   run: |
+      #     npx tsx ${{ github.workspace }}/scripts/release.ts \
+      #       --verbose \
+      #       --changelogs true \
+      #       --preid pr-${{ steps.git.outputs.commit-sha-short }} \
+      #       --git-tag false \
+      #       --git-push false \
+      #       --git-commit false \
+      #       --npm-dist-tag next \
+      #       --dry-run false
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update lockfile
         run: npm install --package-lock-only
@@ -49,4 +49,4 @@ jobs:
       - name: Diff lockfile
         run: |
           git status
-          git diff package-lock.json
+          git --no-pager diff package-lock.json
