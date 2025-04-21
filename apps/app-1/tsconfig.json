@@ -4,6 +4,15 @@
   "include": [],
   "references": [
     {
+      "path": "../../packages/lib-c"
+    },
+    {
+      "path": "../../packages/lib-b"
+    },
+    {
+      "path": "../../packages/lib-a"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

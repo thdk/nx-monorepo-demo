@@ -18,6 +18,9 @@ Idea is to add sample libraries and applications using all kinds of different se
   - bundle: `true`
   - thirdParty: `true`
 - **local dependencies:**
+  - lib-a
+  - lib-b (esm module imported in cjs app, hooray!)
+  - lib-c
 - **local dependants:**
 
 #### react-app-1
