@@ -8,8 +8,10 @@
     "emitDeclarationOnly": false,
     "forceConsistentCasingInFileNames": true,
     "types": ["node"],
-    "module": "ESNext",
-    "moduleResolution": "bundler"
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "target": "ES2022"
   },
+  "include": ["src/**/*.ts", "bin/**/*.ts"],
   "references": []
 }

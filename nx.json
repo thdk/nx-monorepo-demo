@@ -80,7 +80,7 @@
       "dependsOn": ["build"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx ./scripts/docker-build.ts"
+        "command": "tsx ./scripts/bin/docker-build.ts"
       },
       "defaultConfiguration": "development",
       "configurations": {
@@ -112,6 +112,17 @@
   },
   "release": {
     "groups": {
+      "applications": {
+        "projects": ["tag:deployable"],
+        "projectsRelationship": "independent",
+        "releaseTagPattern": "{projectName}@{version}",
+        "version": {
+          "generatorOptions": {
+            "packageRoot": "{projectRoot}"
+          },
+          "groupPreVersionCommand": "npx nx affected --target build --projects tag:deployable"
+        }
+      },
       "packages": {
         "projects": ["tag:npm:public"],
         "releaseTagPattern": "{projectName}@{version}",

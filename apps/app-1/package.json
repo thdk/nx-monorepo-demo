@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "nx": {
+    "tags": [
+      "deployable"
+    ],
     "targets": {
       "build": {
         "executor": "@nx/esbuild:esbuild",

@@ -20,7 +20,7 @@
       "release-custom": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "tsx ./scripts/release.ts"
+          "command": "tsx ./scripts/bin/release.ts"
         }
       },
       "local-registry": {
@@ -80,6 +80,7 @@
     "@types/node": "20.0.0",
     "@types/react": "18.0.0",
     "@types/react-dom": "18.0.0",
+    "@types/yargs": "17.0.33",
     "@vitejs/plugin-react": "4.4.0",
     "@vitest/coverage-v8": "3.1.1",
     "@vitest/ui": "3.1.1",

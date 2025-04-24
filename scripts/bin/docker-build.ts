@@ -1,7 +1,12 @@
+#!/usr/bin/env node
+
 import { $ } from 'zx';
 import { readFileSync } from 'fs';
+import { exec } from '../src/utils/exec';
 
 const program = async () => {
+  $.verbose = true;
+
   const SERVICE_NAME = process.env.SERVICE_NAME;
   const CONTAINER_REGISTRY_URL = process.env.CONTAINER_REGISTRY_URL;
   const IMAGE_TARGET = process.env.IMAGE_TARGET;
@@ -54,8 +59,4 @@ const program = async () => {
   console.log(`Docker image built successfully: ${DOCKER_IMAGE_VERSION_TAG}`);
 };
 
-$.verbose = true;
-
-await program().catch(() => {
-  process.exit(1);
-});
+exec('docker-build', program);
