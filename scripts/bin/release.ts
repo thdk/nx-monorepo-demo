@@ -107,12 +107,6 @@ const program = async () => {
 
   // Release group: applications
   if (options.groups.includes('applications')) {
-    output.logSingleLine(
-      `Version applications. ${
-        options.dryRun ? `${output.colors.red('[dry-run]')}` : ''
-      }`
-    );
-
     const applicationsToVersion = await getProjectsToVersion({
       tag: 'deployable',
       // If a specifier is manually provided, we will use it to version all applications (or those filtered by the --projects flag)
@@ -122,6 +116,12 @@ const program = async () => {
     });
 
     if (applicationsToVersion.length) {
+      output.logSingleLine(
+        `Version applications. ${
+          options.dryRun ? `${output.colors.red('[dry-run]')}` : ''
+        }`
+      );
+
       const versionResult = await releaseVersion({
         specifier: options.specifier ?? (options.preid ? 'preminor' : 'minor'), // always bump the minor version for the applications group
         dryRun: options.dryRun,
@@ -156,6 +156,13 @@ const program = async () => {
           ],
         });
       }
+    } else {
+      output.log({
+        title: 'No applications to version',
+        bodyLines: [
+          'No applications are affected. Skipping application versioning.',
+        ],
+      });
     }
   } else {
     output.logSingleLine(
