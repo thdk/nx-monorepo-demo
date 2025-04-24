@@ -207,23 +207,21 @@ const program = async () => {
         title: 'No versioned projects',
         bodyLines: ['No versioned projects found. Skipping publish.'],
       });
+    } else {
+      const publishResults = await releasePublish({
+        dryRun: options.dryRun,
+        verbose: options.verbose,
+        groups: ['packages'],
+        tag: options.distTag,
+        projects: versionedProjects,
+      });
 
-      return;
-    }
-
-    const publishResults = await releasePublish({
-      dryRun: options.dryRun,
-      verbose: options.verbose,
-      groups: ['packages'],
-      tag: options.distTag,
-      projects: versionedProjects,
-    });
-
-    // publishResults contains a map of project names and their exit codes
-    if (!Object.values(publishResults).every((result) => result.code === 0)) {
-      throw new Error(
-        `Error publishing packages. Some packages failed to publish. See the logs for more details.`
-      );
+      // publishResults contains a map of project names and their exit codes
+      if (!Object.values(publishResults).every((result) => result.code === 0)) {
+        throw new Error(
+          `Error publishing packages. Some packages failed to publish. See the logs for more details.`
+        );
+      }
     }
   }
 
