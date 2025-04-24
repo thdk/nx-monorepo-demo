@@ -59,13 +59,13 @@ jobs:
       - name: Version
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
-            npx tsx ${{ github.workspace }}/scripts/release.ts \
+            npx nx release-custom \
               --verbose \
               --changelogs true \
               --npm-dist-tag latest \
               --dry-run false
           else
-            npx tsx ${{ github.workspace }}/scripts/release.ts \
+            npx nx release-custom \
               --verbose \
               --changelogs true \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
