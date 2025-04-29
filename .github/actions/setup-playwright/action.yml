@@ -43,5 +43,5 @@ runs:
           npx playwright install --with-deps --only-shell
         else
           BROWSERS="${{ inputs.browsers }}"
-          npx playwright install $BROWSERS --with-deps --only-shell
+          npx playwright install $BROWSERS --with-deps --no-shell
         fi
