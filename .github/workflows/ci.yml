@@ -47,7 +47,7 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       - name: Lint package configurations
         run: npx nx syncpack
