@@ -29,6 +29,7 @@ Idea is to add sample libraries and applications using all kinds of different se
 - **framework:** react
 - **type**: (module)
 - **bundler:** vite
+- **e2e target:** yes (playwright)
 - **local dependencies:**
 - **local dependants:**
 

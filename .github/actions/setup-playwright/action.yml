@@ -1,0 +1,47 @@
+name: 'Setup Playwright'
+description: 'Setup Playwright with caching'
+
+inputs:
+  browsers:
+    description: 'Comma-separated list of browsers to install (e.g., chrome, firefox)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Get Playwright version
+      id: playwright-version
+      shell: bash
+      run: |
+        PLAYWRIGHT_VERSION=$(npx playwright --version | awk '{print $2}')
+        echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
+
+    - name: Determine Browsers
+      id: determine-browsers
+      shell: bash
+      run: |
+        BROWSERS="${{ inputs.browsers }}"
+        if [ -z "$BROWSERS" ]; then
+          BROWSERS="all"
+        else
+          BROWSERS=$(echo "$BROWSERS" | tr ',' '\n' | sort | tr '\n' ',' | sed 's/,$//')
+        fi
+        echo "BROWSERS=$BROWSERS" >> $GITHUB_ENV
+
+    - name: Cache Playwright
+      id: playwright-cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}-${{ env.BROWSERS }}
+
+    - name: Install Playwright dependencies
+      shell: bash
+      run: |
+        if [ -z "${{ inputs.browsers }}" ]; then
+          npx playwright install --with-deps --only-shell
+        else
+          BROWSERS="${{ inputs.browsers }}"
+          npx playwright install $BROWSERS --with-deps --no-shell
+        fi
