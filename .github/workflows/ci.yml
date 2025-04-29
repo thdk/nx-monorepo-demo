@@ -46,8 +46,8 @@ jobs:
       - run: npm ci --prefer-offline --no-audit
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+      - name: Setup Playwright
+        uses: ./.github/actions/setup-playwright
 
       - name: Lint package configurations
         run: npx nx syncpack
