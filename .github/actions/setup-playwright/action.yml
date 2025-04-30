@@ -40,7 +40,7 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.browsers }}" ]; then
-          npx playwright install --with-deps --only-shell
+          npx playwright install --with-deps --no-shell
         else
           BROWSERS="${{ inputs.browsers }}"
           npx playwright install $BROWSERS --with-deps --no-shell
