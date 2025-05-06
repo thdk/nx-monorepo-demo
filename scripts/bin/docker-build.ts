@@ -7,7 +7,8 @@ import { exec } from '../src/utils/exec';
 const program = async () => {
   $.verbose = true;
 
-  const SERVICE_NAME = process.env.SERVICE_NAME;
+  const SERVICE_NAME =
+    process.env.SERVICE_NAME || process.env.NX_TASK_TARGET_PROJECT;
   const CONTAINER_REGISTRY_URL = process.env.CONTAINER_REGISTRY_URL;
   const IMAGE_TARGET = process.env.IMAGE_TARGET;
 
