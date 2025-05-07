@@ -1,0 +1,51 @@
+{
+  "name": "@thdk/nx-terraform",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "development": "./src/plugins/plugin.ts",
+      "default": "./dist/plugins/plugin.js"
+    },
+    "./plugin": {
+      "development": "./src/plugins/plugin.ts",
+      "default": "./dist/plugins/plugin.js"
+    }
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "tools/nx-terraform/dist",
+          "main": "tools/nx-terraform/src/index.ts",
+          "tsConfig": "tools/nx-terraform/tsconfig.lib.json",
+          "generatePackageJson": false,
+          "assets": [
+            {
+              "input": "./tools/nx-terraform/src",
+              "glob": "**/!(*.ts)",
+              "output": "."
+            },
+            {
+              "input": "./tools/nx-terraform/src",
+              "glob": "**/*.d.ts",
+              "output": "."
+            }
+          ]
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nx/devkit": "20.7.1",
+    "tslib": "2.8.1"
+  }
+}

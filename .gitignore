@@ -45,3 +45,6 @@ test-output
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+# Terraform (ideally, this should be added once we install nx terraform plugin)
+.terraform

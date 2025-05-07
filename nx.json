@@ -72,6 +72,9 @@
       "options": {
         "targetName": "e2e"
       }
+    },
+    {
+      "plugin": "@thdk/nx-terraform/plugin"
     }
   ],
   "targetDefaults": {

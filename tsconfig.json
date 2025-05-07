@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/lib-c"
+    },
+    {
+      "path": "./tools/nx-terraform"
     }
   ]
 }

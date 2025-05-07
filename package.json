@@ -66,6 +66,7 @@
     "@nx/js": "20.7.1",
     "@nx/node": "20.7.1",
     "@nx/playwright": "20.7.1",
+    "@nx/plugin": "20.7.1",
     "@nx/react": "20.7.1",
     "@nx/vite": "20.7.1",
     "@nx/web": "20.7.1",
@@ -117,6 +118,7 @@
   "workspaces": [
     "packages/*",
     "apps/*",
-    "scripts"
+    "scripts",
+    "tools/*"
   ]
 }
