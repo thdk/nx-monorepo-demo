@@ -95,9 +95,9 @@ async function createNodesInternal(
             executor: 'nx:run-commands',
             options: {
               cwd: projectRoot,
-              command: 'terraform plan --out=tfplan',
+              command: 'terraform plan --out=tfplan --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars',
               env: {
-                TF_CLI_ARGS_plan: '--var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars --input=false',
+                TF_CLI_ARGS_plan: '--input=false',
               },
             },
             configurations: configurationsObject,
@@ -119,10 +119,10 @@ async function createNodesInternal(
               commands:
                 [
                   "[ $(cat .terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1",
-                  'terraform apply',
+                  'terraform apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars',
                 ],
               env: {
-                TF_CLI_ARGS_apply: '--var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars --auto-approve',
+                TF_CLI_ARGS_apply: '--auto-approve',
               }
             },
             configurations: configurationsObject,

@@ -48,3 +48,4 @@ vitest.config.*.timestamp*
 
 # Terraform (ideally, this should be added once we install nx terraform plugin)
 .terraform
+tfplan
