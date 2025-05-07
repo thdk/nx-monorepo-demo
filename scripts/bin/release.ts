@@ -80,6 +80,12 @@ const program = async () => {
       type: 'string',
       string: true,
     })
+    .option('skipLockFileUpdate', {
+      description:
+        'Whether or not to skip updating the lock file after versioning',
+      type: 'boolean',
+      default: false,
+    })
     .parseAsync();
 
   // Abort if git has uncommitted changes
@@ -233,10 +239,8 @@ const program = async () => {
   }
 
   // Release group: releases
-  //   Make sure to run group as final version group since it will update the lock file
-  //   with all changes from other groups as well.
   await releaseVersion({
-    specifier: options.preid ? 'preminor' : 'minor',
+    specifier: options.specifier ?? (options.preid ? 'preminor' : 'minor'),
     dryRun: options.dryRun,
     verbose: options.verbose,
     stageChanges: false,
@@ -252,11 +256,25 @@ const program = async () => {
     },
   });
 
-  if (!options.dryRun) {
+  // Persist version changes and update the lock file
+  if (!options.skipLockFileUpdate && !options.dryRun) {
+    // Update the lock file
     await $`npm install --package-lock-only`;
 
     if (options.gitCommit) {
-      await $`git add .`;
+      // Stage all package.json files
+      await $`git add \*package.json`;
+      // Stage lockfile if it was updated
+      await $`git add package-lock.json`;
+    }
+  }
+
+  if (!options.dryRun) {
+    if (options.gitCommit) {
+      // Stage changelog files
+      await $`git add \*CHANGELOG.md`;
+
+      // Commit all staged changes
       await $`git commit -m "chore: release"`;
     }
 
