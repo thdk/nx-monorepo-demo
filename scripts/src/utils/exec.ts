@@ -9,8 +9,7 @@ export function exec(command: string, fn: () => Promise<void>) {
       process.exit(0);
     })
     .catch((e) => {
-      const bodyLines = [];
-      bodyLines.push(e.stack || e.message);
+      const bodyLines = [e.message, e.stack];
       output.error({
         title: `The command '${command}' failed`,
         bodyLines,
