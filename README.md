@@ -65,9 +65,15 @@ Contains utility scripts (typescript files) for managing projects in this repo.
 - `release.ts`
 - `docker-build.ts`
 
+#### tools/nx-terraform
+
+Custom nx package to automatically terraform targets for projects containing terraform files.
+
+See the [docs for this package](./tools/nx-terraform/README.md).
+
 #### releases/thdk
 
-A project with the sole function of keeping a single version across multiple applications.
+A project dedicated to maintaining a unified version number across multiple independently versioned and deployed applications.
 
 ## Development
 
