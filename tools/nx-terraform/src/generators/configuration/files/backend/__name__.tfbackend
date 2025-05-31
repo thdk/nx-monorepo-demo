@@ -1,0 +1,5 @@
+<% if (backend === 'aws') { %>
+key = "<%= project %>-<%= name %>.tfstate"
+<% } else if (backend === 'gcs') { %>
+prefix = "<%= project %>/<%= name %>"
+<% } %>

@@ -1,0 +1,11 @@
+
+variable "environment" {
+  type        = string
+  description = "Environment name (e.g. <%- configurations.join(', ') %>)"
+  default     = "<%- configurations[0] %>"
+
+  validation {
+    condition     = contains([<% for (var i = 0; i < configurations.length; i++) { if (i > 0) { %>, <% } %>"<%= configurations[i] %>"<% } %>], var.environment)
+    error_message = "Environment name must be one of: <%- configurations.join(', ') %>"
+  }
+}

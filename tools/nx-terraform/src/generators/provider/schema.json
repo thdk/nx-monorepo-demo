@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Provider",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The project where the component will be located.",
+      "x-prompt": "Which project will this component be located in?",
+      "x-dropdown": "projects"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["aws", "google"],
+      "description": "Which provider do you want to use?",
+      "x-prompt": "Pick a provider"
+    }
+  },
+  "required": ["project", "provider"]
+}
