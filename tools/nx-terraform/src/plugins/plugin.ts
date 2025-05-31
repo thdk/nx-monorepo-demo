@@ -55,11 +55,11 @@ async function createNodesInternal(
               parallel: false,
               cwd: projectRoot,
               commands: [
-                'terraform init',
+                'terraform init --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend',
                 'echo $NX_TASK_TARGET_CONFIGURATION > .terraform/init-configuration',
               ],
               env: {
-                TF_CLI_ARGS_init: '--backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend --reconfigure'
+                TF_CLI_ARGS_init: '--reconfigure'
               }
             },
             configurations: configurationsObject,

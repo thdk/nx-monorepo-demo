@@ -1,0 +1,24 @@
+{
+  "generators": {
+    "provider": {
+      "factory": "./dist/generators/provider/provider.impl",
+      "schema": "./dist/generators/provider/schema.json",
+      "description": "provider generator"
+    },
+    "project": {
+      "factory": "./dist/generators/project/project.impl",
+      "schema": "./dist/generators/project/schema.json",
+      "description": "project generator"
+    },
+    "configuration": {
+      "factory": "./dist/generators/configuration/configuration.impl",
+      "schema": "./dist/generators/configuration/schema.json",
+      "description": "configuration generator"
+    },
+    "state": {
+      "factory": "./dist/generators/state/state.impl",
+      "schema": "./dist/generators/state/schema.json",
+      "description": "state generator"
+    }
+  }
+}

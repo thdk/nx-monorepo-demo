@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Terraform Backend Generator Schema",
+  "type": "object",
+  "properties": {
+    "backend": {
+      "type": "string",
+      "enum": ["s3", "gcs"],
+      "description": "Type of backend to use (s3 or gcs)",
+      "x-prompt": "Select the backend type (s3 for AWS, gcs for Google Cloud Storage)"
+    },
+    "bucket": {
+      "type": "string",
+      "description": "Name of the storage bucket",
+      "x-prompt": "Enter the name of the storage bucket"
+    },
+    "region": {
+      "type": "string",
+      "description": "AWS region for S3 backend",
+      "x-prompt": "Enter the AWS region (only for s3 backend)"
+    },
+    "key": {
+      "type": "string",
+      "description": "S3 key for state file (optional)",
+      "x-prompt": "Enter the S3 key for the state file (optional, only for s3 backend)",
+      "nullable": true
+    },
+    "prefix": {
+      "type": "string",
+      "description": "Prefix for GCS backend (optional)",
+      "x-prompt": "Enter the prefix for GCS backend (optional, only for gcs backend)",
+      "nullable": true
+    },
+    "project": {
+      "type": "string",
+      "description": "The project where the component will be located.",
+      "x-prompt": "Which project will this component be located in?",
+      "x-dropdown": "projects"
+    }
+  },
+  "required": ["backend", "bucket"],
+  "allOf": [
+    {
+      "if": { "properties": { "backend": { "const": "s3" } } },
+      "then": {
+        "required": ["region"],
+        "not": { "required": ["prefix"] }
+      }
+    },
+    {
+      "if": { "properties": { "backend": { "const": "gcs" } } },
+      "then": {
+        "not": { "required": ["region", "key"] }
+      }
+    }
+  ]
+}
