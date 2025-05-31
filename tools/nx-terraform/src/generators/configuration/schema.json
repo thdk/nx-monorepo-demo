@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Project",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Configuration name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the configuration?"
+    },
+    "project": {
+      "type": "string",
+      "description": "The project where the configuration files will be added.",
+      "x-prompt": "Which project should the configuration be added to?",
+      "x-dropdown": "projects"
+    },
+    "backend": {
+      "type": "string",
+      "description": "The backend to use for the Terraform state.",
+      "enum": ["gcs", "s3"],
+      "default": "gcs",
+      "x-prompt": "What backend should be used for the Terraform state?"
+    }
+  },
+  "required": ["name", "project"]
+}
