@@ -15,6 +15,8 @@ describe('GET /', () => {
       url: '/',
     });
 
-    expect(response.json()).toEqual({ message: 'Hello API' });
+    expect(response.json()).toEqual({
+      message: 'Hello from lib-a, lib-b, library-c',
+    });
   });
 });
