@@ -26,6 +26,7 @@
         "options": {
           "outputPath": "tools/nx-terraform/dist",
           "main": "tools/nx-terraform/src/index.ts",
+          "rootDir": "{projectRoot}/src",
           "tsConfig": "tools/nx-terraform/tsconfig.lib.json",
           "generatePackageJson": false,
           "assets": [
@@ -47,5 +48,11 @@
   "dependencies": {
     "@nx/devkit": "20.7.1",
     "tslib": "2.8.1"
-  }
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "generators.json"
+  ],
+  "generators": "./generators.json"
 }

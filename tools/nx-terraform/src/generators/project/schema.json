@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "Project",
+  "title": "",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the new project.",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use?"
+    },
+    "backend": {
+      "type": "string",
+      "default": "none",
+      "description": "Type of backend to use for Terraform state (s3, gcs, or none)",
+      "x-prompt": {
+        "message": "Which type of library would you like to generate?",
+        "type": "list",
+        "items": [
+          {
+            "value": "none",
+            "label": "No Backend"
+          },
+          {
+            "value": "gcs",
+            "label": "Google Cloud Storage (GCS)"
+          },
+          {
+            "value": "s3",
+            "label": "Amazon S3"
+          }
+        ]
+      }
+    },
+
+    "terraformStateBucketName": {
+      "type": "string",
+      "description": "The name of the bucket to store the Terraform state.",
+      "x-prompt": "What's the name of the bucket to store the Terraform state?"
+    },
+    "terraformStateBucketRegion": {
+      "type": "string",
+      "description": "The region of the S3 bucket to store the Terraform state (only for s3 backend)."
+    },
+    "directory": {
+      "type": "string",
+      "description": "The directory to create the project in. Defaults to 'terraform/name'."
+    },
+    "aws": {
+      "type": "boolean",
+      "description": "Include AWS provider block in generated Terraform files.",
+      "x-prompt": "Include AWS provider block?"
+    },
+    "google": {
+      "type": "boolean",
+      "description": "Include Google provider block in generated Terraform files.",
+      "x-prompt": "Include Google provider block?"
+    },
+    "awsProviderVersion": {
+      "type": "string",
+      "description": "The version of the AWS provider to use.",
+      "x-prompt": "Which AWS provider version should be used? (e.g., ~> 5.0)"
+    },
+    "googleProviderVersion": {
+      "type": "string",
+      "description": "The version of the Google provider to use.",
+      "x-prompt": "Which Google provider version should be used? (e.g., ~> 4.0)"
+    },
+    "configurations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of configuration names"
+    }
+  },
+  "required": [
+    "name",
+    "terraformStateBucketName",
+    "awsProviderVersion",
+    "googleProviderVersion"
+  ]
+}

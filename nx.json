@@ -118,6 +118,22 @@
         "style": "css",
         "linter": "eslint"
       }
+    },
+    "@thdk/nx-terraform": {
+      "provider": {},
+      "project": {
+        "aws": false,
+        "google": true,
+        "awsProviderVersion": "5.0",
+        "googleProviderVersion": "4.0",
+        "configurations": ["development", "production"],
+        "backend": "gcs",
+        "terraformStateBucketName": "edissa-terraform-state"
+      },
+      "state": {
+        "bucket": "edissa-terraform-state",
+        "backend": "gcs"
+      }
     }
   },
   "release": {

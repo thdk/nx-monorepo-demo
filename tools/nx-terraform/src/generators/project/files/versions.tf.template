@@ -1,0 +1,17 @@
+terraform {
+  required_version = "<%= terraformVersion %>"
+
+  required_providers {
+    <% if (aws) { %>
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> <%= awsProviderVersion %>"
+      }
+    <% } else if (google) { %>
+      google = {
+        source  = "hashicorp/google"
+        version = "~> <%= googleProviderVersion %>"
+      }
+    <% } %>
+  }
+}

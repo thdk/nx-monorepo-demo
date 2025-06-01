@@ -1,0 +1,16 @@
+terraform {
+  <% if (backend === 's3') { %>
+  backend "s3" {
+    bucket = "<%= bucket %>"
+    region = "<%= region %>"
+    <% if (typeof key === 'string') { %>key    = "<%= key %>"
+    <% } %>
+  }
+  <% } else if (backend === 'gcs') { %>
+  backend "gcs" {
+    bucket = "<%= bucket %>"
+    <% if (typeof prefix === 'string') { %>prefix = "<%= prefix %>"
+    <% } %>
+  }
+  <% } %>
+}
