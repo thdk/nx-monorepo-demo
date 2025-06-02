@@ -143,10 +143,9 @@
         "projectsRelationship": "independent",
         "releaseTagPattern": "{projectName}@{version}",
         "version": {
-          "generatorOptions": {
-            "packageRoot": "{projectRoot}"
-          },
-          "groupPreVersionCommand": "npx nx affected --target build --projects tag:deployable"
+          "groupPreVersionCommand": "npx nx affected --target build --projects tag:deployable",
+          "preserveLocalDependencyProtocols": false,
+          "manifestRootsToUpdate": ["{projectRoot}"]
         }
       },
       "packages": {
@@ -154,13 +153,12 @@
         "releaseTagPattern": "{projectName}@{version}",
         "projectsRelationship": "independent",
         "version": {
-          "generatorOptions": {
-            "specifierSource": "conventional-commits",
-            "currentVersionResolver": "git-tag",
-            "fallbackCurrentVersionResolver": "disk",
-            "packageRoot": "{projectRoot}"
-          },
-          "groupPreVersionCommand": "npx nx run-many --target build --projects tag:npm:public"
+          "groupPreVersionCommand": "npx nx run-many --target build --projects tag:npm:public",
+          "specifierSource": "conventional-commits",
+          "currentVersionResolver": "git-tag",
+          "fallbackCurrentVersionResolver": "disk",
+          "preserveLocalDependencyProtocols": false,
+          "manifestRootsToUpdate": ["{projectRoot}"]
         },
         "changelog": {
           "projectChangelogs": true
@@ -168,9 +166,8 @@
       },
       "releases": {
         "version": {
-          "generatorOptions": {
-            "packageRoot": "{projectRoot}"
-          }
+          "preserveLocalDependencyProtocols": false,
+          "manifestRootsToUpdate": ["{projectRoot}"]
         },
         "projects": ["tag:release"],
         "projectsRelationship": "independent",
@@ -214,10 +211,11 @@
       }
     },
     "version": {
-      "generatorOptions": {
-        "currentVersionResolver": "disk",
-        "skipLockFileUpdate": true,
-        "updateDependents": "auto"
+      "currentVersionResolver": "disk",
+      "updateDependents": "auto",
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
+        "skipLockFileUpdate": true
       }
     },
     "changelog": {
