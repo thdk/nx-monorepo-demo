@@ -263,7 +263,7 @@ const program = async () => {
 
     if (options.gitCommit) {
       // Stage all package.json files
-      await $`git add \*package.json`;
+      await $`git add '**/package.json'`;
       // Stage lockfile if it was updated
       await $`git add package-lock.json`;
     }
