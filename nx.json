@@ -78,6 +78,14 @@
     }
   ],
   "targetDefaults": {
+    "release-custom": {
+      "options": {
+        "verbose": "true",
+        "changelogs": true,
+        "npm-dist-tag": "latest",
+        "dry-run": true
+      }
+    },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -143,6 +151,8 @@
         "projectsRelationship": "independent",
         "releaseTagPattern": "{projectName}@{version}",
         "version": {
+          "currentVersionResolver": "git-tag",
+          "fallbackCurrentVersionResolver": "disk",
           "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable | tr '\n' ' ')",
           "preserveLocalDependencyProtocols": false,
           "manifestRootsToUpdate": ["{projectRoot}"]
