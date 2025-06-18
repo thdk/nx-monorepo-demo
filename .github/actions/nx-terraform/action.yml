@@ -1,0 +1,54 @@
+name: 'NX Terraform'
+description: 'Runs terraform commands for affected infra projects using nx dependency tree'
+
+inputs:
+  dry-run:
+    description: 'If dry-run is enabled we will not apply any changes to the infrastructure'
+    required: true
+  affected-only:
+    description: 'If enabled, use nx affected, otherwise use nx run-many'
+    required: true
+  configuration:
+    description: 'The configuration of the nx terraform targets to use when running the commands. Usually this matched the environment name.'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: '1.12.1'
+
+    - name: Terraform init
+      shell: bash
+      run: |
+        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+          --target terraform-init \
+          --configuration "${{ inputs.configuration }}" \
+          --exclude-task-dependencies
+
+    - name: Terraform format, validate & plan
+      shell: bash
+      run: |
+        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+          --target terraform-format:check terraform-plan terraform-validate \
+          --configuration "${{ inputs.configuration }}" \
+          --exclude-task-dependencies
+
+    - name: Terraform show plan
+      shell: bash
+      run: |
+        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+          --target terraform-show \
+          --configuration "${{ inputs.configuration }}" \
+          --exclude-task-dependencies
+
+    - name: Terraform apply
+      shell: bash
+      if: ${{ inputs.dry-run == 'false' }}
+      run: |
+        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+          --target terraform-apply \
+          --configuration "${{ inputs.configuration }}" \
+          --exclude-task-dependencies
