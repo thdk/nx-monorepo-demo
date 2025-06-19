@@ -1,0 +1,18 @@
+name: 'Setup node, install dependencies and configure NX'
+description: 'Setup node, install dependencies and set nx env variables'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.14.0
+        cache: npm
+
+    - name: Install
+      shell: bash
+      run: npm ci --prefer-offline --no-audit
+
+    - name: Setup Nx
+      uses: nrwl/nx-set-shas@v4

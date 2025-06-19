@@ -56,6 +56,10 @@ Idea is to add sample libraries and applications using all kinds of different se
 - **local dependencies:**
 - **local dependants:**
 
+### Terraform projects
+
+- **[bootstrap-infra](./terraform/bootstrap-infra/README.md)**
+
 ### Other projects
 
 #### scripts

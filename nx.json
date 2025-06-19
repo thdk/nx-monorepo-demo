@@ -133,7 +133,7 @@
         "aws": false,
         "google": true,
         "awsProviderVersion": "5.0",
-        "googleProviderVersion": "4.0",
+        "googleProviderVersion": "6.0",
         "configurations": ["development", "production"],
         "backend": "gcs",
         "terraformStateBucketName": "edissa-terraform-state"
