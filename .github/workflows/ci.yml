@@ -10,6 +10,7 @@ permissions:
   actions: read
   contents: write
   packages: write
+  id-token: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +20,7 @@ env:
   NX_VERBOSE_LOGGING: true
 
 jobs:
-  main:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,14 +38,8 @@ jobs:
       # Uncomment this line to enable task distribution
       # - run: npx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
 
-      # Cache node_modules
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-
-      - run: npm ci --prefer-offline --no-audit
-      - uses: nrwl/nx-set-shas@v4
+      - name: Setup node, install dependencies and configure nx
+        uses: ./.github/actions/nx-setup-node
 
       - name: Setup Playwright
         uses: ./.github/actions/setup-playwright
@@ -78,5 +73,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Authenticate GCP
+        uses: './.github/actions/authenticate-gcp'
+
       - name: Containerize affected applications
         run: npx nx affected --targets docker-build --exclude-task-dependencies
+
+      - name: Validate IaC
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: ./.github/actions/nx-terraform
+        with:
+          dry-run: true
+          affected-only: true
+          configuration: development
+  deploy:
+    needs: [build]
+    uses: ./.github/workflows/cd.yml
+    if: ${{ github.ref == 'refs/heads/main' }}
+    with:
+      environment: development
+      dry-run: false
+      affected-only: true
+    secrets: inherit

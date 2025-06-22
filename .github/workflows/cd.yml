@@ -1,0 +1,86 @@
+name: Deploy
+run-name: Deploy / ${{ inputs.environment }}${{ inputs.dry-run == true && ' / Dry-run' || '' }}
+
+on:
+  workflow_call:
+    inputs:
+      thdk-version:
+        description: 'The version of the thdk release project to be deployed. Can be a tag or a commit sha. If not set, defaults to the latest commit on the selected branch'
+        required: false
+        type: string
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        type: string
+      dry-run:
+        description: 'Do not run the actual apply step, only plan the changes.'
+        type: boolean
+        required: true
+      affected-only:
+        type: boolean
+        default: true
+  workflow_dispatch:
+    inputs:
+      thdk-version:
+        description: 'The version of the thdk release project to be deployed. Can be a tag or a commit sha. If not set, defaults to the latest commit on the selected branch'
+        required: false
+        type: string
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - development
+      dry-run:
+        description: 'Do not run the actual apply step, only plan the changes.'
+        type: boolean
+        default: true
+        required: false
+      affected-only:
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+  id-token: write
+
+jobs:
+  plan:
+    name: deploy-dry-run-${{ inputs.environment }}
+    if: ${{ inputs.dry-run }}
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.thdk-version }}
+
+      - uses: ./.github/actions/deploy
+        with:
+          environment: ${{ inputs.environment }}
+          dry-run: ${{ inputs.dry-run }}
+          github-packages-token: ${{ secrets.GITHUB_TOKEN }}
+          affected-only: ${{ inputs.affected-only }}}
+
+  apply:
+    name: deploy-${{ inputs.environment }}
+    if: ${{ !inputs.dry-run }}
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.thdk-version }}
+
+      - uses: ./.github/actions/deploy
+        with:
+          environment: ${{ inputs.environment }}
+          dry-run: ${{ inputs.dry-run }}
+          github-packages-token: ${{ secrets.GITHUB_TOKEN }}
+          affected-only: ${{ inputs.affected-only }}}

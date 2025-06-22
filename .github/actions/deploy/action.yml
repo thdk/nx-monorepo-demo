@@ -1,0 +1,35 @@
+name: 'Deploy'
+description: 'Deploy'
+
+inputs:
+  environment:
+    description: 'The environment to deploy to'
+    required: true
+  dry-run:
+    description: 'Do not run the actual apply step, only plan the changes.'
+    required: true
+  github-packages-token:
+    description: 'The token to use to access the packages from github packages npm registry.'
+    required: true
+  affected-only:
+    description: 'If set then any command by this action will only be executed for affected projects.'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup git
+      id: git
+      uses: ./.github/actions/setup-git
+
+    - name: Setup node, install dependencies and configure nx
+      uses: ./.github/actions/nx-setup-node
+
+    - uses: './.github/actions/authenticate-gcp'
+
+    - name: Infra ${{ inputs.dry-run == 'false' && '(apply)' || '(dry-run)' }}
+      uses: ./.github/actions/nx-terraform
+      with:
+        dry-run: ${{ inputs.dry-run }}
+        affected-only: ${{ inputs.affected-only == 'true'}}
+        configuration: ${{ inputs.environment }}
