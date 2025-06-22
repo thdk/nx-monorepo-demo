@@ -25,7 +25,8 @@ runs:
     - name: Setup node, install dependencies and configure nx
       uses: ./.github/actions/nx-setup-node
 
-    - uses: './.github/actions/authenticate-gcp'
+    - name: Authenticate GCP
+      uses: './.github/actions/authenticate-gcp'
 
     - name: Infra ${{ inputs.dry-run == 'false' && '(apply)' || '(dry-run)' }}
       uses: ./.github/actions/nx-terraform

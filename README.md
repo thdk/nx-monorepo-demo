@@ -1,79 +1,79 @@
-# Nx monorepo demo
+# Nx Monorepo Demo
 
 [![CI](https://github.com/thdk/nx-monorepo-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/thdk/nx-monorepo-demo/actions/workflows/ci.yml)
 
-This is a repo with the sole purpose to demo how Nx can be used to manage a monorepo.
-Idea is to add sample libraries and applications using all kinds of different setups.
+Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leveraged to manage a monorepo effectively, combining libraries, applications, and infrastructure projects. The goal is to demonstrate the versatility and power of Nx in handling diverse setups.
 
-## Projects in this repo
+## Features
+
+- **Centralized Management**: Manage multiple projects, including applications, libraries, and infrastructure, within a single repository.
+- **Custom Nx Plugin**: Includes a custom Nx plugin for Terraform projects, enabling seamless integration and management of infrastructure-as-code.
+- **Optimized Build System**: Utilize Nx's caching and dependency graph to optimize builds and CI/CD workflows.
+- **Diverse Project Types**: Support for Node.js, React, and Terraform projects, showcasing Nx's flexibility.
+
+## Projects in this Repository
 
 ### Applications
 
 #### app-1
 
-- **env:**: node
-- **framework:**: fastify
-- **type:** / (commonjs)
-- **bundler:** esbuild
-  - bundle: `true`
-  - thirdParty: `true`
-- **local dependencies:**
+- **Environment**: Node.js
+- **Framework**: Fastify
+- **Module Type**: CommonJS
+- **Bundler**: Esbuild
+  - Bundle: `true`
+  - Third-party: `true`
+- **Local Dependencies**:
   - lib-a
-  - lib-b (esm module imported in cjs app, hooray!)
+  - lib-b (ESM module imported in CJS app)
   - lib-c
-- **local dependants:**
 
 #### react-app-1
 
-- **env:**: browser
-- **framework:** react
-- **type**: (module)
-- **bundler:** vite
-- **e2e target:** yes (playwright)
-- **local dependencies:**
-- **local dependants:**
+- **Environment**: Browser
+- **Framework**: React
+- **Module Type**: ES Module
+- **Bundler**: Vite
+- **E2E Testing**: Playwright
 
 ### Libraries
 
 #### lib-a
 
-- **bundler:** tsc
-- **published:** false
-- **local dependencies:**
-- **local dependants:**
+- **Bundler**: TypeScript Compiler (tsc)
+- **Published**: No
 
 #### lib-b
 
-- **bundler:** esbuild
-- **published:** false
-- **local dependencies:**
-- **local dependants:**
+- **Bundler**: Esbuild
+- **Published**: No
 
 #### lib-c
 
-- **bundler:** tsc
-- **published:** true
-- **local dependencies:**
-- **local dependants:**
+- **Bundler**: TypeScript Compiler (tsc)
+- **Published**: Yes
 
-### Terraform projects
+### Terraform Projects
 
-- **[bootstrap-infra](./terraform/bootstrap-infra/README.md)**
+#### bootstrap-infra
 
-### Other projects
+- **Description**: Infrastructure bootstrap project leveraging Terraform.
+- **Documentation**: [bootstrap-infra README](./terraform/bootstrap-infra/README.md)
+
+### Other Projects
 
 #### scripts
 
-Contains utility scripts (typescript files) for managing projects in this repo.
+Utility scripts for managing projects in this repository.
 
-- `release.ts`
-- `docker-build.ts`
+- `release.ts`: Automates release processes.
+- `docker-build.ts`: Handles Docker image builds.
 
 #### tools/nx-terraform
 
-Custom nx package to automatically terraform targets for projects containing terraform files.
+Custom Nx package to manage Terraform targets for projects containing Terraform files.
 
-See the [docs for this package](./tools/nx-terraform/README.md).
+- **Documentation**: [nx-terraform README](./tools/nx-terraform/README.md)
 
 #### releases/thdk
 
@@ -81,10 +81,14 @@ A project dedicated to maintaining a unified version number across multiple inde
 
 ## Development
 
+### Setup
+
 ```sh
 # Install dependencies
 npm install
 ```
+
+### Running Targets
 
 ```sh
 # Run all relevant targets (build, lint, test, ...) for every project
@@ -93,3 +97,14 @@ npx nx run-all
 # Run all relevant targets (build, lint, test, ...) for affected projects only
 npx nx run-affected
 ```
+
+## Why Nx?
+
+Nx is a powerful tool for managing monorepos, offering features like:
+
+- **Dependency Graph**: Visualize and understand project dependencies.
+- **Task Scheduling**: Efficiently run tasks based on project dependencies.
+- **Caching**: Speed up builds and tests with smart caching.
+- **Extensibility**: Create custom plugins like `nx-terraform` to extend functionality.
+
+This repository demonstrates how Nx can be used to manage diverse projects, optimize workflows, and scale development efficiently.
