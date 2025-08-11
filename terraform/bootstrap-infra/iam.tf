@@ -47,6 +47,15 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "serviceusage.services.enable",
     "serviceusage.services.get",
     "serviceusage.services.list",
+    "artifactregistry.repositories.get",
+    "artifactregistry.repositories.list",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
+    "artifactregistry.tags.get",
+    "artifactregistry.tags.list",
+    "artifactregistry.tags.create",
+    "artifactregistry.tags.update",
+    "artifactregistry.tags.delete",
   ]
 }
 
