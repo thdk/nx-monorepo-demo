@@ -8,12 +8,13 @@ const program = async () => {
   $.verbose = true;
 
   const config = await getDockerImageConfig();
+  const platform = process.env.DOCKER_PLATFORM || 'linux/amd64';
 
   logDockerOperation('Building', config);
 
   await $`docker build \
   --file apps/${config.serviceName}/Dockerfile \
-  --platform linux/arm64 \
+  --platform ${platform} \
   --build-arg SERVICE_VERSION=${config.serviceVersion} \
   --tag ${config.dockerImageShaTag} \
   --tag ${config.dockerImageVersionTag} \
