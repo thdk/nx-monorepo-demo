@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nx": {
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["nx-mcp@latest"]
+    }
+  }
+}
