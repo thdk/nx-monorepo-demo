@@ -34,7 +34,6 @@ resource "google_project_iam_custom_role" "cicd_role" {
   description = "A role for CI/CD operations used by GitHub Actions"
   permissions = [
     "storage.objects.create",
-    "storage.objects.create",
     "storage.objects.get",
     "storage.objects.delete",
     "storage.objects.list",
@@ -43,6 +42,10 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "iam.roles.get",
     "iam.workloadIdentityPools.get",
     "iam.workloadIdentityPoolProviders.get",
+    "resourcemanager.projects.get",
+    "resourcemanager.projects.getIamPolicy",
+    "serviceusage.services.enable",
+    "serviceusage.services.get",
   ]
 }
 
