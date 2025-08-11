@@ -3,6 +3,6 @@ provider "google" {
   region  = var.google_region
 
   default_labels = {
-    "nx:project" = "<%= project %>"
+    "nx-project" = "<%= project %>"
   }
 }

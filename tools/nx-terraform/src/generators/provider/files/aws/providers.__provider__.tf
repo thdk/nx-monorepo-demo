@@ -4,7 +4,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      "nx:project" = "<%= project %>"
+      "nx-project" = "<%= project %>"
     }
   }
 }
