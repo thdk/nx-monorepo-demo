@@ -70,7 +70,8 @@
           "passWithNoTests": true
         }
       },
-      "docker-build": {}
+      "docker-build": {},
+      "docker-push": {}
     }
   },
   "dependencies": {

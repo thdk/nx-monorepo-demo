@@ -79,6 +79,9 @@ jobs:
       - name: Containerize affected applications
         run: npx nx affected --targets docker-build --exclude-task-dependencies
 
+      - name: Push Docker images
+        run: npx nx affected --targets docker-push --exclude-task-dependencies
+
       - name: Validate IaC
         if: ${{ github.ref != 'refs/heads/main' }}
         uses: ./.github/actions/nx-terraform

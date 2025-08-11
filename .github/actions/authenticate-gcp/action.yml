@@ -7,3 +7,7 @@ runs:
       with:
         project_id: 'nx-monorepo-demo-462313'
         workload_identity_provider: 'projects/607498314242/locations/global/workloadIdentityPools/github/providers/github-actions'
+    - name: 'Docker auth'
+      shell: bash
+      run: |
+        gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet

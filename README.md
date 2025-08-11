@@ -115,3 +115,31 @@ npx nx syncpack-fix
 ```
 
 However these are automatically run for you in CI and will block any thing that doesn't follow the rules.
+
+### IaC with terraform and Nx
+
+A custom terraform plugin will infer terraform targets for each project with a `main.tf` file.
+
+Terraform state for this repo is kept in a GCP bucket for which you must be authenticated if you would want to run this locally (CI authorizes with GCP using Workload Identity Federation)
+
+```sh
+gcloud auth login
+gcloud auth application-default login
+
+# if using docker
+gcloud auth configure-docker
+# if using podman (aliased as docker)
+gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-west1-docker.pkg.dev
+```
+
+```sh
+# init target is a dependency of other terraform targets so usually you do not have to run it explicitly
+npx nx run-many --target terraform-init
+
+npx nx run-many --target terraform-plan
+
+# currently will use --auto-approve so use with caution after inspecting output of terraform-plan command
+# TODO: Make this target interactive so user can manually confirm the action for each project.
+npx nx run-many --target terraform-apply
+
+```

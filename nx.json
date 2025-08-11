@@ -105,6 +105,17 @@
         "development": {}
       }
     },
+    "docker-push": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsx ./scripts/bin/docker-push.ts"
+      },
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {}
+      }
+    },
     "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],

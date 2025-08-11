@@ -128,6 +128,20 @@ async function createNodesInternal(
             configurations: configurationsObject,
             defaultConfiguration,
           },
+          'terraform': {
+            executor: 'nx:run-commands',
+            dependsOn: ['terraform-init'],
+            options: {
+              parallel: false,
+              cwd: projectRoot,
+              commands:
+                [
+                  'terraform',
+                ],
+            },
+            configurations: configurationsObject,
+            defaultConfiguration,
+          },
         },
       },
     },
