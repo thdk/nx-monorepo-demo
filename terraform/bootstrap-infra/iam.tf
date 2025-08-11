@@ -46,6 +46,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "resourcemanager.projects.getIamPolicy",
     "serviceusage.services.enable",
     "serviceusage.services.get",
+    "serviceusage.services.list",
   ]
 }
 
