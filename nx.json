@@ -147,10 +147,10 @@
         "googleProviderVersion": "6.0",
         "configurations": ["development", "production"],
         "backend": "gcs",
-        "terraformStateBucketName": "edissa-terraform-state"
+        "terraformStateBucketName": "edissa-tf-state"
       },
       "state": {
-        "bucket": "edissa-terraform-state",
+        "bucket": "edissa-tf-state",
         "backend": "gcs"
       }
     }

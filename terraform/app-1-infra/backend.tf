@@ -1,8 +1,8 @@
 terraform {
-  
+
   backend "gcs" {
-    bucket = "edissa-terraform-state"
-    
+    bucket = "edissa-tf-state"
+
   }
-  
+
 }
