@@ -98,13 +98,20 @@ npx nx run-all
 npx nx run-affected
 ```
 
-## Why Nx?
+### Syncpack
 
-Nx is a powerful tool for managing monorepos, offering features like:
+This is an external tool not related with nx but works very well together with nx repos.
 
-- **Dependency Graph**: Visualize and understand project dependencies.
-- **Task Scheduling**: Efficiently run tasks based on project dependencies.
-- **Caching**: Speed up builds and tests with smart caching.
-- **Extensibility**: Create custom plugins like `nx-terraform` to extend functionality.
+Why syncpack?
 
-This repository demonstrates how Nx can be used to manage diverse projects, optimize workflows, and scale development efficiently.
+- ensures all packages use the same version for dependencies
+- ensures app dependencies use the same range specifier
+
+Provided commands in the repo:
+
+```sh
+npx nx syncpack
+npx nx syncpack-fix
+```
+
+However these are automatically run for you in CI and will block any thing that doesn't follow the rules.
