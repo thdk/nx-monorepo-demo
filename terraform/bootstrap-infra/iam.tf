@@ -47,6 +47,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "serviceusage.services.enable",
     "serviceusage.services.get",
     "serviceusage.services.list",
+    "artifactregistry.repositories.create",
     "artifactregistry.repositories.get",
     "artifactregistry.repositories.list",
     "artifactregistry.dockerimages.get",
