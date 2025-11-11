@@ -160,18 +160,19 @@
       "applications": {
         "projects": ["tag:deployable"],
         "projectsRelationship": "independent",
-        "releaseTagPattern": "{projectName}@{version}",
         "version": {
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
           "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable | tr '\n' ' ')",
           "preserveLocalDependencyProtocols": false,
           "manifestRootsToUpdate": ["{projectRoot}"]
+        },
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
         }
       },
       "packages": {
         "projects": ["tag:npm:public"],
-        "releaseTagPattern": "{projectName}@{version}",
         "projectsRelationship": "independent",
         "version": {
           "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:npm:public | tr '\n' ' ')",
@@ -183,6 +184,9 @@
         },
         "changelog": {
           "projectChangelogs": true
+        },
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
         }
       },
       "releases": {
@@ -192,7 +196,9 @@
         },
         "projects": ["tag:release"],
         "projectsRelationship": "independent",
-        "releaseTagPattern": "release/{projectName}@{version}"
+        "releaseTag": {
+          "pattern": "release/{projectName}@{version}"
+        }
       }
     },
     "conventionalCommits": {
