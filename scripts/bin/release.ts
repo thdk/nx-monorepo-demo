@@ -251,7 +251,7 @@ const program = async () => {
     groups: ['releases'],
     projects: options.projects,
     preid: options.preid,
-    generatorOptionsOverrides: {
+    versionActionsOptionsOverrides: {
       skipLockFileUpdate: true,
     },
   });
