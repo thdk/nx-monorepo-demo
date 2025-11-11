@@ -7,7 +7,7 @@ runs:
     - name: Setup node
       uses: actions/setup-node@v4
       with:
-        node-version: 22.14.0
+        node-version-file: .tool-versions
         cache: npm
 
     - name: Install
