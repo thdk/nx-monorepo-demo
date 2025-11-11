@@ -84,6 +84,8 @@ A project dedicated to maintaining a unified version number across multiple inde
 ### Setup
 
 ```sh
+# Install tools
+asdf install
 # Install dependencies
 npm install
 ```
