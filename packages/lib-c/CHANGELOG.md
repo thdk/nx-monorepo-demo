@@ -1,3 +1,13 @@
+## 0.6.0 (2025-11-14)
+
+### New Features
+
+- use nx release cli instead of custom release script ([4c6fc13](https://github.com/thdk/nx-monorepo-demo/commit/4c6fc13))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.6.0-pr-d4dff29.0 (2025-11-14)
 
 ### New Features
