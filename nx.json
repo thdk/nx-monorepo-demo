@@ -243,7 +243,7 @@
     },
     "version": {
       "currentVersionResolver": "disk",
-      "updateDependents": "always",
+      "updateDependents": "auto",
       "preserveLocalDependencyProtocols": false,
       "versionActionsOptions": {
         "skipLockFileUpdate": false
