@@ -16,7 +16,7 @@ describe('GET /', () => {
     });
 
     expect(response.json()).toEqual({
-      message: 'Hello from lib-a, lib-b, library-c',
+      message: 'Hello from lib-a, lib-b, library-c-v2',
     });
   });
 });

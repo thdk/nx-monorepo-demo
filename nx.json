@@ -156,11 +156,15 @@
     }
   },
   "release": {
+    "git": {
+      "push": true
+    },
     "groups": {
       "applications": {
         "projects": ["tag:deployable"],
         "projectsRelationship": "independent",
         "version": {
+          "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
           "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable | tr '\n' ' ')",
@@ -242,7 +246,7 @@
       "updateDependents": "auto",
       "preserveLocalDependencyProtocols": false,
       "versionActionsOptions": {
-        "skipLockFileUpdate": true
+        "skipLockFileUpdate": false
       }
     },
     "changelog": {

@@ -59,19 +59,36 @@ jobs:
       - name: Version
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
-            npx nx release-custom \
-              --dry-run false
+            npx nx release \
+              --group applications \
+              --group packages \
+              --skip-publish
           else
-            npx nx release-custom \
+            npx nx release \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --git-tag false \
-              --git-push false \
-              --git-commit false \
-              --npm-dist-tag next \
-              --dry-run false
+              --group applications \
+              --group packages \
+              --skip-publish
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        run: |
+          if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
+            npx nx release publish \
+              --group packages \
+              --tag latest
+            git push --follow-tags
+          else
+            npx nx release publish \
+              --group packages \
+              --tag pr-${{ steps.git.outputs.commit-sha-short }}
+            git push --follow-tags
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Authenticate GCP
         uses: './.github/actions/authenticate-gcp'

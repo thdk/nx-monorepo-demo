@@ -1,6 +1,6 @@
 {
   "name": "@thdk/app-1",
-  "version": "0.16.0",
+  "version": "0.17.0-pr-d4dff29.0",
   "private": true,
   "nx": {
     "tags": [
@@ -78,7 +78,7 @@
     "@fastify/sensible": "6.0.2",
     "@thdk/lib-a": "0.0.1",
     "@thdk/lib-b": "0.0.1",
-    "@thdk/lib-c": "0.4.0",
+    "@thdk/lib-c": "0.6.0-pr-d4dff29.0",
     "fastify": "5.2.1",
     "fastify-plugin": "5.0.1"
   }
