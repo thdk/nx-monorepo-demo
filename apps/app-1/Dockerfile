@@ -10,7 +10,7 @@ ENV SERVICE_VERSION=$SERVICE_VERSION
 
 WORKDIR /app
 
-COPY apps/app-1/dist app-1/
+COPY ./dist app-1/
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.

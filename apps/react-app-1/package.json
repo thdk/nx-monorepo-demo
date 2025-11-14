@@ -6,7 +6,12 @@
   "nx": {
     "tags": [
       "deployable"
-    ]
+    ],
+    "release": {
+      "docker": {
+        "repositoryName": "europe-west1-docker.pkg.dev/nx-monorepo-demo-462313/docker-images"
+      }
+    }
   },
   "dependencies": {
     "@thdk/lib-b": "0.0.1",

@@ -75,6 +75,17 @@
     },
     {
       "plugin": "@thdk/nx-terraform/plugin"
+    },
+    {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTarget": {
+          "name": "docker:build"
+        },
+        "runTarget": {
+          "name": "docker:run"
+        }
+      }
     }
   ],
   "targetDefaults": {
@@ -156,8 +167,14 @@
     }
   },
   "release": {
-    "git": {
-      "push": true
+    "docker": {
+      "repositoryName": "acme/api",
+      "versionSchemes": {
+        "production": "{currentDate|YYMM.DD}.{env.BUILD_NUMBER}",
+        "staging": "{currentDate|YYMM.DD}-staging.{shortCommitSha}",
+        "ci": "{env.BUILD_NUMBER}-{shortCommitSha}",
+        "default": "{projectName}-{versionActionsVersion}"
+      }
     },
     "groups": {
       "applications": {
@@ -173,6 +190,14 @@
         },
         "releaseTag": {
           "pattern": "{projectName}@{version}"
+        },
+        "docker": {
+          "skipVersionActions": false,
+          "registryUrl": "docker.io",
+          "groupPreVersionCommand": "echo BEFORE VERSIONING"
+        },
+        "changelog": {
+          "projectChangelogs": true
         }
       },
       "packages": {
