@@ -1,3 +1,14 @@
+## 0.6.0-pr-d4dff29.0 (2025-11-14)
+
+### New Features
+
+- native nx release ([647295d](https://github.com/thdk/nx-monorepo-demo/commit/647295d))
+- new feature for lib c ([e0dcdd8](https://github.com/thdk/nx-monorepo-demo/commit/e0dcdd8))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.6.0-pr-afc4746.0 (2025-11-14)
 
 ### New Features
