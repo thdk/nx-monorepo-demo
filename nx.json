@@ -156,6 +156,9 @@
     }
   },
   "release": {
+    "git": {
+      "push": true
+    },
     "groups": {
       "applications": {
         "projects": ["tag:deployable"],
@@ -240,10 +243,10 @@
     },
     "version": {
       "currentVersionResolver": "disk",
-      "updateDependents": "auto",
+      "updateDependents": "always",
       "preserveLocalDependencyProtocols": false,
       "versionActionsOptions": {
-        "skipLockFileUpdate": true
+        "skipLockFileUpdate": false
       }
     },
     "changelog": {
