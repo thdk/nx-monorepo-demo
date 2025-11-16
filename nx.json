@@ -168,7 +168,6 @@
   },
   "release": {
     "docker": {
-      "repositoryName": "nx-monorepo-demo-462313/docker-images",
       "versionSchemes": {
         "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
         "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix",
@@ -193,7 +192,7 @@
         },
         "docker": {
           "skipVersionActions": false,
-          "registryUrl": "europe-west1-docker.pkg.dev",
+          "registryUrl": "europe-west1-docker.pkg.dev/nx-monorepo-demo-462313/docker-images",
           "groupPreVersionCommand": "echo BEFORE VERSIONING"
         },
         "changelog": {

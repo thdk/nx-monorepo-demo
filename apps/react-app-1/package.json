@@ -4,12 +4,7 @@
   "private": true,
   "type": "module",
   "nx": {
-    "name": "react-app-1",
-    "release": {
-      "docker": {
-        "repositoryName": "europe-west1-docker.pkg.dev/nx-monorepo-demo-462313/docker-images"
-      }
-    }
+    "name": "react-app-1"
   },
   "dependencies": {
     "@thdk/lib-b": "0.0.1",
