@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "nx": {
+    "name": "react-app-1",
     "tags": [
       "deployable"
     ],

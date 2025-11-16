@@ -170,10 +170,10 @@
     "docker": {
       "repositoryName": "acme/api",
       "versionSchemes": {
-        "production": "{currentDate|YYMM.DD}.{env.BUILD_NUMBER}",
-        "staging": "{currentDate|YYMM.DD}-staging.{shortCommitSha}",
-        "ci": "{env.BUILD_NUMBER}-{shortCommitSha}",
-        "default": "{projectName}-{versionActionsVersion}"
+        "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
+        "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix",
+        "example-using-ci-variables": "{env.BUILD_NUMBER}-{shortCommitSha}",
+        "semver": "{projectName}-{versionActionsVersion}"
       }
     },
     "groups": {
