@@ -5,9 +5,6 @@
   "type": "module",
   "nx": {
     "name": "react-app-1",
-    "tags": [
-      "deployable"
-    ],
     "release": {
       "docker": {
         "repositoryName": "europe-west1-docker.pkg.dev/nx-monorepo-demo-462313/docker-images"

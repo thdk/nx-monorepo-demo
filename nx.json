@@ -168,7 +168,7 @@
   },
   "release": {
     "docker": {
-      "repositoryName": "acme/api",
+      "repositoryName": "nx-monorepo-demo-462313/docker-images",
       "versionSchemes": {
         "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
         "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix",
@@ -178,13 +178,13 @@
     },
     "groups": {
       "applications": {
-        "projects": ["tag:deployable"],
+        "projects": ["tag:deployable:docker"],
         "projectsRelationship": "independent",
         "version": {
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
-          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable | tr '\n' ' ')",
+          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable:docker | tr '\n' ' ')",
           "preserveLocalDependencyProtocols": false,
           "manifestRootsToUpdate": ["{projectRoot}"]
         },
@@ -193,7 +193,7 @@
         },
         "docker": {
           "skipVersionActions": false,
-          "registryUrl": "docker.io",
+          "registryUrl": "europe-west1-docker.pkg.dev",
           "groupPreVersionCommand": "echo BEFORE VERSIONING"
         },
         "changelog": {
