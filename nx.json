@@ -203,7 +203,6 @@
         "projects": ["tag:npm:public"],
         "projectsRelationship": "independent",
         "version": {
-          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:npm:public | tr '\n' ' ')",
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
