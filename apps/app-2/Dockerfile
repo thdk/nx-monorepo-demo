@@ -1,4 +1,4 @@
-# Run the container with `docker run -it --rm --init -p 3000:3000 localhost/app-1:0.0.1`.
+# Run the container with `docker run -it --rm --init -p 3000:3000 localhost/app-2:0.0.1`.
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0

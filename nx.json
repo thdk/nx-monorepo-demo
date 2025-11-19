@@ -172,7 +172,7 @@
         "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
         "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix",
         "example-using-ci-variables": "{env.BUILD_NUMBER}-{shortCommitSha}",
-        "semver": "{projectName}-{versionActionsVersion}"
+        "semver": "{versionActionsVersion}"
       }
     },
     "groups": {
