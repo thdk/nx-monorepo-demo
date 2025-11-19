@@ -23,6 +23,9 @@
     },
     {
       "path": "./tools/nx-terraform"
+    },
+    {
+      "path": "./apps/app-2"
     }
   ]
 }
