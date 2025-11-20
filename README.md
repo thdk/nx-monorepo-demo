@@ -67,7 +67,6 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 Utility scripts for managing projects in this repository.
 
 - `release.ts`: Automates release processes.
-- `docker-build.ts`: Handles Docker image builds.
 
 #### tools/nx-terraform
 

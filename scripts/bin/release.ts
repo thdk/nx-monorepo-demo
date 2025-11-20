@@ -114,7 +114,7 @@ const program = async () => {
   // Release group: applications
   if (options.groups.includes('applications')) {
     const applicationsToVersion = await getProjectsToVersion({
-      tag: 'deployable',
+      tag: 'deployable:docker',
       // If a specifier is manually provided, we will use it to version all applications (or those filtered by the --projects flag)
       // otherwise we will only version the affected applications
       affected: !options.specifier,
