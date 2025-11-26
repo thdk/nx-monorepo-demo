@@ -4,9 +4,7 @@
   "private": true,
   "type": "module",
   "nx": {
-    "tags": [
-      "deployable"
-    ]
+    "name": "react-app-1"
   },
   "dependencies": {
     "@thdk/lib-b": "0.0.1",

@@ -1,9 +1,9 @@
 {
-  "name": "@thdk/app-1",
-  "version": "0.18.0-pr-38041ad.0",
+  "name": "@thdk/app-2",
+  "version": "0.1.0-pr-38041ad.0",
   "private": true,
   "nx": {
-    "name": "app-1",
+    "name": "app-2",
     "tags": [
       "deployable:docker"
     ],
@@ -16,17 +16,17 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "apps/app-1/dist",
+          "outputPath": "apps/app-2/dist",
           "format": [
             "cjs"
           ],
           "bundle": true,
           "thirdParty": true,
           "generatePackageJson": false,
-          "main": "apps/app-1/src/main.ts",
-          "tsConfig": "apps/app-1/tsconfig.app.json",
+          "main": "apps/app-2/src/main.ts",
+          "tsConfig": "apps/app-2/tsconfig.app.json",
           "assets": [
-            "apps/app-1/src/assets"
+            "apps/app-2/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -54,15 +54,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "app-1:build",
+          "buildTarget": "app-2:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "app-1:build:development"
+            "buildTarget": "app-2:build:development"
           },
           "production": {
-            "buildTarget": "app-1:build:production"
+            "buildTarget": "app-2:build:production"
           }
         }
       },

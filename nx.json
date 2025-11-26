@@ -75,6 +75,17 @@
     },
     {
       "plugin": "@thdk/nx-terraform/plugin"
+    },
+    {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTarget": {
+          "name": "docker:build"
+        },
+        "runTarget": {
+          "name": "docker:run"
+        }
+      }
     }
   ],
   "targetDefaults": {
@@ -156,30 +167,42 @@
     }
   },
   "release": {
-    "git": {
-      "push": true
+    "docker": {
+      "versionSchemes": {
+        "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
+        "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix",
+        "example-using-ci-variables": "{env.BUILD_NUMBER}-{shortCommitSha}",
+        "semver": "{versionActionsVersion}"
+      }
     },
     "groups": {
       "applications": {
-        "projects": ["tag:deployable"],
+        "projects": ["tag:deployable:docker"],
         "projectsRelationship": "independent",
         "version": {
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
-          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable | tr '\n' ' ')",
+          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:deployable:docker | tr '\n' ' ')",
           "preserveLocalDependencyProtocols": false,
           "manifestRootsToUpdate": ["{projectRoot}"]
         },
         "releaseTag": {
           "pattern": "{projectName}@{version}"
+        },
+        "docker": {
+          "skipVersionActions": false,
+          "registryUrl": "europe-west1-docker.pkg.dev/nx-monorepo-demo-462313/docker-images",
+          "groupPreVersionCommand": "echo BEFORE VERSIONING"
+        },
+        "changelog": {
+          "projectChangelogs": true
         }
       },
       "packages": {
         "projects": ["tag:npm:public"],
         "projectsRelationship": "independent",
         "version": {
-          "groupPreVersionCommand": "npx nx run-many --target build --projects $(npx nx show projects --affected --projects tag:npm:public | tr '\n' ' ')",
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
