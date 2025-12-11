@@ -58,7 +58,7 @@ async function createNodesInternal(
               parallel: false,
               cwd: workspaceRoot,
               commands: [
-                `terraform --version && terraform init --chdir=${projectRoot} --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
+                `terraform -chdir=${projectRoot} init --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
                 'echo $NX_TASK_TARGET_CONFIGURATION > .terraform/init-configuration',
               ],
               env: {
@@ -98,7 +98,7 @@ async function createNodesInternal(
             executor: 'nx:run-commands',
             options: {
               cwd: workspaceRoot,
-              command: `terraform plan --chdir=${projectRoot} --out=tfplan --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
+              command: `terraform -chdir=${projectRoot} plan --out=tfplan --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
               env: {
                 TF_CLI_ARGS_plan: '--input=false',
               },
@@ -115,14 +115,14 @@ async function createNodesInternal(
           },
           'terraform-apply': {
             executor: 'nx:run-commands',
-            dependsOn: ['terraform-plan', '^docker-build', '^terraform-apply'],
+            dependsOn: ['terraform-plan', '^docker:build', '^terraform-apply'],
             options: {
               parallel: false,
               cwd: workspaceRoot,
               commands:
                 [
                   "[ $(cat .terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1",
-                  `terraform apply --chdir=${projectRoot} --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
+                  `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
                 ],
               env: {
                 TF_CLI_ARGS_apply: '--auto-approve',
