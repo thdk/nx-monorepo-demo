@@ -47,7 +47,7 @@ async function createNodesInternal(
   const defaultConfiguration = Object.keys(configurationsObject)[0];
   
   const workspaceRoot = context.workspaceRoot;
-  
+
   return {
     projects: {
       [projectRoot]: {
@@ -58,7 +58,7 @@ async function createNodesInternal(
               parallel: false,
               cwd: workspaceRoot,
               commands: [
-                `terraform init --chdir=${projectRoot} --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
+                `terraform --version && terraform init --chdir=${projectRoot} --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
                 'echo $NX_TASK_TARGET_CONFIGURATION > .terraform/init-configuration',
               ],
               env: {
