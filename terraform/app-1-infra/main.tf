@@ -20,16 +20,16 @@ locals {
 module "app_1_service" {
   source = "../modules/cloud-run-service"
 
-  service_name                      = local.service_name
-  location                          = var.google_region
-  image                             = "${local.image_name}:${local.app_1_version}"
-  container_port                    = 8080
-  cpu_limit                         = "250m"
-  memory_limit                      = "128Mi"
-  min_instance_count                = 0
-  max_instance_count                = 3
-  max_instance_request_concurrency  = 1
-  allow_public_access               = true
+  service_name                     = local.service_name
+  location                         = var.google_region
+  image                            = "${local.image_name}:${local.app_1_version}"
+  container_port                   = 8080
+  cpu_limit                        = "250m"
+  memory_limit                     = "128Mi"
+  min_instance_count               = 0
+  max_instance_count               = 3
+  max_instance_request_concurrency = 1
+  allow_public_access              = true
 }
 
 output "app_1_url" {
