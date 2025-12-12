@@ -59,7 +59,7 @@ async function createNodesInternal(
               cwd: workspaceRoot,
               commands: [
                 `terraform -chdir=${projectRoot} init --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
-                'echo $NX_TASK_TARGET_CONFIGURATION > ${NX_PROJECT_ROOT}/.terraform/init-configuration',
+                `echo $NX_TASK_TARGET_CONFIGURATION > ${projectRoot}/.terraform/init-configuration`,
               ],
               env: {
                 TF_CLI_ARGS_init: `--reconfigure`,
@@ -121,7 +121,7 @@ async function createNodesInternal(
               cwd: workspaceRoot,
               commands:
                 [
-                  "[ $(cat ${NX_PROJECT_ROOT}/.terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1",
+                  `[ $(cat ${projectRoot}/.terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1`,
                   `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
                 ],
               env: {
