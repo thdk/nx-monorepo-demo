@@ -90,7 +90,7 @@ async function createNodesInternal(
             cache: true,
             options: {
               cwd: workspaceRoot,
-              command: `terraform validate --chdir=${projectRoot}`
+              command: `terraform -chdir=${projectRoot} validate`
             },
           },
           'terraform-plan': {
@@ -139,7 +139,7 @@ async function createNodesInternal(
               cwd: workspaceRoot,
               commands:
                 [
-                  `terraform --chdir=${projectRoot}`,
+                  `terraform -chdir=${projectRoot}`,
                 ],
             },
             configurations: configurationsObject,
