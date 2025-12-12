@@ -62,6 +62,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "artifactregistry.tags.list",
     "artifactregistry.tags.create",
     "artifactregistry.tags.update",
+    "run.services.get",
   ]
 }
 
