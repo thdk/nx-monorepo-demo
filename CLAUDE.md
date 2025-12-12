@@ -1,0 +1,2 @@
+- Always use nx targets to run terraform commands
+- always use infra as code if the resource are managed in terraform instead of suggesting to use the native cli to make changes

@@ -1,3 +1,91 @@
+## 0.1.0-pr-acc2cf4.0 (2025-12-12)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-6ee4c41.0 (2025-12-12)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-002881e.0 (2025-12-12)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-b82f886.0 (2025-12-12)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-a207178.0 (2025-12-11)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-83c2f22.0 (2025-12-11)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-f317d0a.0 (2025-12-11)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
+## 0.1.0-pr-75e501b.0 (2025-12-11)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
 ## 0.1.0-pr-38041ad.1 (2025-11-26)
 
 ### New Features

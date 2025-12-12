@@ -5,6 +5,11 @@
             "args": [
                 "octocode-mcp@latest"
             ]
+        },
+         "nx": {
+          "transport": "stdio",
+          "command": "npx",
+          "args": ["nx-mcp@latest"]
         }
     }
 }
