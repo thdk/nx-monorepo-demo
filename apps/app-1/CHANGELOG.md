@@ -1,3 +1,13 @@
+## 0.18.0-pr-38041ad.3 (2025-12-28)
+
+### New Features
+
+- add app-1 infra ([494b21d](https://github.com/thdk/nx-monorepo-demo/commit/494b21d))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.18.0-pr-38041ad.2 (2025-12-12)
 
 This was a version bump only for app-1 to align it with other projects, there were no code changes.
