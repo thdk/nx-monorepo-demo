@@ -1,3 +1,14 @@
+## 0.1.0-pr-3c29225.0 (2025-12-28)
+
+### New Features
+
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
 ## 0.1.0-pr-c50898a.0 (2025-12-12)
 
 ### New Features
