@@ -20,6 +20,10 @@ runs:
       with:
         terraform_version: '1.12.1'
 
+    - name: Verify Terraform version
+      shell: bash
+      run: terraform --version
+
     - name: Terraform init
       shell: bash
       run: |

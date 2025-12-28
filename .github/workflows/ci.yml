@@ -92,14 +92,14 @@ jobs:
               --group packages \
               --group applications \
               --tag latest
+
+            git push --follow-tags
           else
             npx nx release publish \
               --group packages \
               --group applications \
               --tag pr-${{ steps.git.outputs.commit-sha-short }}
           fi
-
-          git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -2,7 +2,6 @@
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0
-ENV PORT=3000
 
 # Allow to set the service version via build arg
 ARG SERVICE_VERSION
