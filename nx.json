@@ -80,7 +80,11 @@
       "plugin": "@nx/docker",
       "options": {
         "buildTarget": {
-          "name": "docker:build"
+          "name": "docker:build",
+          "args": [
+            "--platform",
+            "linux/amd64"
+          ]
         },
         "runTarget": {
           "name": "docker:run"
