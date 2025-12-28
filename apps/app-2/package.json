@@ -1,6 +1,6 @@
 {
   "name": "@thdk/app-2",
-  "version": "0.1.0-pr-38041ad.4",
+  "version": "0.1.0-pr-38041ad.5",
   "private": true,
   "nx": {
     "name": "app-2",

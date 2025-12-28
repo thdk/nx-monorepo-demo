@@ -1,3 +1,7 @@
+## 0.1.0-pr-38041ad.5 (2025-12-28)
+
+This was a version bump only for app-2 to align it with other projects, there were no code changes.
+
 ## 0.1.0-pr-38041ad.4 (2025-12-28)
 
 This was a version bump only for app-2 to align it with other projects, there were no code changes.
