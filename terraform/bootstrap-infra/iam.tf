@@ -39,6 +39,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "storage.objects.list",
     "iam.serviceAccounts.get",
     "iam.serviceAccounts.list",
+    "iam.serviceAccounts.getAccessToken",
     "iam.roles.get",
     "iam.workloadIdentityPools.get",
     "iam.workloadIdentityPoolProviders.get",
@@ -62,13 +63,20 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "artifactregistry.tags.list",
     "artifactregistry.tags.create",
     "artifactregistry.tags.update",
+    "artifactregistry.repositories.downloadArtifacts",
     "run.services.get",
+    "run.services.update",
+    "iam.serviceAccounts.actAs",
+    "run.operations.get"
   ]
 }
 
 locals {
   cicd_roles = [
     google_project_iam_custom_role.cicd_role.id,
+  ]
+  developers = [
+    "user:thomas@edissa.dev",
   ]
 }
 resource "google_project_iam_member" "github_actions_pool" {
@@ -93,4 +101,15 @@ resource "google_project_iam_member" "cicd_service_account_role" {
   project  = data.google_project.current.project_id
   role     = each.key
   member   = "serviceAccount:${google_service_account.cicd_service_account.email}"
+}
+
+/**
+  * Grant Service Account Token Creator role on the cicd service account to developers.
+  * This allows developers to impersonate the cicd service account.
+*/
+resource "google_service_account_iam_member" "cicd_impersonation" {
+  for_each           = toset(local.developers)
+  service_account_id = google_service_account.cicd_service_account.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = each.key
 }
