@@ -40,6 +40,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "iam.serviceAccounts.get",
     "iam.serviceAccounts.list",
     "iam.serviceAccounts.getAccessToken",
+    "iam.serviceAccounts.getIamPolicy",
     "iam.roles.get",
     "iam.workloadIdentityPools.get",
     "iam.workloadIdentityPoolProviders.get",
@@ -67,7 +68,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "run.services.get",
     "run.services.update",
     "iam.serviceAccounts.actAs",
-    "run.operations.get"
+    "run.operations.get",
   ]
 }
 
