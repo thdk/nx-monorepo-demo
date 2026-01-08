@@ -1,3 +1,13 @@
+## 0.18.0-pr-38041ad.9 (2026-01-08)
+
+### Other Updates
+
+- use linux/arm64 ([f8a308e](https://github.com/thdk/nx-monorepo-demo/commit/f8a308e))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.18.0-pr-38041ad.8 (2026-01-08)
 
 ### Bug Fixes
