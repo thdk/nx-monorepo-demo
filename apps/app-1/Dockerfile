@@ -2,6 +2,7 @@
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0
+ENV PORT 8080
 
 # Allow to set the service version via build arg
 ARG SERVICE_VERSION
@@ -18,5 +19,3 @@ COPY ./dist app-1/
 # RUN npm --prefix app-1 --omit=dev -f install 
 
 CMD [ "node", "app-1/main.js" ]
-
-
