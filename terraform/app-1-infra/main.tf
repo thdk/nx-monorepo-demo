@@ -23,7 +23,7 @@ module "app_1_service" {
   service_name                     = local.service_name
   location                         = var.google_region
   image                            = "${local.image_name}:${local.app_1_version}"
-  container_port                   = 8080
+  container_port                   = 3000
   cpu_limit                        = "250m"
   memory_limit                     = "128Mi"
   min_instance_count               = 0
