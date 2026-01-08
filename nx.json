@@ -83,7 +83,7 @@
           "name": "docker:build",
           "args": [
             "--platform",
-            "linux/amd64"
+            "linux/arm64"
           ]
         },
         "runTarget": {
