@@ -1,3 +1,13 @@
+## 0.18.0-pr-38041ad.8 (2026-01-08)
+
+### Bug Fixes
+
+- use port 8080 ([028f865](https://github.com/thdk/nx-monorepo-demo/commit/028f865))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.18.0-pr-38041ad.7 (2026-01-08)
 
 This was a version bump only for app-1 to align it with other projects, there were no code changes.
