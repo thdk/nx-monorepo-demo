@@ -219,6 +219,7 @@
           "projectChangelogs": true
         },
         "releaseTag": {
+          "preferDockerVersion": false,
           "pattern": "{projectName}@{version}"
         }
       },
