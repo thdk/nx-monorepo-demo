@@ -42,16 +42,19 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 
 - **Bundler**: TypeScript Compiler (tsc)
 - **Published**: No
+- **type:** cjs
 
 #### lib-b
 
 - **Bundler**: Esbuild
 - **Published**: No
+- **type:** module
 
 #### lib-c
 
 - **Bundler**: TypeScript Compiler (tsc)
 - **Published**: Yes
+- **type:** cjs
 
 ### Terraform Projects
 
