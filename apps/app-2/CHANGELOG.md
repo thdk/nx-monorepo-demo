@@ -1,3 +1,13 @@
+## 0.1.0-pr-38041ad.10 (2026-01-09)
+
+### New Features
+
+- upgrade nx to latest version ([55a7305](https://github.com/thdk/nx-monorepo-demo/commit/55a7305))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.1.0-pr-38041ad.9 (2026-01-08)
 
 This was a version bump only for app-2 to align it with other projects, there were no code changes.
