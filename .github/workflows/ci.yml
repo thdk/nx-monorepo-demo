@@ -60,23 +60,14 @@ jobs:
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release \
-              --group applications \
+              --groups packages,applications \
               --dockerVersionScheme semver \
-              --skip-publish
-
-            npx nx release \
-              --group packages \
               --skip-publish
           else
             npx nx release \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --group applications \
+              --groups packages,applications \
               --dockerVersionScheme semver \
-              --skip-publish
-
-            npx nx release \
-              --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --group packages \
               --skip-publish
           fi
         env:
@@ -89,15 +80,13 @@ jobs:
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release publish \
-              --group packages \
-              --group applications \
+              --groups packages,applications \
               --tag latest
 
             git push --follow-tags
           else
             npx nx release publish \
-              --group packages \
-              --group applications \
+              --groups packages,applications \
               --tag pr-${{ steps.git.outputs.commit-sha-short }}
           fi
         env:
