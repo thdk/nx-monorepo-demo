@@ -106,14 +106,6 @@
     }
   ],
   "targetDefaults": {
-    "release-custom": {
-      "options": {
-        "verbose": "true",
-        "changelogs": true,
-        "npm-dist-tag": "latest",
-        "dry-run": true
-      }
-    },
     "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
@@ -122,32 +114,21 @@
     "test": {
       "dependsOn": ["^build"]
     },
-    "docker-build": {
-      "dependsOn": ["build"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsx ./scripts/bin/docker-build.ts"
-      },
-      "defaultConfiguration": "development",
-      "configurations": {
-        "development": {}
-      }
-    },
-    "docker-push": {
-      "dependsOn": ["build"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsx ./scripts/bin/docker-push.ts"
-      },
-      "defaultConfiguration": "development",
-      "configurations": {
-        "development": {}
-      }
-    },
     "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "docker:build": {
+      "dependsOn": ["build","^build", "prune", "copy-workspace-modules"]
+    },
+    "prune": {
+      "executor": "@nx/js:prune-lockfile",
+      "dependsOn": ["build"]
+    },
+    "copy-workspace-modules": {
+      "executor": "@nx/js:copy-workspace-modules",
+      "dependsOn": ["build"]
     }
   },
   "generators": {

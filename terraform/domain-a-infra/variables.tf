@@ -12,6 +12,12 @@ variable "configuration" {
 
 variable "app_1_version" {
   type        = string
-  description = "Version of the app-1 docker image that needs to be used for deployment. If not provided the latest git tag matching @thdk/app-1@{version} will be used."
+  description = "Version of the app-1 docker image that needs to be used for deployment. If not provided the latest git tag matching app-1@{version} will be used."
+  default     = null
+}
+
+variable "app_2_version" {
+  type        = string
+  description = "Version of the app-2 docker image that needs to be used for deployment. If not provided the latest git tag matching app-2@{version} will be used."
   default     = null
 }

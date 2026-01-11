@@ -20,7 +20,7 @@
           "format": [
             "cjs"
           ],
-          "bundle": true,
+          "bundle": false,
           "thirdParty": true,
           "generatePackageJson": false,
           "main": "apps/app-2/src/main.ts",
@@ -70,7 +70,9 @@
         "options": {
           "passWithNoTests": true
         }
-      }
+      },
+      "copy-workspace-modules": {},
+      "prune": {}
     }
   },
   "dependencies": {

@@ -11,11 +11,7 @@ WORKDIR /app
 
 COPY ./dist app/
 
-# You can remove this install step if you build with `--bundle` option.
-# The bundled output will include external dependencies.
-# Currently, we can't install dependencies since esbuild executor no longer generates package.json for the output.
-# See: https://github.com/nrwl/nx/issues/30146
-# RUN npm --prefix app --omit=dev -f install 
+RUN npm --prefix app --omit=dev -f install 
 
 CMD [ "node", "app/main.js" ]
 

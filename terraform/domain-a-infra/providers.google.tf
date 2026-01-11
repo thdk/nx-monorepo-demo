@@ -3,6 +3,6 @@ provider "google" {
   region  = var.google_region
 
   default_labels = {
-    "nx-project" = "app-1-infra"
+    "nx-project" = "domain-a-infra"
   }
 }
