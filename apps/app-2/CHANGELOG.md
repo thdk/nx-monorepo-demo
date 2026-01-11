@@ -1,3 +1,20 @@
+## 0.2.0 (2026-01-11)
+
+### New Features
+
+- configure different ports for each app ([bc3d828](https://github.com/thdk/nx-monorepo-demo/commit/bc3d828))
+- upgrade nx to latest version ([55a7305](https://github.com/thdk/nx-monorepo-demo/commit/55a7305))
+- publish docker images using nx release ([#20](https://github.com/thdk/nx-monorepo-demo/pull/20))
+
+### Other Updates
+
+- fix versions ([a35f2c0](https://github.com/thdk/nx-monorepo-demo/commit/a35f2c0))
+
+### ❤️ Thank You
+
+- Github Action @github-action
+- Thomas Dekiere @thdk
+
 ## 0.1.0-pr-38041ad.16 (2026-01-11)
 
 ### New Features
