@@ -7,7 +7,7 @@ data "google_artifact_registry_repository" "docker_registry" {
 
 module "app_1_git_tag" {
   source      = "../modules/data-git-tag"
-  tag_pattern = "@thdk/app-1@*"
+  tag_pattern = "app-1@*"
 }
 
 locals {
