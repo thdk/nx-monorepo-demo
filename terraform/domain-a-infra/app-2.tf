@@ -4,18 +4,18 @@ module "app_2_git_tag" {
 }
 
 locals {
-  service_name               = "app-2"
+  app_2_service_name         = "app-2"
   app_2_version_from_git_tag = module.app_2_git_tag.version
   app_2_version              = coalesce(var.app_2_version, local.app_2_version_from_git_tag)
-  image_name                 = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.service_name}"
+  app_2_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.app_2_service_name}"
 }
 
 module "app_2_service" {
   source = "../modules/cloud-run-service"
 
-  service_name                     = local.service_name
+  service_name                     = local.app_2_service_name
   location                         = var.google_region
-  image                            = "${local.image_name}:${local.app_2_version}"
+  image                            = "${local.app_2_image_name}:${local.app_2_version}"
   container_port                   = 8080
   cpu_limit                        = "250m"
   memory_limit                     = "128Mi"
