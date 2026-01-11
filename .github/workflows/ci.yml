@@ -22,6 +22,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version-commit-sha: ${{ steps.publish.outputs.version-commit-sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,6 +79,7 @@ jobs:
         uses: './.github/actions/authenticate-gcp'
 
       - name: Publish
+        id: publish
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release publish \
@@ -84,6 +87,7 @@ jobs:
               --tag latest
 
             git push --follow-tags
+            echo "version-commit-sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           else
             npx nx release publish \
               --groups packages,applications \
@@ -107,4 +111,5 @@ jobs:
       environment: development
       dry-run: false
       affected-only: true
+      ref: ${{ needs.build.outputs.version-commit-sha }} # forward new ref so the next job can fetch it instead of using the ref that triggered the workflow!
     secrets: inherit

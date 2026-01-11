@@ -4,8 +4,8 @@ run-name: Deploy / ${{ inputs.environment }}${{ inputs.dry-run == true && ' / Dr
 on:
   workflow_call:
     inputs:
-      thdk-version:
-        description: 'The version of the thdk release project to be deployed. Can be a tag or a commit sha. If not set, defaults to the latest commit on the selected branch'
+      ref:
+        description: 'The git ref (commit sha, tag, or branch) to deploy. If not set, defaults to the latest commit on the selected branch.'
         required: false
         type: string
       environment:
@@ -21,8 +21,8 @@ on:
         default: true
   workflow_dispatch:
     inputs:
-      thdk-version:
-        description: 'The version of the thdk release project to be deployed. Can be a tag or a commit sha. If not set, defaults to the latest commit on the selected branch'
+      ref:
+        description: 'The git ref (commit sha, tag, or branch) to deploy. If not set, defaults to the latest commit on the selected branch.'
         required: false
         type: string
       environment:
@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.thdk-version }}
+          ref: ${{ inputs.ref }}
 
       - uses: ./.github/actions/deploy
         with:
@@ -76,7 +76,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.thdk-version }}
+          ref: ${{ inputs.ref }}
 
       - uses: ./.github/actions/deploy
         with:
