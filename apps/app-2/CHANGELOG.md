@@ -1,3 +1,17 @@
+## 0.1.0-pr-38041ad.16 (2026-01-11)
+
+### New Features
+
+- configure different ports for each app ([bc3d828](https://github.com/thdk/nx-monorepo-demo/commit/bc3d828))
+
+### 🧱 Updated Dependencies
+
+- Updated @thdk/lib-c to 0.10.0
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.1.0-pr-38041ad.15 (2026-01-11)
 
 ### 🧱 Updated Dependencies
