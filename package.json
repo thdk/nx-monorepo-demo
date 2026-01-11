@@ -118,11 +118,11 @@
     "yargs": "17.7.2",
     "zx": "8.4.1"
   },
+  "packageManager": "npm@11.6.1",
   "workspaces": [
     "packages/*",
     "apps/*",
     "scripts",
     "tools/*"
-  ],
-  "packageManager": "npm@11.6.1"
+  ]
 }
