@@ -1,3 +1,9 @@
+## 0.18.0-pr-38041ad.15 (2026-01-11)
+
+### 🧱 Updated Dependencies
+
+- Updated @thdk/lib-c to 0.9.0
+
 ## 0.18.0-pr-38041ad.14 (2026-01-11)
 
 ### Other Updates
