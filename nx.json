@@ -89,11 +89,11 @@
             "--rm",
             "--init",
             "--publish",
-            "3000:3000",
+            "${PORT}:${PORT}",
             "--env",
             "NODE_ENV=production",
             "--env",
-            "PORT=3000"
+            "PORT=${PORT}"
           ]
         }
       }
