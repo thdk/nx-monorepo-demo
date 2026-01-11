@@ -12,7 +12,7 @@ runs:
 
     - name: Install
       shell: bash
-      run: npm ci --prefer-offline --no-audit --force # only allowing force due to often use nx beta versions, should be removed in actual repo
+      run: npm ci --prefer-offline --no-audit
 
     - name: Setup Nx
       uses: nrwl/nx-set-shas@v4
