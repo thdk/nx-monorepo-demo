@@ -1,3 +1,7 @@
+## 0.1.0-pr-38041ad.11 (2026-01-11)
+
+This was a version bump only for app-2 to align it with other projects, there were no code changes.
+
 ## 0.1.0-pr-38041ad.10 (2026-01-09)
 
 ### New Features
