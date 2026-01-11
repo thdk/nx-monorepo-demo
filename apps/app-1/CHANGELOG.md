@@ -1,3 +1,17 @@
+## 0.18.0-pr-38041ad.14 (2026-01-11)
+
+### Other Updates
+
+- fix versions ([a35f2c0](https://github.com/thdk/nx-monorepo-demo/commit/a35f2c0))
+
+### 🧱 Updated Dependencies
+
+- Updated @thdk/lib-c to 0.8.0
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.18.0-pr-38041ad.13 (2026-01-11)
 
 This was a version bump only for app-1 to align it with other projects, there were no code changes.
