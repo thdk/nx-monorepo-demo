@@ -80,10 +80,21 @@
       "options": {
         "buildTarget": {
           "name": "docker:build",
-          "args": ["--platform", "linux/arm64"]
+          "args": ["--platform", "linux/arm64"],
+          "DOCKER_BUILDKIT": "1"
         },
         "runTarget": {
-          "name": "docker:run"
+          "name": "docker:run",
+          "args": [
+            "--rm",
+            "--init",
+            "--publish",
+            "3000:3000",
+            "--env",
+            "NODE_ENV=production",
+            "--env",
+            "PORT=3000"
+          ]
         }
       }
     },
