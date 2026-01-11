@@ -1,3 +1,17 @@
+## 0.3.0 (2026-01-11)
+
+### New Features
+
+- add app-2 ([d42f6b3](https://github.com/thdk/nx-monorepo-demo/commit/d42f6b3))
+
+### 🧱 Updated Dependencies
+
+- Updated @thdk/lib-c to 0.11.0
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.1 (2026-01-11)
 
 ### 🧱 Updated Dependencies

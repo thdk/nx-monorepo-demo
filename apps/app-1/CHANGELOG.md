@@ -1,3 +1,9 @@
+## 0.20.0 (2026-01-11)
+
+### 🧱 Updated Dependencies
+
+- Updated @thdk/lib-c to 0.11.0
+
 ## 0.18.0 (2026-01-11)
 
 ### New Features
