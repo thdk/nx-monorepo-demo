@@ -80,7 +80,7 @@
       "options": {
         "buildTarget": {
           "name": "docker:build",
-          "args": ["--platform", "linux/arm64"],
+          "args": ["--platform", "linux/amd64"],
           "DOCKER_BUILDKIT": "1"
         },
         "runTarget": {
