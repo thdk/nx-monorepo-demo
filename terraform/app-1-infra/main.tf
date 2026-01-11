@@ -14,7 +14,7 @@ locals {
   service_name               = "app-1"
   app_1_version_from_git_tag = module.app_1_git_tag.version
   app_1_version              = coalesce(var.app_1_version, local.app_1_version_from_git_tag)
-  image_name                 = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/${local.service_name}"
+  image_name                 = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.service_name}"
 }
 
 module "app_1_service" {
