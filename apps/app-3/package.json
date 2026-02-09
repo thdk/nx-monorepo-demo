@@ -53,10 +53,10 @@
   "dependencies": {
     "@nestjs/common": "11.0.0",
     "@nestjs/core": "11.0.0",
-    "@nx/webpack": "22.3.3"
+    "@nx/webpack": "22.4.5"
   },
   "devDependencies": {
     "@nestjs/testing": "11.0.0",
-    "@nx/webpack": "22.3.3"
+    "@nx/webpack": "22.4.5"
   }
 }
