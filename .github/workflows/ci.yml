@@ -58,36 +58,18 @@ jobs:
       - name: Build lint test affected projects and prepare apps for containerization
         run: npx nx affected --targets lint test build e2e
 
-      - name: Version libs
+      - name: Version
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release \
-              --groups packages \
+              --groups packages,apps \
+              --dockerVersionScheme production \
               --skip-publish
           else
             npx nx release \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --groups packages \
-              --skip-publish
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prepare apps for containerization
-        run: npx nx affected --targets prune
-
-      - name: Version apps
-        run: |
-          if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
-            npx nx release \
-              --groups apps \
-              --dockerVersionScheme semver \
-              --skip-publish
-          else
-            npx nx release \
-              --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --groups apps \
-              --dockerVersionScheme semver \
+              --groups packages,apps \
+              --dockerVersionScheme production \
               --skip-publish
           fi
         env:
