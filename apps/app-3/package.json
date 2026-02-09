@@ -1,0 +1,62 @@
+{
+  "name": "@thdk/app-3",
+  "version": "0.3.0",
+  "private": true,
+  "nx": {
+    "name": "app-3",
+    "tags": [
+      "deployable:docker"
+    ],
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "--node-env=production"
+          ],
+          "cwd": "apps/app-3"
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "--node-env=development"
+            ]
+          }
+        }
+      },
+      "prune-lockfile": {},
+      "copy-workspace-modules": {},
+      "prune": {},
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "@thdk/app-3:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "@thdk/app-3:build:development"
+          },
+          "production": {
+            "buildTarget": "@thdk/app-3:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "11.0.0",
+    "@nestjs/core": "11.0.0",
+    "@nx/webpack": "22.4.5"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.0.0",
+    "@nx/webpack": "22.4.5"
+  }
+}

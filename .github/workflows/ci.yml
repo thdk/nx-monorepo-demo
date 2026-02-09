@@ -55,26 +55,26 @@ jobs:
       # - run: npx nx-cloud record -- echo Hello World
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
 
-      - name: Build lint test affected projects
+      - name: Build lint test affected projects and prepare apps for containerization
         run: npx nx affected --targets lint test build e2e
 
       - name: Version
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release \
-              --groups packages,applications \
-              --dockerVersionScheme semver \
+              --groups packages,apps \
+              --dockerVersionScheme production \
               --skip-publish
           else
             npx nx release \
               --preid pr-${{ steps.git.outputs.commit-sha-short }} \
-              --groups packages,applications \
-              --dockerVersionScheme semver \
+              --groups packages,apps \
+              --dockerVersionScheme production \
               --skip-publish
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Authenticate GCP
         uses: './.github/actions/authenticate-gcp'
 
@@ -83,14 +83,14 @@ jobs:
         run: |
           if [ "${{ steps.git.outputs.branch-name }}" == "main" ]; then
             npx nx release publish \
-              --groups packages,applications \
+              --groups packages,apps \
               --tag latest
 
             git push --follow-tags
             echo "version-commit-sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
           else
             npx nx release publish \
-              --groups packages,applications \
+              --groups packages,apps \
               --tag pr-${{ steps.git.outputs.commit-sha-short }}
           fi
         env:

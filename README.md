@@ -36,6 +36,13 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 - **Bundler**: Vite
 - **E2E Testing**: Playwright
 
+#### react-router-app-1
+
+- **Environment**: Browser
+- **Framework**: React router (with SSR)
+- **Module Type**: ES Module
+- **Bundler**: Vite
+
 ### Libraries
 
 #### lib-a
@@ -122,6 +129,16 @@ However these are automatically run for you in CI and will block any thing that 
 
 ### IaC with terraform and Nx
 
+#### Terraform project generator
+
+Default terraform generator settigns for this repo can be found in `nx.json` under `generators.@thdk/nx-terraform.project`.
+
+```sh
+npx nx generate @thdk/nx-terraform:project domain-b-infra
+```
+
+#### Inferred targets
+
 A custom terraform plugin will infer terraform targets for each project with a `main.tf` file.
 
 Terraform state for this repo is kept in a GCP bucket for which you must be authenticated if you would want to run this locally (CI authorizes with GCP using Workload Identity Federation)
@@ -147,3 +164,21 @@ npx nx run-many --target terraform-plan
 npx nx run-many --target terraform-apply
 
 ```
+
+## Version & release
+
+This is all managed by nx release.
+
+Docs:
+
+- [Configuring nx release in `nx.json`](https://nx.dev/docs/reference/nx-json#release)
+- [Release npm packages](https://nx.dev/docs/guides/nx-release/release-npm-packages)
+- [Release docker images](https://nx.dev/docs/guides/nx-release/release-docker-images)
+- [More nx release guides](https://nx.dev/docs/guides/nx-release)
+
+Next the terraform setup will read the version from git tags for each affected application and
+update the deployed service to use that new docker image.
+
+## Future improvements
+
+- Dependencies should be managed by each project itself and no longer add each dependency to root `package.json`.

@@ -1,3 +1,25 @@
+# 2602.09.00d1b16 (2026-02-09)
+
+### New Features
+
+- add prune target to app-2 ([21cc3d4](https://github.com/thdk/nx-monorepo-demo/commit/21cc3d4))
+- add nestjs app-3 ([73fa93d](https://github.com/thdk/nx-monorepo-demo/commit/73fa93d))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
+## 0.4.0 (2026-02-09)
+
+### New Features
+
+- add prune target to app-2 ([21cc3d4](https://github.com/thdk/nx-monorepo-demo/commit/21cc3d4))
+- add nestjs app-3 ([73fa93d](https://github.com/thdk/nx-monorepo-demo/commit/73fa93d))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.3.0 (2026-01-11)
 
 ### New Features

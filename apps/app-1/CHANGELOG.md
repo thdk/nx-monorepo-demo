@@ -1,3 +1,11 @@
+# 2602.09.00d1b16 (2026-02-09)
+
+This was a version bump only for app-1 to align it with other projects, there were no code changes.
+
+## 0.21.0 (2026-02-09)
+
+This was a version bump only for app-1 to align it with other projects, there were no code changes.
+
 ## 0.20.0 (2026-01-11)
 
 ### 🧱 Updated Dependencies
