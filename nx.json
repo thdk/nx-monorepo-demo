@@ -210,7 +210,7 @@
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
           "preserveLocalDependencyProtocols": false,
-          "manifestRootsToUpdate": ["{projectRoot}/dist"]
+          "manifestRootsToUpdate": ["{projectRoot}"]
         },
         "changelog": {
           "projectChangelogs": false,
