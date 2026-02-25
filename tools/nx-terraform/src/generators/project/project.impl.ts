@@ -49,7 +49,7 @@ export const projectGenerator = async (
   if (options.backend !== 'none') {
     await stateGenerator(
       tree,
-      getMergedGeneratorOptions('@weareoneworld/nx-terraform:state', tree, {
+      getMergedGeneratorOptions('@thdk/nx-terraform:state', tree, {
         backend: options.backend,
         bucket: options.terraformStateBucketName,
         project: options.name,
@@ -62,16 +62,12 @@ export const projectGenerator = async (
     ...(options.configurations ?? []).map((env) =>
       configurationGenerator(
         tree,
-        getMergedGeneratorOptions(
-          '@weareoneworld/nx-terraform:configuration',
-          tree,
-          {
-            ...options,
-            name: env,
-            project: options.name,
-            skipFormat: true,
-          }
-        )
+        getMergedGeneratorOptions('@thdk/nx-terraform:configuration', tree, {
+          ...options,
+          name: env,
+          project: options.name,
+          skipFormat: true,
+        })
       )
     )
   );
@@ -81,14 +77,10 @@ export const projectGenerator = async (
     tasks.push(
       await providerGenerator(
         tree,
-        getMergedGeneratorOptions(
-          '@weareoneworld/nx-terraform:provider',
-          tree,
-          {
-            project: options.name,
-            provider: 'aws',
-          }
-        )
+        getMergedGeneratorOptions('@thdk/nx-terraform:provider', tree, {
+          project: options.name,
+          provider: 'aws',
+        })
       )
     );
   }
@@ -97,14 +89,10 @@ export const projectGenerator = async (
     tasks.push(
       await providerGenerator(
         tree,
-        getMergedGeneratorOptions(
-          '@weareoneworld/nx-terraform:provider',
-          tree,
-          {
-            project: options.name,
-            provider: 'google',
-          }
-        )
+        getMergedGeneratorOptions('@thdk/nx-terraform:provider', tree, {
+          project: options.name,
+          provider: 'google',
+        })
       )
     );
   }
