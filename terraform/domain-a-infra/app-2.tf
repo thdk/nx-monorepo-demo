@@ -1,6 +1,7 @@
 module "app_2_git_tag" {
-  source      = "../modules/data-git-tag"
-  tag_pattern = "app-2@*"
+  source            = "../modules/data-git-tag"
+  tag_pattern       = "app-2@*"
+  versioning_scheme = "calendar"
 }
 
 locals {

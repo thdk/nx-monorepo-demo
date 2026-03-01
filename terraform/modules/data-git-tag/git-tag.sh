@@ -1,10 +1,18 @@
 #!/bin/bash
 
-# Read the input variable
+# Read the input variables
 pattern=$1
+versioning_scheme=${2:-semver}
+
+# Choose sort strategy based on versioning scheme
+if [ "$versioning_scheme" = "calendar" ]; then
+  sort_flag="--sort=-creatordate"
+else
+  sort_flag="--sort=-version:refname"
+fi
 
 # Run the Git command and capture the output
-latest_tag=$(git tag -l "$pattern" --sort=-version:refname --merged HEAD | head -n 1)
+latest_tag=$(git tag -l "$pattern" $sort_flag --merged HEAD | head -n 1)
 
 # Check if latest_tag is empty and set it to null if so
 if [ -z "$latest_tag" ]; then

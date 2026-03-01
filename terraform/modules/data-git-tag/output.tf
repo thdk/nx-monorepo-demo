@@ -1,6 +1,6 @@
 
 data "external" "latest_tag" {
-  program = ["bash", "${path.module}/git-tag.sh", var.tag_pattern]
+  program = ["bash", "${path.module}/git-tag.sh", var.tag_pattern, var.versioning_scheme]
 }
 
 
