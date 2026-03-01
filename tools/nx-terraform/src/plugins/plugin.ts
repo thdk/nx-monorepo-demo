@@ -115,7 +115,7 @@ async function createNodesInternal(
           },
           'terraform-apply': {
             executor: 'nx:run-commands',
-            dependsOn: ['terraform-plan', '^docker:build', '^terraform-apply'],
+            dependsOn: ['terraform-plan', '^terraform-apply'],
             options: {
               parallel: false,
               cwd: workspaceRoot,
