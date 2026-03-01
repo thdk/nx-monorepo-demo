@@ -34,6 +34,7 @@ export const projectGenerator = async (
 
   addProjectConfiguration(tree, options.name, {
     root: projectRoot,
+    tags: ['terraform'],
   });
 
   const suggestedTerraformVersion = await resolveSuggestedTerraformVersion({
