@@ -50,7 +50,7 @@ The `project` generator scaffolds a new Terraform project in your Nx workspace, 
 #### Usage
 
 ```sh
-npx nx generate @thdk/nx-terraform:project <name> \
+pnpm exec nx generate @thdk/nx-terraform:project <name> \
   --terraformStateBucketName=<bucket-name> \
   --terraformStateBucketRegion=<region> \
   [--directory=<directory>] \
@@ -74,7 +74,7 @@ npx nx generate @thdk/nx-terraform:project <name> \
 #### Example
 
 ```sh
-npx nx generate @thdk/nx-terraform:project my-infra \
+pnpm exec nx generate @thdk/nx-terraform:project my-infra \
   --terraformStateBucketName=my-bucket \
   --terraformStateBucketRegion=eu-west-1 \
   --directory=infra/my-infra \

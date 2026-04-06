@@ -259,13 +259,13 @@ const program = async () => {
   // Persist version changes and update the lock file
   if (!options.skipLockFileUpdate && !options.dryRun) {
     // Update the lock file
-    await $`npm install --package-lock-only`;
+    await $`pnpm install --lockfile-only`;
 
     if (options.gitCommit) {
       // Stage all package.json files
       await $`git add '**/package.json'`;
       // Stage lockfile if it was updated
-      await $`git add package-lock.json`;
+      await $`git add pnpm-lock.yaml`;
     }
   }
 

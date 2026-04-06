@@ -1,15 +1,13 @@
 {
-    "mcpServers": {
-        "octocode": {
-            "command": "npx",
-            "args": [
-                "octocode-mcp@latest"
-            ]
-        },
-         "nx": {
-          "transport": "stdio",
-          "command": "npx",
-          "args": ["nx-mcp@latest"]
-        }
+  "mcpServers": {
+    "octocode": {
+      "command": "pnpm",
+      "args": ["exec", "octocode-mcp@latest"]
+    },
+    "nx": {
+      "transport": "stdio",
+      "command": "pnpm",
+      "args": ["exec", "nx-mcp@latest"]
     }
+  }
 }

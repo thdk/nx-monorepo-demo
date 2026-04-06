@@ -35,7 +35,7 @@ export async function getProjectsToVersion({
   }
 
   const { stdout: allApplications } =
-    await $`npx nx show projects ${listProjectsCommandArgs}`;
+    await $`pnpm exec nx show projects ${listProjectsCommandArgs}`;
 
   return JSON.parse(allApplications);
 }

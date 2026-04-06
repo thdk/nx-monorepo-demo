@@ -7,10 +7,11 @@ Usually it is fine to run this manually on your own computer.
 ```sh
 # Login with admin
 gcloud auth application-default login
-npx nx terraform-apply bootstrap-infra
+pnpm exec nx terraform-apply bootstrap-infra
 ```
 
 Example can be to:
+
 - add / remove permissions for the role assumed by our ci/cd pipeline
 - create artifacts buckets to store build artifacts
 - to create new container registries for uploading container images on succesful build of applications

@@ -4,15 +4,19 @@ description: 'Setup node, install dependencies and set nx env variables'
 runs:
   using: 'composite'
   steps:
+    - name: Enable pnpm
+      shell: bash
+      run: corepack enable pnpm
+
     - name: Setup node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
         node-version-file: .tool-versions
-        cache: npm
+        cache: pnpm
 
     - name: Install
       shell: bash
-      run: npm ci --prefer-offline --no-audit
+      run: pnpm install --prefer-offline
 
     - name: Setup Nx
-      uses: nrwl/nx-set-shas@v4
+      uses: nrwl/nx-set-shas@v5

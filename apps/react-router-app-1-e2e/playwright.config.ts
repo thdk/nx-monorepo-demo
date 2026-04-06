@@ -24,7 +24,7 @@ export default defineConfig({
   },
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npx nx run @thdk/react-router-app-1:dev',
+    command: 'pnpm exec nx run @thdk/react-router-app-1:dev',
     url: 'http://localhost:4201',
     reuseExistingServer: true,
     cwd: workspaceRoot,

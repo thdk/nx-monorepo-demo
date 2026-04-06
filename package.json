@@ -32,15 +32,15 @@
         }
       },
       "syncpack": {
-        "command": "npx syncpack lint"
+        "command": "pnpm exec syncpack lint"
       },
       "syncpack-fix": {
         "executor": "nx:run-commands",
         "options": {
           "commands": [
-            "npx syncpack fix-mismatches",
-            "npx syncpack format",
-            "npm install"
+            "pnpm exec syncpack fix-mismatches",
+            "pnpm exec syncpack format",
+            "pnpm install"
           ],
           "parallel": false
         }
@@ -133,7 +133,6 @@
     "yargs": "17.7.2",
     "zx": "8.4.1"
   },
-  "packageManager": "npm@11.6.1",
   "workspaces": [
     "packages/*",
     "apps/*",

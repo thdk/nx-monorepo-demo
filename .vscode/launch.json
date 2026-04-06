@@ -5,20 +5,14 @@
       "type": "node",
       "request": "launch",
       "name": "Debug @thdk/app-3 with Nx",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": [
-        "nx",
-        "serve",
-        "@thdk/app-3"
-      ],
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["exec", "nx", "serve", "@thdk/app-3"],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/apps/app-3/dist/**/*.(m|c|)js",

@@ -7,8 +7,8 @@
 #### New plugin to infer terraform targets automatically
 
 ```sh
-npx nx add @nx/plugin
-npx nx g plugin tools/nx-terraform
+pnpm exec nx add @nx/plugin
+pnpm exec nx g plugin tools/nx-terraform
 ```
 
 Note: when using plugins locally for inferring tasks, nx, must be able to resolve the plugin without having the plugin built.
