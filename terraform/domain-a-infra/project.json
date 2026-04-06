@@ -1,5 +1,5 @@
 {
   "name": "domain-a-infra",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": ["app-1", "app-2"]
+  "implicitDependencies": ["bootstrap-infra", "app-1", "app-2"]
 }
