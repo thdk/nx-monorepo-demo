@@ -13,9 +13,9 @@ This Nx generator creates a `backend.tf` file for Terraform, supporting AWS S3 a
 ## Usage
 
 ```
-npx nx generate @thdk/nx-terraform:state --backend=s3 --bucket=my-tf-bucket --region=us-west-2 --key=my/key/path
+pnpm exec nx generate @thdk/nx-terraform:state --backend=s3 --bucket=my-tf-bucket --region=us-west-2 --key=my/key/path
 ```
 
 ```
-npx nx generate @thdk/nx-terraform:state --backend=gcs --bucket=my-tf-bucket --prefix=terraform/state
+pnpm exec nx generate @thdk/nx-terraform:state --backend=gcs --bucket=my-tf-bucket --prefix=terraform/state
 ```

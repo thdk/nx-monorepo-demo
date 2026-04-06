@@ -14,7 +14,7 @@ runs:
       id: playwright-version
       shell: bash
       run: |
-        PLAYWRIGHT_VERSION=$(npx playwright --version | awk '{print $2}')
+        PLAYWRIGHT_VERSION=$(pnpm exec playwright --version | awk '{print $2}')
         echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
 
     - name: Determine Browsers
@@ -40,8 +40,8 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.browsers }}" ]; then
-          npx playwright install --with-deps --no-shell
+          pnpm exec playwright install --with-deps --no-shell
         else
           BROWSERS="${{ inputs.browsers }}"
-          npx playwright install $BROWSERS --with-deps --no-shell
+          pnpm exec playwright install $BROWSERS --with-deps --no-shell
         fi

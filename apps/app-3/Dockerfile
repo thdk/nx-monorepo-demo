@@ -11,7 +11,7 @@ WORKDIR /app
 
 COPY ./dist app/
 
-RUN npm --prefix app --omit=dev -f install 
+RUN corepack enable pnpm && pnpm --prefix app --prod install 
 
 CMD [ "node", "app/main.js" ]
 

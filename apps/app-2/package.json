@@ -78,9 +78,9 @@
   },
   "dependencies": {
     "@fastify/sensible": "6.0.2",
-    "@thdk/lib-a": "0.0.1",
-    "@thdk/lib-b": "0.0.1",
-    "@thdk/lib-c": "0.13.0",
+    "@thdk/lib-a": "workspace:*",
+    "@thdk/lib-b": "workspace:*",
+    "@thdk/lib-c": "workspace:*",
     "fastify": "5.2.1",
     "fastify-plugin": "5.0.1"
   }

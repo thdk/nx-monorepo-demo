@@ -2,6 +2,14 @@
 
 /** @type {import("syncpack").RcFile} */
 const config = {
+  versionGroups: [
+    {
+      // Use workspace protocol for internal @thdk packages
+      dependencies: ['@thdk/**'],
+      dependencyTypes: ['prod', 'dev', 'peer'],
+      pinVersion: 'workspace:*',
+    },
+  ],
   semverGroups: [
     {
       // packages that are published and installed by other libs/app not managed in this repo shouldn't pin version of any dependency

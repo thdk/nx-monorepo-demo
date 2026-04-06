@@ -1,0 +1,8 @@
+verifyDepsBeforeRun: install
+
+packages:
+  - 'libs/**'
+  - 'packages/**'
+  - 'apps/*'
+  - 'tools/*'
+  - 'scripts/*'

@@ -96,17 +96,17 @@ A project dedicated to maintaining a unified version number across multiple inde
 # Install tools
 asdf install
 # Install dependencies
-npm install
+pnpm install
 ```
 
 ### Running Targets
 
 ```sh
 # Run all relevant targets (build, lint, test, ...) for every project
-npx nx run-all
+pnpm exec nx run-all
 
 # Run all relevant targets (build, lint, test, ...) for affected projects only
-npx nx run-affected
+pnpm exec nx run-affected
 ```
 
 ### Syncpack
@@ -121,8 +121,8 @@ Why syncpack?
 Provided commands in the repo:
 
 ```sh
-npx nx syncpack
-npx nx syncpack-fix
+pnpm exec nx syncpack
+pnpm exec nx syncpack-fix
 ```
 
 However these are automatically run for you in CI and will block any thing that doesn't follow the rules.
@@ -134,7 +134,7 @@ However these are automatically run for you in CI and will block any thing that 
 Default terraform generator settigns for this repo can be found in `nx.json` under `generators.@thdk/nx-terraform.project`.
 
 ```sh
-npx nx generate @thdk/nx-terraform:project domain-b-infra
+pnpm exec nx generate @thdk/nx-terraform:project domain-b-infra
 ```
 
 #### Inferred targets
@@ -155,13 +155,13 @@ gcloud auth print-access-token | docker login -u oauth2accesstoken --password-st
 
 ```sh
 # init target is a dependency of other terraform targets so usually you do not have to run it explicitly
-npx nx run-many --target terraform-init
+pnpm exec nx run-many --target terraform-init
 
-npx nx run-many --target terraform-plan
+pnpm exec nx run-many --target terraform-plan
 
 # currently will use --auto-approve so use with caution after inspecting output of terraform-plan command
 # TODO: Make this target interactive so user can manually confirm the action for each project.
-npx nx run-many --target terraform-apply
+pnpm exec nx run-many --target terraform-apply
 
 ```
 

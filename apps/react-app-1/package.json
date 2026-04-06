@@ -7,7 +7,7 @@
     "name": "react-app-1"
   },
   "dependencies": {
-    "@thdk/lib-b": "0.0.1",
+    "@thdk/lib-b": "workspace:*",
     "@vitejs/plugin-react": "5.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",

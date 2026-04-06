@@ -27,7 +27,7 @@ runs:
     - name: Terraform init
       shell: bash
       run: |
-        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
           --target terraform-init \
           --configuration "${{ inputs.configuration }}" \
           --exclude-task-dependencies
@@ -35,7 +35,7 @@ runs:
     - name: Terraform format, validate & plan
       shell: bash
       run: |
-        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
           --target terraform-format:check terraform-plan terraform-validate \
           --configuration "${{ inputs.configuration }}" \
           --exclude-task-dependencies
@@ -43,7 +43,7 @@ runs:
     - name: Terraform show plan
       shell: bash
       run: |
-        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
           --target terraform-show \
           --configuration "${{ inputs.configuration }}" \
           --exclude-task-dependencies
@@ -52,7 +52,7 @@ runs:
       shell: bash
       if: ${{ inputs.dry-run == 'false' }}
       run: |
-        npx nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
           --target terraform-apply \
           --configuration "${{ inputs.configuration }}" \
           --exclude-task-dependencies
