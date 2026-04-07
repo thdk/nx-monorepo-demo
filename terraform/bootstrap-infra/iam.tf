@@ -66,6 +66,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "artifactregistry.tags.update",
     "artifactregistry.repositories.downloadArtifacts",
     "run.services.create",
+    "run.services.delete",
     "run.services.get",
     "run.services.update",
     "run.services.setIamPolicy",
