@@ -9,10 +9,10 @@ ENV SERVICE_VERSION=$SERVICE_VERSION
 
 WORKDIR /app
 
-COPY ./dist app/
+COPY ./dist ./
 
-RUN corepack enable pnpm && pnpm --prefix app --prod install 
+RUN corepack enable pnpm && pnpm --prod install 
 
-CMD [ "node", "app/main.js" ]
+CMD [ "node", "main.js" ]
 
 

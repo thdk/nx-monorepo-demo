@@ -10,7 +10,7 @@ ENV SERVICE_VERSION=$SERVICE_VERSION
 
 WORKDIR /app
 
-COPY ./dist app-1/
+COPY ./dist ./
 
 # You can remove this install step if you build with `--bundle` option.
 # The bundled output will include external dependencies.
@@ -18,4 +18,4 @@ COPY ./dist app-1/
 # See: https://github.com/nrwl/nx/issues/30146
 # RUN npm --prefix app-1 --omit=dev -f install 
 
-CMD [ "node", "app-1/main.js" ]
+CMD [ "node", "main.js" ]
