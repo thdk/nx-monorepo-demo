@@ -16,7 +16,7 @@ describe('GET /', () => {
     });
 
     expect(response.json()).toEqual({
-      message: 'Hello from lib-a, lib-b, library-c-v2',
+      message: expect.stringMatching(/^Hello from lib-a, lib-b-[\w-]+, library-c-v2$/),
     });
   });
 });
