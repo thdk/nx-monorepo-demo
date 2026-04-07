@@ -58,6 +58,6 @@
   },
   "devDependencies": {
     "@nestjs/testing": "11.0.0",
-    "@nx/webpack": "22.4.5"
+    "@nx/webpack": "22.5.4"
   }
 }
