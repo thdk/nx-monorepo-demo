@@ -11,7 +11,8 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
-      "!{projectRoot}/playwright.config.[jt]s"
+      "!{projectRoot}/playwright.config.[jt]s",
+      "!{projectRoot}/webpack.config.[jt]s"
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
