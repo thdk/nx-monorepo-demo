@@ -6,10 +6,13 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 
 ## Features
 
+- **Diverse frameworks and platforms**: Node.js (Fastify, NestJS), React (Vite SPA, React Router with SSR), and Terraform — with more (e.g. Next.js) available on request.
 - **Centralized Management**: Manage multiple projects, including applications, libraries, and infrastructure, within a single repository.
-- **Custom Nx Plugin**: Includes a custom Nx plugin for Terraform projects, enabling seamless integration and management of infrastructure-as-code.
-- **Optimized Build System**: Utilize Nx's caching and dependency graph to optimize builds and CI/CD workflows.
-- **Diverse Project Types**: Support for Node.js, React, and Terraform projects, showcasing Nx's flexibility.
+- **Custom Nx Plugin**: A custom Nx plugin (`@thdk/nx-terraform`) auto-discovers `main.tf` files and infers Terraform targets, making IaC a first-class citizen in the Nx dependency graph.
+- **End-to-end release-to-deploy**: `nx release` creates git tags that Terraform reads to resolve Docker image versions — no manual version wiring between CI and deployment.
+- **Mixed module formats**: Intentionally mixes CJS and ESM across apps and libs with different bundlers (esbuild, webpack, Vite, tsc) to exercise real-world module interop.
+- **Bundled vs. unbundled Docker**: Side-by-side comparison of fully bundled (no runtime install) and unbundled (multi-stage with `pnpm --prod install`) container strategies.
+- **Three-tier release groups**: `apps` (Docker images), `packages` (npm), and `releases` (a unified version tracker via a phantom project with no code).
 
 ## Projects in this Repository
 
@@ -23,9 +26,36 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 - **Bundler**: Esbuild
   - Bundle: `true`
   - Third-party: `true`
+- **Docker**: Single-stage — fully bundled, no `npm install` in container
 - **Local Dependencies**:
   - lib-a
   - lib-b (ESM module imported in CJS app)
+  - lib-c
+
+#### app-2
+
+- **Environment**: Node.js
+- **Framework**: Fastify
+- **Module Type**: CommonJS
+- **Bundler**: Esbuild
+  - Bundle: `false`
+  - Third-party: `true`
+- **Docker**: Multi-stage — runs `pnpm --prod install` in container (unbundled)
+- **Local Dependencies**:
+  - lib-a
+  - lib-b
+  - lib-c
+
+#### app-3
+
+- **Environment**: Node.js
+- **Framework**: NestJS
+- **Module Type**: CommonJS
+- **Bundler**: Webpack (via `NxAppWebpackPlugin`)
+- **Docker**: Multi-stage — runs `pnpm --prod install` in container
+- **Local Dependencies**:
+  - lib-a
+  - lib-b
   - lib-c
 
 #### react-app-1
@@ -63,12 +93,35 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 - **Published**: Yes
 - **type:** cjs
 
+#### react-router-app-1-e2e
+
+- **Framework**: Playwright
+- **Type**: End-to-end tests for `react-router-app-1`
+
 ### Terraform Projects
 
 #### bootstrap-infra
 
-- **Description**: Infrastructure bootstrap project leveraging Terraform.
+- **Description**: Infrastructure bootstrap project — enables GCP services, creates Artifact Registry, and sets up IAM.
 - **Documentation**: [bootstrap-infra README](./terraform/bootstrap-infra/README.md)
+
+#### domain-a-infra
+
+- **Description**: Deploys `app-1` and `app-2` to Cloud Run. Reads image versions from git tags created by `nx release`.
+- **Configurations**: `development`, `production`
+
+#### domain-b-infra
+
+- **Description**: Deploys `app-3` to Cloud Run. Same pattern as `domain-a-infra`.
+- **Configurations**: `development`, `production`
+
+#### modules/cloud-run-service
+
+- **Description**: Reusable Terraform module for Cloud Run v2 services (scaling, resource limits, env vars, public access).
+
+#### modules/data-git-tag
+
+- **Description**: Custom data source that resolves the latest git tag matching a pattern (e.g. `app-1@*`), bridging `nx release` tags to Terraform-managed deployments.
 
 ### Other Projects
 
