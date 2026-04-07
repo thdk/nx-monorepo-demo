@@ -323,6 +323,39 @@ importers:
         specifier: 22.4.5
         version: 22.4.5(@babel/traverse@7.29.0)(@rspack/core@1.6.8(@swc/helpers@0.5.11))(@swc-node/register@1.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.7)(typescript@5.9.3))(@swc/core@1.5.7(@swc/helpers@0.5.11))(esbuild@0.19.2)(nx@22.4.5(@swc-node/register@1.9.1(@swc/core@1.5.7(@swc/helpers@0.5.11))(@swc/types@0.1.7)(typescript@5.9.3))(@swc/core@1.5.7(@swc/helpers@0.5.11)))(typescript@5.9.3)(verdaccio@6.0.5(encoding@0.1.13)(typanion@3.14.0))(webpack-cli@5.1.4(webpack@5.102.1))
 
+  apps/node-fastify-tsc:
+    dependencies:
+      '@fastify/sensible':
+        specifier: 6.0.2
+        version: 6.0.2
+      '@thdk/lib-a':
+        specifier: workspace:*
+        version: link:../../packages/lib-a
+      '@thdk/lib-b':
+        specifier: workspace:*
+        version: link:../../packages/lib-b
+      '@thdk/lib-c':
+        specifier: workspace:*
+        version: link:../../packages/lib-c
+      fastify:
+        specifier: 5.2.1
+        version: 5.2.1
+      fastify-plugin:
+        specifier: 5.0.1
+        version: 5.0.1
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+
+  apps/node-tsc:
+    dependencies:
+      '@thdk/lib-b':
+        specifier: workspace:*
+        version: link:../../packages/lib-b
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
+
   apps/react-app-1:
     dependencies:
       '@thdk/lib-b':

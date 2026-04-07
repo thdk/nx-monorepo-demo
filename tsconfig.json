@@ -35,6 +35,12 @@
     },
     {
       "path": "./apps/react-router-app-1"
+    },
+    {
+      "path": "./apps/node-fastify-tsc"
+    },
+    {
+      "path": "./apps/node-tsc"
     }
   ]
 }

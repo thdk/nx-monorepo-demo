@@ -6,7 +6,7 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 
 ## Features
 
-- **Diverse frameworks and platforms**: Node.js (Fastify, NestJS), React (Vite SPA, React Router with SSR), and Terraform — with more (e.g. Next.js) available on request.
+- **Diverse frameworks and platforms**: Node.js (Fastify, NestJS, plain tsc), React (Vite SPA, React Router with SSR), and Terraform — with more (e.g. Next.js) available on request.
 - **Centralized Management**: Manage multiple projects, including applications, libraries, and infrastructure, within a single repository.
 - **Custom Nx Plugin**: A custom Nx plugin (`@thdk/nx-terraform`) auto-discovers `main.tf` files and infers Terraform targets, making IaC a first-class citizen in the Nx dependency graph.
 - **End-to-end release-to-deploy**: `nx release` creates git tags that Terraform reads to resolve Docker image versions — no manual version wiring between CI and deployment.
@@ -57,6 +57,28 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
   - lib-a
   - lib-b
   - lib-c
+
+#### node-fastify-tsc
+
+- **Environment**: Node.js
+- **Framework**: Fastify
+- **Module Type**: CommonJS
+- **Bundler**: TypeScript Compiler (tsc)
+- **Docker**: Multi-stage — runs `pnpm --prod install` in container (unbundled)
+- **Local Dependencies**:
+  - lib-a
+  - lib-b
+  - lib-c
+
+#### node-tsc
+
+- **Environment**: Node.js
+- **Framework**: None (plain Node.js script)
+- **Module Type**: CommonJS
+- **Bundler**: TypeScript Compiler (tsc)
+- **Docker**: None
+- **Local Dependencies**:
+  - lib-b
 
 #### react-app-1
 
