@@ -154,8 +154,21 @@
         "buildTarget": "build"
       }
     },
+    "generate-pnpm-workspace-yaml": {
+      "dependsOn": ["copy-workspace-modules"],
+      "cache": true,
+      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'packages:\n  - workspace_modules/@*/*' > {projectRoot}/dist/pnpm-workspace.yaml"
+      }
+    },
     "prune": {
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "dependsOn": [
+        "prune-lockfile",
+        "copy-workspace-modules",
+        "generate-pnpm-workspace-yaml"
+      ],
       "executor": "nx:noop"
     }
   },
