@@ -25,6 +25,7 @@ export default [
             '{projectRoot}/eslint.config.{js,cjs,mjs}',
             '{projectRoot}/esbuild.config.{js,ts,mjs,mts}',
           ],
+          runtimeHelpers: ['tslib'],
         },
       ],
     },
