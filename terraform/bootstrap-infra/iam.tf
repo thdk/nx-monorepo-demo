@@ -68,6 +68,7 @@ resource "google_project_iam_custom_role" "cicd_role" {
     "run.services.create",
     "run.services.get",
     "run.services.update",
+    "run.services.setIamPolicy",
     "iam.serviceAccounts.actAs",
     "run.operations.get",
   ]
