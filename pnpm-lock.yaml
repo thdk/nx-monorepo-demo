@@ -340,6 +340,9 @@ importers:
       react-router-dom:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
       vite:
         specifier: 7.2.2
         version: 7.2.2(@types/node@22.15.21)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1)
@@ -367,6 +370,9 @@ importers:
       react-router:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
       vite:
         specifier: 7.2.2
         version: 7.2.2(@types/node@22.15.21)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.97.3)(sass@1.97.3)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.1)
@@ -394,6 +400,9 @@ importers:
       nanoid:
         specifier: 3.3.11
         version: 3.3.11
+      tslib:
+        specifier: 2.8.1
+        version: 2.8.1
 
   packages/lib-c:
     dependencies:
