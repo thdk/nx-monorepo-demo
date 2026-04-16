@@ -1,3 +1,16 @@
 import baseConfig from '../../eslint.config.mjs';
 
-export default [...baseConfig];
+export default [
+  ...baseConfig,
+  {
+    files: ['**/*.json'],
+    rules: {
+      '@nx/dependency-checks': [
+        'error',
+        {
+          ignoredDependencies: ['auth0'],
+        },
+      ],
+    },
+  },
+];
