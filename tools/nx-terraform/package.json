@@ -46,7 +46,7 @@
     }
   },
   "dependencies": {
-    "@nx/devkit": "22.6.4",
+    "@nx/devkit": "22.6.3",
     "tslib": "2.8.1"
   },
   "files": [
