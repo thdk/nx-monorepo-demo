@@ -1,5 +1,5 @@
 {
-  "name": "@thdk/app-3",
+  "name": "@thdk/node-nest-webpack",
   "version": "0.3.0",
   "private": true,
   "nx": {
@@ -15,7 +15,7 @@
           "args": [
             "--node-env=production"
           ],
-          "cwd": "apps/app-3"
+          "cwd": "apps/node-nest-webpack"
         },
         "configurations": {
           "development": {
@@ -41,15 +41,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "app-3:build",
+          "buildTarget": "node-nest-webpack:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "app-3:build:development"
+            "buildTarget": "node-nest-webpack:build:development"
           },
           "production": {
-            "buildTarget": "app-3:build:production"
+            "buildTarget": "node-nest-webpack:build:production"
           }
         }
       }
