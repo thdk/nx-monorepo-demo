@@ -1,4 +1,4 @@
-# Run the container with `docker run -it --rm --init -p 8082:8082 --env PORT=8082 localhost/app-3:0.0.1`.
+# Run the container with `docker run -it --rm --init -p 8082:8082 --env PORT=8082 localhost/node-nest-webpack:0.0.1`.
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0

@@ -10,8 +10,8 @@ variable "configuration" {
   }
 }
 
-variable "app_3_version" {
+variable "node_nest_webpack_version" {
   type        = string
-  description = "Version of the app-3 docker image that needs to be used for deployment. If not provided the latest git tag matching app-3@{version} will be used."
+  description = "Version of the node-nest-webpack docker image that needs to be used for deployment. If not provided the latest git tag matching node-nest-webpack@{version} will be used."
   default     = null
 }
