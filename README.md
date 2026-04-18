@@ -46,7 +46,7 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
   - lib-b
   - lib-c
 
-#### app-3
+#### node-nest-webpack
 
 - **Environment**: Node.js
 - **Framework**: NestJS
