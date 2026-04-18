@@ -57,6 +57,7 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
   - lib-a
   - lib-b
   - lib-c
+  - nest-lib-a (imported as TypeScript source)
 
 #### node-fastify-tsc
 
@@ -114,6 +115,12 @@ Welcome to my Nx Monorepo Demo! This repository showcases how Nx can be leverage
 - **Bundler**: TypeScript Compiler (tsc)
 - **Published**: Yes
 - **type:** cjs
+
+#### nest-lib-a
+
+- **Bundler**: None — imported as TypeScript source by consuming apps
+- **Framework**: NestJS
+- **Published**: No
 
 #### react-router-app-1-e2e
 

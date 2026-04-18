@@ -41,6 +41,9 @@
     },
     {
       "path": "./apps/node-tsc"
+    },
+    {
+      "path": "./packages/nest-lib-a"
     }
   ]
 }

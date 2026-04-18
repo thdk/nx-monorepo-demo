@@ -37,15 +37,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@thdk/app-3:build",
+          "buildTarget": "app-3:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@thdk/app-3:build:development"
+            "buildTarget": "app-3:build:development"
           },
           "production": {
-            "buildTarget": "@thdk/app-3:build:production"
+            "buildTarget": "app-3:build:production"
           }
         }
       }
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "11.0.0",
-    "@nx/webpack": "22.6.3"
+    "@nx/webpack": "22.6.3",
+    "@thdk/nest-lib-a": "workspace:*"
   }
 }

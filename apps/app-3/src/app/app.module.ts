@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
+import { ThdkNestLibAModule } from '@thdk/nest-lib-a';
 @Module({
-  imports: [],
+  imports: [ThdkNestLibAModule],
   controllers: [AppController],
   providers: [AppService],
 })
