@@ -4,7 +4,7 @@ import {
   readProjectConfiguration,
   formatFiles,
 } from '@nx/devkit';
-import * as path from 'path';
+import path from 'path';
 import { ProviderGeneratorSchema } from './schema';
 import { GeneratorOptions } from '../_common/generator-options';
 
