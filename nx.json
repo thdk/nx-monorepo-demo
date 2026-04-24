@@ -20,6 +20,7 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
+        "compiler": "tsgo",
         "typecheck": {
           "targetName": "typecheck"
         },
@@ -34,6 +35,7 @@
     {
       "plugin": "@nx/js/typescript",
       "options": {
+        "compiler": "tsgo",
         "typecheck": {
           "targetName": "typecheck"
         },
@@ -71,6 +73,7 @@
     {
       "plugin": "@nx/vite/plugin",
       "options": {
+        "compiler": "tsgo",
         "buildTargetName": "build",
         "serveTargetName": "serve",
         "devTargetName": "dev",
