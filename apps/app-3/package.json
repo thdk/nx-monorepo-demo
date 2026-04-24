@@ -22,7 +22,12 @@
           }
         }
       },
-      "prune-lockfile": {},
+      "prune-lockfile": {
+        "options": {
+          "buildTarget": "build",
+          "outputPath": "{projectRoot}/dist"
+        }
+      },
       "copy-workspace-modules": {},
       "generate-pnpm-workspace-yaml": {},
       "prune": {},
