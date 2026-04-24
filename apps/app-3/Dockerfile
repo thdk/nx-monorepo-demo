@@ -21,8 +21,9 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # Copy full dist output (including workspace_modules with compiled code)
 COPY ./dist .
 
-# Install offline from the cached store
+# Install offline from the cached store 
+# TODO: Remove --no-frozen-lockfile and readd --frozen-lockfile once nx prune lockfile is fixed for local workspace dependencies
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --offline --frozen-lockfile
+    pnpm install --prod --offline --no-frozen-lockfile
 
 CMD [ "node", "main.js" ]
