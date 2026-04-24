@@ -21,7 +21,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # Copy full dist output (including workspace_modules with compiled code)
 COPY ./dist .
 
-# Install offline from the cached store
+# Install offline from the cached store 
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --prod --offline --frozen-lockfile
 

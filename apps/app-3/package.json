@@ -4,9 +4,6 @@
   "private": true,
   "nx": {
     "name": "app-3",
-    "tags": [
-      "deployable:docker"
-    ],
     "targets": {
       "build": {
         "executor": "nx:run-commands",
@@ -25,7 +22,12 @@
           }
         }
       },
-      "prune-lockfile": {},
+      "prune-lockfile": {
+        "options": {
+          "buildTarget": "build",
+          "outputPath": "{projectRoot}/dist"
+        }
+      },
       "copy-workspace-modules": {},
       "generate-pnpm-workspace-yaml": {},
       "prune": {},
@@ -58,7 +60,7 @@
   },
   "devDependencies": {
     "@nestjs/testing": "11.0.0",
-    "@nx/webpack": "22.6.3",
+    "@nx/webpack": "22.7.0",
     "@thdk/nest-lib-a": "workspace:*"
   }
 }
