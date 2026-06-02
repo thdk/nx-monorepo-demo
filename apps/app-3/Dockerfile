@@ -25,7 +25,8 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 COPY ./dist .
 
 # Install offline from the cached store 
+# TODO: temporary need to disable frozen-lockfile due to nx bug https://github.com/nrwl/nx/issues/35425
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --offline --frozen-lockfile
+    pnpm install --prod --offline --no-frozen-lockfile
 
 CMD [ "node", "main.js" ]
