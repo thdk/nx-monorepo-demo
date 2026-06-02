@@ -146,5 +146,6 @@
     "apps/*",
     "scripts",
     "tools/*"
-  ]
+  ],
+  "packageManager": "pnpm@11.5.0"
 }

@@ -7,6 +7,9 @@ ENV PORT=8080
 ARG SERVICE_VERSION
 ENV SERVICE_VERSION=$SERVICE_VERSION
 
+ARG PNPM_VERSION
+RUN corepack prepare pnpm@${PNPM_VERSION} --activate
+
 RUN corepack enable pnpm
 
 WORKDIR /app
