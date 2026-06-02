@@ -5,10 +5,16 @@
   "license": "MIT",
   "nx": {
     "targets": {
-      "run-all": {
+      "all": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "nx run-many --target build lint test syncpack"
+          "commands": [
+            "nx format",
+            "nx syncpack-fix",
+            "nx affected --target lint -- --fix",
+            "nx affected --target build test typecheck terraform-format"
+          ],
+          "parallel": false
         }
       },
       "run-affected": {
@@ -135,17 +141,11 @@
     "yargs": "17.7.2",
     "zx": "8.4.1"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "nx"
-    ]
-  },
+  "packageManager": "pnpm@11.5.0",
   "workspaces": [
     "packages/*",
     "apps/*",
     "scripts",
     "tools/*"
-  ],
-  "packageManager": "pnpm@11.5.0"
+  ]
 }
