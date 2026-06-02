@@ -5,7 +5,7 @@
   "license": "MIT",
   "nx": {
     "targets": {
-      "all": {
+      "run-all": {
         "executor": "nx:run-commands",
         "options": {
           "commands": [
