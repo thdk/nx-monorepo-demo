@@ -23,7 +23,7 @@
         ],
         "options": {
           "outputPath": "packages/lib-b/dist",
-          "main": "packages/lib-b/src/index.ts",
+          "main": "./packages/lib-b/src/index.ts",
           "tsConfig": "packages/lib-b/tsconfig.lib.json",
           "format": [
             "esm"

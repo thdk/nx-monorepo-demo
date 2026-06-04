@@ -7,6 +7,9 @@ ENV PORT=8080
 ARG SERVICE_VERSION
 ENV SERVICE_VERSION=$SERVICE_VERSION
 
+ARG PNPM_VERSION
+RUN corepack prepare pnpm@${PNPM_VERSION} --activate
+
 RUN corepack enable pnpm
 
 WORKDIR /app
@@ -21,8 +24,9 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 # Copy full dist output (including workspace_modules with compiled code)
 COPY ./dist .
 
-# Install offline from the cached store
+# Install offline from the cached store 
+# TODO: temporary need to disable frozen-lockfile due to nx bug https://github.com/nrwl/nx/issues/35425
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --offline --frozen-lockfile
+    pnpm install --prod --offline --no-frozen-lockfile --ignore-scripts
 
 CMD [ "node", "main.js" ]

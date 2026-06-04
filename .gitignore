@@ -61,3 +61,6 @@ tfplan
 
 # Ignore generated credentials from google-github-actions/auth
 gha-creds-*.json
+
+.nx/polygraph
+.nx/self-healing
