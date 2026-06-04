@@ -60,7 +60,6 @@
   },
   "devDependencies": {
     "@nestjs/testing": "11.0.0",
-    "@nx/webpack": "22.7.5",
-    "@thdk/nest-lib-a": "workspace:*"
+    "@nx/webpack": "22.7.5"
   }
 }
