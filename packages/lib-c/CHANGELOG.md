@@ -1,3 +1,13 @@
+## 0.19.0 (2026-06-04)
+
+### Other Updates
+
+- upgrade to typescript 6 ([192313f](https://github.com/thdk/nx-monorepo-demo/commit/192313f))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.18.0 (2026-04-18)
 
 This was a version bump only for @thdk/lib-c to align it with other projects, there were no code changes.
