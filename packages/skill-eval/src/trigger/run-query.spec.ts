@@ -138,7 +138,9 @@ describe('runQuery', () => {
 
   it('cleans up its tempdir after the run', async () => {
     const { readdirSync } = await import('node:fs');
-    const before = readdirSync(tmpdir()).filter((n) => n.startsWith('skill-eval-'));
+    const before = readdirSync(tmpdir()).filter((n) =>
+      n.startsWith('skill-eval-')
+    );
     const bin = writeFakeClaude(tmp, 'claude', MISS_SCRIPT);
     await runQuery({
       query: 'anything',
@@ -146,7 +148,9 @@ describe('runQuery', () => {
       skillDescription: 'desc',
       claudeBin: bin,
     });
-    const after = readdirSync(tmpdir()).filter((n) => n.startsWith('skill-eval-'));
+    const after = readdirSync(tmpdir()).filter((n) =>
+      n.startsWith('skill-eval-')
+    );
     expect(after.length).toBeLessThanOrEqual(before.length);
   });
 });

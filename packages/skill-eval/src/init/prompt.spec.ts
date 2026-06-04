@@ -6,7 +6,8 @@ function baseOptions() {
   return {
     skillName: 'example-skill',
     skillDescription: 'Does example things.',
-    skillContent: '---\nname: example-skill\ndescription: Does example things.\n---\n\n# body\n',
+    skillContent:
+      '---\nname: example-skill\ndescription: Does example things.\n---\n\n# body\n',
     positiveCount: 7,
     negativeCount: 4,
     withExpectations: false,
@@ -36,7 +37,11 @@ describe('buildInitPrompt', () => {
   });
 
   it('asks for expectations when withExpectations is true', () => {
-    const prompt = buildInitPrompt({ ...baseOptions(), withExpectations: true, expectationsPerPositive: 2 });
+    const prompt = buildInitPrompt({
+      ...baseOptions(),
+      withExpectations: true,
+      expectationsPerPositive: 2,
+    });
     expect(prompt).toContain('2 expectation(s)');
     expect(prompt).not.toContain('Do NOT include the `expectations` field');
   });

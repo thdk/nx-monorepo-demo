@@ -1,10 +1,16 @@
 import type { ConfigurationStats, OutputEvalRun } from '../types.js';
 
-export function calculateStats(values: number[]): { mean: number; stddev: number; min: number; max: number } {
+export function calculateStats(values: number[]): {
+  mean: number;
+  stddev: number;
+  min: number;
+  max: number;
+} {
   if (values.length === 0) return { mean: 0, stddev: 0, min: 0, max: 0 };
   const n = values.length;
   const mean = values.reduce((s, v) => s + v, 0) / n;
-  const variance = n > 1 ? values.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1) : 0;
+  const variance =
+    n > 1 ? values.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1) : 0;
   const stddev = Math.sqrt(variance);
   return {
     mean: Number(mean.toFixed(4)),
@@ -14,7 +20,9 @@ export function calculateStats(values: number[]): { mean: number; stddev: number
   };
 }
 
-export function aggregateRuns(runs: OutputEvalRun[]): Record<string, ConfigurationStats> {
+export function aggregateRuns(
+  runs: OutputEvalRun[]
+): Record<string, ConfigurationStats> {
   const grouped = new Map<string, OutputEvalRun[]>();
   for (const r of runs) {
     const list = grouped.get(r.configuration) ?? [];
@@ -38,7 +46,7 @@ export function aggregateRuns(runs: OutputEvalRun[]): Record<string, Configurati
 }
 
 export function computeDelta(
-  stats: Record<string, ConfigurationStats>,
+  stats: Record<string, ConfigurationStats>
 ): { pass_rate: string; time_seconds: string; tokens: string } | undefined {
   const withSkill = stats['with_skill'];
   const withoutSkill = stats['without_skill'];

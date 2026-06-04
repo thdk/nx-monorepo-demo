@@ -1,11 +1,24 @@
 import { spawn } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 
 import type { ExecutionResult } from '../types.js';
 
-import { consume, createAccumulator, summarise, type ParsedEvent } from './transcript.js';
+import {
+  consume,
+  createAccumulator,
+  summarise,
+  type ParsedEvent,
+} from './transcript.js';
 
 export interface ExecutorOptions {
   query: string;
@@ -48,7 +61,9 @@ function collectOutputFiles(workdir: string): string[] {
   return results.sort();
 }
 
-export async function executeQuery(options: ExecutorOptions): Promise<ExecutionResult> {
+export async function executeQuery(
+  options: ExecutorOptions
+): Promise<ExecutionResult> {
   const {
     query,
     skillPath,
@@ -67,7 +82,10 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
     mkdirSync(skillsDir, { recursive: true });
     // Copy the entire skill folder so the model can read SKILL.md and any
     // referenced files (references/, scripts/).
-    cpSync(skillPath, join(skillsDir, skillName), { recursive: true, dereference: true });
+    cpSync(skillPath, join(skillsDir, skillName), {
+      recursive: true,
+      dereference: true,
+    });
   }
 
   const args = [
@@ -156,7 +174,7 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
             reject(
               Object.assign(new Error(`claude exited with code ${code}`), {
                 code: 'CLAUDE_NONZERO_EXIT',
-              }),
+              })
             );
             return;
           }
@@ -174,8 +192,14 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
     // Persist artifacts before cleanup wipes the workdir.
     if (artifactsDir) {
       mkdirSync(artifactsDir, { recursive: true });
-      writeFileSync(join(artifactsDir, 'transcript.jsonl'), transcriptLines.join('\n') + '\n');
-      writeFileSync(join(artifactsDir, 'transcript.md'), summary.final_text + '\n');
+      writeFileSync(
+        join(artifactsDir, 'transcript.jsonl'),
+        transcriptLines.join('\n') + '\n'
+      );
+      writeFileSync(
+        join(artifactsDir, 'transcript.md'),
+        summary.final_text + '\n'
+      );
       writeFileSync(
         join(artifactsDir, 'timing.json'),
         JSON.stringify(
@@ -186,8 +210,8 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
             total_tokens: summary.usage.total_tokens,
           },
           null,
-          2,
-        ),
+          2
+        )
       );
       if (outputFiles.length > 0) {
         const outDir = join(artifactsDir, 'outputs');
@@ -216,7 +240,9 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
         usage: summary.usage,
         duration_ms: durationMs,
         ok: false,
-        error: `timeout after ${timeoutMs}ms${stderrTail ? `\n--- stderr ---\n${stderrTail.trim()}` : ''}`,
+        error: `timeout after ${timeoutMs}ms${
+          stderrTail ? `\n--- stderr ---\n${stderrTail.trim()}` : ''
+        }`,
       };
     }
 
@@ -238,7 +264,9 @@ export async function executeQuery(options: ExecutorOptions): Promise<ExecutionR
       usage: { input_tokens: 0, output_tokens: 0, total_tokens: 0 },
       duration_ms: Date.now() - startedAt,
       ok: false,
-      error: stderrTail ? `${message}\n--- stderr ---\n${stderrTail.trim()}` : message,
+      error: stderrTail
+        ? `${message}\n--- stderr ---\n${stderrTail.trim()}`
+        : message,
     };
   } finally {
     cleanup();

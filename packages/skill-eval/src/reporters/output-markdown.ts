@@ -8,8 +8,12 @@ function pct(n: number): string {
 
 function statsRow(label: string, stats: ConfigurationStats): string {
   const pr = `${pct(stats.pass_rate.mean)} ± ${pct(stats.pass_rate.stddev)}`;
-  const time = `${stats.time_seconds.mean.toFixed(1)}s ± ${stats.time_seconds.stddev.toFixed(1)}s`;
-  const tokens = `${stats.tokens.mean.toFixed(0)} ± ${stats.tokens.stddev.toFixed(0)}`;
+  const time = `${stats.time_seconds.mean.toFixed(
+    1
+  )}s ± ${stats.time_seconds.stddev.toFixed(1)}s`;
+  const tokens = `${stats.tokens.mean.toFixed(
+    0
+  )} ± ${stats.tokens.stddev.toFixed(0)}`;
   return `| ${label} | ${pr} | ${time} | ${tokens} |`;
 }
 
@@ -28,10 +32,12 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
     '## Summary',
     '',
     '| Configuration | Pass rate | Time | Tokens |',
-    '|---|---:|---:|---:|',
+    '|---|---:|---:|---:|'
   );
 
-  for (const [config, stats] of Object.entries(benchmark.run_summary.configurations)) {
+  for (const [config, stats] of Object.entries(
+    benchmark.run_summary.configurations
+  )) {
     lines.push(statsRow(config.replace(/_/g, ' '), stats));
   }
 
@@ -39,7 +45,7 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
   if (delta) {
     lines.push(
       '',
-      `**Delta (with_skill − without_skill)**: pass_rate ${delta.pass_rate}, time ${delta.time_seconds}s, tokens ${delta.tokens}`,
+      `**Delta (with_skill − without_skill)**: pass_rate ${delta.pass_rate}, time ${delta.time_seconds}s, tokens ${delta.tokens}`
     );
   }
 
@@ -58,7 +64,11 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
     lines.push(`> ${runs[0]?.query.replace(/\n/g, ' ') ?? ''}`, '');
 
     for (const run of runs) {
-      lines.push(`**${run.configuration} · run ${run.run_number}** — ${(run.execution.duration_ms / 1000).toFixed(1)}s, ${run.execution.usage.total_tokens} tokens`);
+      lines.push(
+        `**${run.configuration} · run ${run.run_number}** — ${(
+          run.execution.duration_ms / 1000
+        ).toFixed(1)}s, ${run.execution.usage.total_tokens} tokens`
+      );
 
       if (!run.execution.ok) {
         lines.push('', '```');
@@ -70,7 +80,12 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
         lines.push('  ⚠ grader did not run', '');
         continue;
       }
-      lines.push(`  → ${run.grading.summary.passed}/${run.grading.summary.total} expectations passed (${pct(run.grading.summary.pass_rate)})`, '');
+      lines.push(
+        `  → ${run.grading.summary.passed}/${
+          run.grading.summary.total
+        } expectations passed (${pct(run.grading.summary.pass_rate)})`,
+        ''
+      );
       for (const exp of run.grading.expectations) {
         const mark = exp.passed ? '✓' : '✗';
         lines.push(`  - ${mark} ${exp.text}`);
@@ -83,6 +98,9 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
   return lines.join('\n');
 }
 
-export function writeOutputMarkdownReport(path: string, benchmark: OutputBenchmark): void {
+export function writeOutputMarkdownReport(
+  path: string,
+  benchmark: OutputBenchmark
+): void {
   writeFileSync(path, renderOutputMarkdown(benchmark));
 }

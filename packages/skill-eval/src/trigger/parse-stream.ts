@@ -28,7 +28,11 @@ export function createParserState(): StreamParserState {
   return { pendingTool: null, accumulatedJson: '' };
 }
 
-export function feedEvent(state: StreamParserState, event: ParsedEvent, triggerId: string): Verdict {
+export function feedEvent(
+  state: StreamParserState,
+  event: ParsedEvent,
+  triggerId: string
+): Verdict {
   const type = event['type'];
 
   if (type === 'stream_event') {
@@ -88,7 +92,11 @@ export function feedEvent(state: StreamParserState, event: ParsedEvent, triggerI
       if (item['type'] !== 'tool_use') continue;
       const toolName = item['name'];
       const input = (item['input'] ?? {}) as ParsedEvent;
-      if (toolName === 'Skill' && typeof input['skill'] === 'string' && input['skill'].includes(triggerId)) {
+      if (
+        toolName === 'Skill' &&
+        typeof input['skill'] === 'string' &&
+        input['skill'].includes(triggerId)
+      ) {
         return { decided: true, triggered: true };
       }
       if (

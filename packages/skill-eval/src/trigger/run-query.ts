@@ -8,7 +8,11 @@ import { stringify as stringifyYaml } from 'yaml';
 
 import type { RunOutcome } from '../types.js';
 
-import { createParserState, feedEvent, type ParsedEvent } from './parse-stream.js';
+import {
+  createParserState,
+  feedEvent,
+  type ParsedEvent,
+} from './parse-stream.js';
 
 export interface RunQueryOptions {
   query: string;
@@ -71,7 +75,7 @@ interface ParserOutcome {
 function consumeStreamLine(
   state: ReturnType<typeof createParserState>,
   line: string,
-  triggerId: string,
+  triggerId: string
 ): ParserOutcome | null {
   if (!line) return null;
   let event: ParsedEvent;
@@ -85,7 +89,9 @@ function consumeStreamLine(
   return { outcome: verdict.triggered === true ? 'trigger' : 'miss' };
 }
 
-export async function runQuery(options: RunQueryOptions): Promise<RunQueryResult> {
+export async function runQuery(
+  options: RunQueryOptions
+): Promise<RunQueryResult> {
   const {
     query,
     skillName,
@@ -101,7 +107,9 @@ export async function runQuery(options: RunQueryOptions): Promise<RunQueryResult
   // Isolation: each runQuery gets its own tempdir so concurrent runs against
   // the same project never share a `.claude/commands/` directory.
   const ownTempRoot = projectRoot == null;
-  const workdir = ownTempRoot ? mkdtempSync(join(tmpdir(), 'skill-eval-')) : projectRoot;
+  const workdir = ownTempRoot
+    ? mkdtempSync(join(tmpdir(), 'skill-eval-'))
+    : projectRoot;
   const commandsDir = join(workdir, '.claude', 'commands');
   const commandFile = join(commandsDir, `${triggerId}.md`);
 
@@ -156,55 +164,57 @@ export async function runQuery(options: RunQueryOptions): Promise<RunQueryResult
 
     let parsedOutcome: ParserOutcome | null = null;
     try {
-      parsedOutcome = await new Promise<ParserOutcome | null>((resolve, reject) => {
-        const state = createParserState();
-        let buffer = '';
+      parsedOutcome = await new Promise<ParserOutcome | null>(
+        (resolve, reject) => {
+          const state = createParserState();
+          let buffer = '';
 
-        child.stdout.setEncoding('utf-8');
-        child.stdout.on('data', (chunk: string) => {
-          buffer += chunk;
-          let nl: number;
-          while ((nl = buffer.indexOf('\n')) !== -1) {
-            const line = buffer.slice(0, nl).trim();
-            buffer = buffer.slice(nl + 1);
-            const result = consumeStreamLine(state, line, triggerId);
-            if (result) {
-              resolve(result);
-              controller.abort();
+          child.stdout.setEncoding('utf-8');
+          child.stdout.on('data', (chunk: string) => {
+            buffer += chunk;
+            let nl: number;
+            while ((nl = buffer.indexOf('\n')) !== -1) {
+              const line = buffer.slice(0, nl).trim();
+              buffer = buffer.slice(nl + 1);
+              const result = consumeStreamLine(state, line, triggerId);
+              if (result) {
+                resolve(result);
+                controller.abort();
+                return;
+              }
+            }
+          });
+
+          child.on('error', (err: NodeJS.ErrnoException) => {
+            if (controller.signal.aborted && err.name === 'AbortError') {
+              // Aborted because we already decided — not a real error.
+              resolve(null);
               return;
             }
-          }
-        });
+            reject(err);
+          });
 
-        child.on('error', (err: NodeJS.ErrnoException) => {
-          if (controller.signal.aborted && err.name === 'AbortError') {
-            // Aborted because we already decided — not a real error.
-            resolve(null);
-            return;
-          }
-          reject(err);
-        });
-
-        child.on('close', (code, signal) => {
-          if (signal === 'SIGTERM' || signal === 'SIGKILL') {
-            // We aborted (either decided or timeout) — let resolve/reject paths win.
-            resolve(null);
-            return;
-          }
-          if (code !== 0 && code !== null) {
-            reject(
-              Object.assign(new Error(`claude exited with code ${code}`), {
-                code: 'CLAUDE_NONZERO_EXIT',
-                exitCode: code,
-              }),
-            );
-            return;
-          }
-          // Process exited cleanly with no verdict — the model produced no
-          // tool_use that matched, treat as a miss.
-          resolve({ outcome: 'miss' });
-        });
-      });
+          child.on('close', (code, signal) => {
+            if (signal === 'SIGTERM' || signal === 'SIGKILL') {
+              // We aborted (either decided or timeout) — let resolve/reject paths win.
+              resolve(null);
+              return;
+            }
+            if (code !== 0 && code !== null) {
+              reject(
+                Object.assign(new Error(`claude exited with code ${code}`), {
+                  code: 'CLAUDE_NONZERO_EXIT',
+                  exitCode: code,
+                })
+              );
+              return;
+            }
+            // Process exited cleanly with no verdict — the model produced no
+            // tool_use that matched, treat as a miss.
+            resolve({ outcome: 'miss' });
+          });
+        }
+      );
     } finally {
       clearTimeout(timer);
     }

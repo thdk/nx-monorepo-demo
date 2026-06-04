@@ -41,7 +41,9 @@ function isNumber(v: unknown): v is number {
 }
 
 function asRecord(v: unknown): Record<string, unknown> {
-  return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
+  return v && typeof v === 'object' && !Array.isArray(v)
+    ? (v as Record<string, unknown>)
+    : {};
 }
 
 export function consume(acc: TranscriptAccumulator, event: ParsedEvent): void {
@@ -94,14 +96,18 @@ export function consume(acc: TranscriptAccumulator, event: ParsedEvent): void {
     acc.reachedResult = true;
     const usage = asRecord(event['usage']);
     const input = isNumber(usage['input_tokens']) ? usage['input_tokens'] : 0;
-    const output = isNumber(usage['output_tokens']) ? usage['output_tokens'] : 0;
+    const output = isNumber(usage['output_tokens'])
+      ? usage['output_tokens']
+      : 0;
     acc.usage = {
       input_tokens: input,
       output_tokens: output,
       total_tokens: input + output,
     };
     if (event['is_error'] === true) {
-      acc.error = isString(event['error']) ? event['error'] : 'unknown error from claude -p';
+      acc.error = isString(event['error'])
+        ? event['error']
+        : 'unknown error from claude -p';
     }
   }
 }

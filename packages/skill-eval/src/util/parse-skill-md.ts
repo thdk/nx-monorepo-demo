@@ -36,10 +36,14 @@ export function parseSkillMd(skillPath: string): SkillMeta {
   const description = asString(meta.description);
 
   if (!name) {
-    throw new Error(`SKILL.md at ${skillFile} is missing a 'name' frontmatter field`);
+    throw new Error(
+      `SKILL.md at ${skillFile} is missing a 'name' frontmatter field`
+    );
   }
   if (!description) {
-    throw new Error(`SKILL.md at ${skillFile} is missing a 'description' frontmatter field`);
+    throw new Error(
+      `SKILL.md at ${skillFile} is missing a 'description' frontmatter field`
+    );
   }
 
   return { name, description };

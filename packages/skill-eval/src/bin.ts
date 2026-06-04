@@ -81,7 +81,8 @@ const outputOptions = {
   'executor-model': {
     type: 'string',
     default: null as string | null,
-    describe: 'Model passed to claude -p when running the skill (default: Claude Code default)',
+    describe:
+      'Model passed to claude -p when running the skill (default: Claude Code default)',
   },
   'grader-model': {
     type: 'string',
@@ -98,7 +99,8 @@ const outputOptions = {
   runs: {
     type: 'number',
     default: 1,
-    describe: 'Number of runs per configuration (output evals are expensive; default 1)',
+    describe:
+      'Number of runs per configuration (output evals are expensive; default 1)',
   },
   concurrency: {
     type: 'number',
@@ -118,7 +120,8 @@ const outputOptions = {
   out: {
     type: 'string',
     default: './skill-eval-output',
-    describe: 'Output directory for benchmark.json / junit.xml / summary.md and per-eval artifacts',
+    describe:
+      'Output directory for benchmark.json / junit.xml / summary.md and per-eval artifacts',
   },
   'claude-bin': {
     type: 'string',
@@ -158,12 +161,14 @@ const initOptions = {
   'with-expectations': {
     type: 'boolean',
     default: false,
-    describe: 'Also draft 2-3 expectations per positive case (for output evals)',
+    describe:
+      'Also draft 2-3 expectations per positive case (for output evals)',
   },
   'expectations-per-positive': {
     type: 'number',
     default: 3,
-    describe: 'How many expectations to draft per positive case (only used with --with-expectations)',
+    describe:
+      'How many expectations to draft per positive case (only used with --with-expectations)',
   },
   model: {
     type: 'string',
@@ -173,7 +178,8 @@ const initOptions = {
   timeout: {
     type: 'number',
     default: 300,
-    describe: 'Timeout in seconds for the generation call (default 300 = 5 minutes)',
+    describe:
+      'Timeout in seconds for the generation call (default 300 = 5 minutes)',
   },
   'claude-bin': {
     type: 'string',
@@ -188,7 +194,10 @@ function abs(p: string, cwd = process.cwd()): string {
   return isAbsolute(p) ? p : resolve(cwd, p);
 }
 
-function resolveEvalSetPath(skillPath: string, override: string | undefined): string {
+function resolveEvalSetPath(
+  skillPath: string,
+  override: string | undefined
+): string {
   if (override) {
     const resolved = abs(override);
     if (!existsSync(resolved)) {
@@ -205,7 +214,7 @@ function resolveEvalSetPath(skillPath: string, override: string | undefined): st
         `Pass --eval-set, or place one at the default location:`,
         `  ${fallback}`,
         '',
-      ].join('\n'),
+      ].join('\n')
     );
     process.exit(2);
   }
@@ -229,7 +238,9 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   const outDir = abs(args.out);
   // claude-bin: only resolve to absolute when it looks like a path. Bare names
   // like `claude` should still resolve via PATH.
-  const claudeBin = args['claude-bin'].includes('/') ? abs(args['claude-bin']) : args['claude-bin'];
+  const claudeBin = args['claude-bin'].includes('/')
+    ? abs(args['claude-bin'])
+    : args['claude-bin'];
 
   const raw = JSON.parse(readFileSync(evalSetPath, 'utf-8')) as unknown;
   const evalSet = evalSetSchema.parse(raw);
@@ -239,7 +250,7 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   const totalRuns = evalSet.evals.length * args.runs;
   process.stderr.write(
     `Running ${evalSet.evals.length} queries × ${args.runs} = ${totalRuns} total runs ` +
-      `(concurrency=${args.concurrency})\n`,
+      `(concurrency=${args.concurrency})\n`
   );
 
   const startedAt = Date.now();
@@ -252,13 +263,31 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
     triggerThreshold: args.threshold,
     timeoutMs: args.timeout * 1000,
     claudeBin,
-    onProgress: ({ query, outcome, durationMs, queryIndex, totalQueries, runIndex, runsPerQuery, error }) => {
-      const tag = outcome === 'trigger' ? 'HIT  ' : outcome === 'miss' ? 'miss ' : 'ERROR';
-      const progress = `${queryIndex + 1}/${totalQueries}·${runIndex + 1}/${runsPerQuery}`;
+    onProgress: ({
+      query,
+      outcome,
+      durationMs,
+      queryIndex,
+      totalQueries,
+      runIndex,
+      runsPerQuery,
+      error,
+    }) => {
+      const tag =
+        outcome === 'trigger'
+          ? 'HIT  '
+          : outcome === 'miss'
+          ? 'miss '
+          : 'ERROR';
+      const progress = `${queryIndex + 1}/${totalQueries}·${
+        runIndex + 1
+      }/${runsPerQuery}`;
       const snippet = query.replace(/\s+/g, ' ').slice(0, 64);
       const errSuffix = error ? `  (${error.split('\n')[0]})` : '';
       process.stderr.write(
-        `  [${tag}] ${progress.padEnd(9)} ${(durationMs / 1000).toFixed(1)}s  ${snippet}${errSuffix}\n`,
+        `  [${tag}] ${progress.padEnd(9)} ${(durationMs / 1000).toFixed(
+          1
+        )}s  ${snippet}${errSuffix}\n`
       );
     },
   });
@@ -271,8 +300,10 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   const { summary } = output;
   process.stderr.write(
     `\nDone in ${elapsed}s. ${summary.passed}/${summary.total} passed ` +
-      `(precision=${(summary.precision * 100).toFixed(0)}% recall=${(summary.recall * 100).toFixed(0)}% ` +
-      `accuracy=${(summary.accuracy * 100).toFixed(0)}%)`,
+      `(precision=${(summary.precision * 100).toFixed(0)}% recall=${(
+        summary.recall * 100
+      ).toFixed(0)}% ` +
+      `accuracy=${(summary.accuracy * 100).toFixed(0)}%)`
   );
   if (summary.errored > 0) {
     process.stderr.write(` — ${summary.errored} query(ies) had errored runs`);
@@ -301,7 +332,7 @@ function assertApiGraderAuth(): void {
       'Or drop --grader-mode api (or pass --grader-mode claude-p) to use your existing Claude Code',
       'login. That mode loses prompt caching + forced structured output but needs no extra auth.',
       '',
-    ].join('\n'),
+    ].join('\n')
   );
   process.exit(2);
 }
@@ -314,17 +345,19 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const skillPath = abs(args['skill-path']);
   const evalSetPath = resolveEvalSetPath(skillPath, args['eval-set']);
   const outDir = abs(args.out);
-  const claudeBin = args['claude-bin'].includes('/') ? abs(args['claude-bin']) : args['claude-bin'];
+  const claudeBin = args['claude-bin'].includes('/')
+    ? abs(args['claude-bin'])
+    : args['claude-bin'];
 
   const raw = JSON.parse(readFileSync(evalSetPath, 'utf-8')) as unknown;
   const evalSet = evalSetSchema.parse(raw);
 
   const toRun = evalSet.evals.filter(
-    (item) => item.should_trigger && (item.expectations?.length ?? 0) > 0,
+    (item) => item.should_trigger && (item.expectations?.length ?? 0) > 0
   );
   if (toRun.length === 0) {
     process.stderr.write(
-      'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n',
+      'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n'
     );
     process.exit(2);
   }
@@ -333,9 +366,11 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 
   const configurations = args.baseline ? 2 : 1;
   process.stderr.write(
-    `Running ${toRun.length} evals × ${configurations} config × ${args.runs} runs = ${
+    `Running ${toRun.length} evals × ${configurations} config × ${
+      args.runs
+    } runs = ${
       toRun.length * configurations * args.runs
-    } executions (concurrency=${args.concurrency})\n`,
+    } executions (concurrency=${args.concurrency})\n`
   );
 
   const startedAt = Date.now();
@@ -356,20 +391,28 @@ async function outputCommand(args: OutputArgs): Promise<void> {
         event.phase === 'execute-start'
           ? 'exec…'
           : event.phase === 'execute-end'
-            ? event.error
-              ? 'EXEC!'
-              : 'exec✓'
-            : event.phase === 'grade-start'
-              ? 'grade'
-              : event.phase === 'grade-end'
-                ? event.error
-                  ? 'GRD!'
-                  : `grade=${event.passRate != null ? (event.passRate * 100).toFixed(0) + '%' : '?'}`
-                : 'skip';
-      const dur = event.durationMs ? ` ${(event.durationMs / 1000).toFixed(1)}s` : '';
+          ? event.error
+            ? 'EXEC!'
+            : 'exec✓'
+          : event.phase === 'grade-start'
+          ? 'grade'
+          : event.phase === 'grade-end'
+          ? event.error
+            ? 'GRD!'
+            : `grade=${
+                event.passRate != null
+                  ? (event.passRate * 100).toFixed(0) + '%'
+                  : '?'
+              }`
+          : 'skip';
+      const dur = event.durationMs
+        ? ` ${(event.durationMs / 1000).toFixed(1)}s`
+        : '';
       const err = event.error ? `  (${event.error.split('\n')[0]})` : '';
       process.stderr.write(
-        `  [${tag.padEnd(9)}] ${event.evalName}/${event.configuration}/run-${event.runNumber}${dur}${err}\n`,
+        `  [${tag.padEnd(9)}] ${event.evalName}/${event.configuration}/run-${
+          event.runNumber
+        }${dur}${err}\n`
       );
     },
   });
@@ -381,12 +424,19 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   const withSkill = benchmark.run_summary.configurations['with_skill'];
   const passRate = withSkill?.pass_rate.mean ?? 0;
-  process.stderr.write(`\nDone in ${elapsed}s. with_skill pass_rate=${(passRate * 100).toFixed(0)}%\n`);
+  process.stderr.write(
+    `\nDone in ${elapsed}s. with_skill pass_rate=${(passRate * 100).toFixed(
+      0
+    )}%\n`
+  );
   process.stderr.write(`Artifacts: ${outDir}\n`);
 
   // Exit non-zero if any run had an exec error or any expectation failed.
   const hasFailures = benchmark.runs.some(
-    (r) => !r.execution.ok || (r.grading?.summary.failed ?? 0) > 0 || r.grading === null,
+    (r) =>
+      !r.execution.ok ||
+      (r.grading?.summary.failed ?? 0) > 0 ||
+      r.grading === null
   );
   if (hasFailures) process.exitCode = 1;
 }
@@ -394,12 +444,18 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 async function initCommand(args: InitArgs): Promise<void> {
   const skillPath = abs(args['skill-path']);
   const outPath = args.out ? abs(args.out) : undefined;
-  const claudeBin = args['claude-bin'].includes('/') ? abs(args['claude-bin']) : args['claude-bin'];
+  const claudeBin = args['claude-bin'].includes('/')
+    ? abs(args['claude-bin'])
+    : args['claude-bin'];
 
   process.stderr.write(
-    `Drafting eval set for skill at ${skillPath} (${args.positive} positive + ${args.negative} negative${
-      args['with-expectations'] ? `, +${args['expectations-per-positive']} expectations/case` : ''
-    })…\n`,
+    `Drafting eval set for skill at ${skillPath} (${args.positive} positive + ${
+      args.negative
+    } negative${
+      args['with-expectations']
+        ? `, +${args['expectations-per-positive']} expectations/case`
+        : ''
+    })…\n`
   );
 
   try {
@@ -416,11 +472,13 @@ async function initCommand(args: InitArgs): Promise<void> {
       timeoutMs: args.timeout * 1000,
     });
     process.stderr.write(
-      `\nWrote ${result.evalSet.evals.length} evals to ${result.outPath} (${(result.durationMs / 1000).toFixed(1)}s)\n`,
+      `\nWrote ${result.evalSet.evals.length} evals to ${result.outPath} (${(
+        result.durationMs / 1000
+      ).toFixed(1)}s)\n`
     );
     process.stderr.write(
       `\nReview, refine the queries / expectations, then commit the file and run:\n` +
-        `  pnpm exec skill-eval trigger --skill-path ${skillPath}\n`,
+        `  pnpm exec skill-eval trigger --skill-path ${skillPath}\n`
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -439,7 +497,7 @@ async function main(): Promise<void> {
       (y) => y.options(initOptions),
       async (argv) => {
         await initCommand(argv as unknown as InitArgs);
-      },
+      }
     )
     .command(
       'trigger',
@@ -447,7 +505,7 @@ async function main(): Promise<void> {
       (y) => y.options(triggerOptions),
       async (argv) => {
         await triggerCommand(argv as unknown as TriggerArgs);
-      },
+      }
     )
     .command(
       'output',
@@ -455,7 +513,7 @@ async function main(): Promise<void> {
       (y) => y.options(outputOptions),
       async (argv) => {
         await outputCommand(argv as unknown as OutputArgs);
-      },
+      }
     )
     .demandCommand(1)
     .strict()
@@ -464,6 +522,8 @@ async function main(): Promise<void> {
 }
 
 main().catch((err: unknown) => {
-  process.stderr.write(`${err instanceof Error ? (err.stack ?? err.message) : String(err)}\n`);
+  process.stderr.write(
+    `${err instanceof Error ? err.stack ?? err.message : String(err)}\n`
+  );
   process.exit(1);
 });

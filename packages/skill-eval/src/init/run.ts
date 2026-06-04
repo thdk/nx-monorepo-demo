@@ -40,7 +40,13 @@ function findSchemaPath(): string | null {
   // Resolve relative to this compiled module: <pkg>/dist/init/run.js → <pkg>/schema/eval-set.schema.json
   try {
     const here = fileURLToPath(import.meta.url);
-    const candidate = join(dirname(here), '..', '..', 'schema', 'eval-set.schema.json');
+    const candidate = join(
+      dirname(here),
+      '..',
+      '..',
+      'schema',
+      'eval-set.schema.json'
+    );
     if (existsSync(candidate)) return candidate;
   } catch {
     // import.meta.url may be unavailable in some test environments
@@ -53,7 +59,8 @@ function relativeSchemaPath(outPath: string): string | null {
   if (!schemaPath) return null;
   const rel = relative(dirname(outPath), schemaPath);
   // Ensure a relative-looking path (not absolute) and POSIX separators for JSON portability.
-  if (rel.startsWith('..') || rel.startsWith('./')) return rel.split('\\').join('/');
+  if (rel.startsWith('..') || rel.startsWith('./'))
+    return rel.split('\\').join('/');
   return `./${rel.split('\\').join('/')}`;
 }
 
@@ -76,7 +83,7 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
 
   if (existsSync(outPath) && !force) {
     throw new Error(
-      `${outPath} already exists. Pass --force to overwrite, or remove the file and re-run.`,
+      `${outPath} already exists. Pass --force to overwrite, or remove the file and re-run.`
     );
   }
 
@@ -102,7 +109,9 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
     raw = extractJsonObject(responseText);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    throw new Error(`init: model did not return a parsable JSON object: ${message}`);
+    throw new Error(
+      `init: model did not return a parsable JSON object: ${message}`
+    );
   }
 
   // Validate via zod. We also coerce skill_name to match the actual skill, in

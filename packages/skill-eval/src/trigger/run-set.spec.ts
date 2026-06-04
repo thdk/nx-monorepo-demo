@@ -19,7 +19,7 @@ description: a fake skill for testing
 ---
 
 body
-`,
+`
   );
   return dir;
 }
@@ -72,14 +72,32 @@ describe('runSet', () => {
       concurrency: 2,
       triggerThreshold: 0.5,
       runQuery: scriptedRunQuery({
-        positive: [{ outcome: 'trigger' }, { outcome: 'trigger' }, { outcome: 'miss' }],
-        negative: [{ outcome: 'miss' }, { outcome: 'miss' }, { outcome: 'miss' }],
+        positive: [
+          { outcome: 'trigger' },
+          { outcome: 'trigger' },
+          { outcome: 'miss' },
+        ],
+        negative: [
+          { outcome: 'miss' },
+          { outcome: 'miss' },
+          { outcome: 'miss' },
+        ],
       }),
     });
 
     const [pos, neg] = out.results;
-    expect(pos).toMatchObject({ triggers: 2, misses: 1, errors: 0, pass: true });
-    expect(neg).toMatchObject({ triggers: 0, misses: 3, errors: 0, pass: true });
+    expect(pos).toMatchObject({
+      triggers: 2,
+      misses: 1,
+      errors: 0,
+      pass: true,
+    });
+    expect(neg).toMatchObject({
+      triggers: 0,
+      misses: 3,
+      errors: 0,
+      pass: true,
+    });
     expect(out.summary).toMatchObject({ passed: 2, failed: 0, errored: 0 });
   });
 
@@ -97,13 +115,29 @@ describe('runSet', () => {
       runsPerQuery: 1,
       runQuery: vi
         .fn<(options: RunQueryOptions) => Promise<RunQueryResult>>()
-        .mockResolvedValueOnce({ outcome: 'trigger', triggerId: 't', durationMs: 1 })
-        .mockResolvedValueOnce({ outcome: 'miss', triggerId: 't', durationMs: 1 }),
+        .mockResolvedValueOnce({
+          outcome: 'trigger',
+          triggerId: 't',
+          durationMs: 1,
+        })
+        .mockResolvedValueOnce({
+          outcome: 'miss',
+          triggerId: 't',
+          durationMs: 1,
+        }),
     });
 
     expect(out.results).toHaveLength(2);
-    expect(out.results[0]).toMatchObject({ triggers: 1, misses: 0, pass: true });
-    expect(out.results[1]).toMatchObject({ triggers: 0, misses: 1, pass: true });
+    expect(out.results[0]).toMatchObject({
+      triggers: 1,
+      misses: 0,
+      pass: true,
+    });
+    expect(out.results[1]).toMatchObject({
+      triggers: 0,
+      misses: 1,
+      pass: true,
+    });
   });
 
   it('excludes errored runs from precision/recall and surfaces them in summary.errored', async () => {

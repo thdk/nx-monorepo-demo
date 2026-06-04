@@ -1,17 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
-import { consume, createAccumulator, parseStreamJsonl, summarise } from './transcript.js';
+import {
+  consume,
+  createAccumulator,
+  parseStreamJsonl,
+  summarise,
+} from './transcript.js';
 
 describe('transcript accumulator', () => {
   it('accumulates text_delta into finalText', () => {
     const acc = createAccumulator();
     consume(acc, {
       type: 'stream_event',
-      event: { type: 'content_block_delta', delta: { type: 'text_delta', text: 'Hello ' } },
+      event: {
+        type: 'content_block_delta',
+        delta: { type: 'text_delta', text: 'Hello ' },
+      },
     });
     consume(acc, {
       type: 'stream_event',
-      event: { type: 'content_block_delta', delta: { type: 'text_delta', text: 'world' } },
+      event: {
+        type: 'content_block_delta',
+        delta: { type: 'text_delta', text: 'world' },
+      },
     });
     expect(acc.finalText).toBe('Hello world');
   });
@@ -20,7 +31,10 @@ describe('transcript accumulator', () => {
     const acc = createAccumulator();
     consume(acc, {
       type: 'stream_event',
-      event: { type: 'content_block_delta', delta: { type: 'text_delta', text: 'midstream' } },
+      event: {
+        type: 'content_block_delta',
+        delta: { type: 'text_delta', text: 'midstream' },
+      },
     });
     consume(acc, {
       type: 'assistant',
@@ -55,14 +69,23 @@ describe('transcript accumulator', () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
     const out = summarise(acc);
-    expect(out.usage).toEqual({ input_tokens: 100, output_tokens: 50, total_tokens: 150 });
+    expect(out.usage).toEqual({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
     expect(out.ok).toBe(true);
     expect(out.error).toBeNull();
   });
 
   it('marks not-ok when result has is_error', () => {
     const acc = createAccumulator();
-    consume(acc, { type: 'result', is_error: true, error: 'rate limited', usage: {} });
+    consume(acc, {
+      type: 'result',
+      is_error: true,
+      error: 'rate limited',
+      usage: {},
+    });
     const out = summarise(acc);
     expect(out.ok).toBe(false);
     expect(out.error).toBe('rate limited');
@@ -72,13 +95,23 @@ describe('transcript accumulator', () => {
     const jsonl = [
       JSON.stringify({
         type: 'stream_event',
-        event: { type: 'content_block_start', content_block: { type: 'tool_use', name: 'Read' } },
+        event: {
+          type: 'content_block_start',
+          content_block: { type: 'tool_use', name: 'Read' },
+        },
       }),
       JSON.stringify({
         type: 'assistant',
-        message: { content: [{ type: 'text', text: 'route file goes under app/routes/users/' }] },
+        message: {
+          content: [
+            { type: 'text', text: 'route file goes under app/routes/users/' },
+          ],
+        },
       }),
-      JSON.stringify({ type: 'result', usage: { input_tokens: 200, output_tokens: 80 } }),
+      JSON.stringify({
+        type: 'result',
+        usage: { input_tokens: 200, output_tokens: 80 },
+      }),
     ].join('\n');
 
     const out = parseStreamJsonl(jsonl);

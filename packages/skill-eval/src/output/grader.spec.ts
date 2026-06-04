@@ -33,9 +33,13 @@ describe('gradeExecution dispatcher', () => {
     const runClaudeP = vi.fn(async () =>
       JSON.stringify({
         expectations: [
-          { text: 'mentions list.route.tsx', passed: true, evidence: 'output contains it' },
+          {
+            text: 'mentions list.route.tsx',
+            passed: true,
+            evidence: 'output contains it',
+          },
         ],
-      }),
+      })
     );
     const result = await gradeExecution({
       query: 'q',
@@ -45,14 +49,19 @@ describe('gradeExecution dispatcher', () => {
       runClaudeP,
     });
     expect(runClaudeP).toHaveBeenCalledOnce();
-    expect(result.summary).toEqual({ passed: 1, failed: 0, total: 1, pass_rate: 1 });
+    expect(result.summary).toEqual({
+      passed: 1,
+      failed: 0,
+      total: 1,
+      pass_rate: 1,
+    });
     expect(result.expectations[0]?.passed).toBe(true);
   });
 
   it('coerces a grader response that wraps JSON in a ```json fence', async () => {
     const runClaudeP = vi.fn(
       async () =>
-        '```json\n{"expectations":[{"text":"x","passed":false,"evidence":"missing"}]}\n```',
+        '```json\n{"expectations":[{"text":"x","passed":false,"evidence":"missing"}]}\n```'
     );
     const result = await gradeExecution({
       query: 'q',
@@ -96,7 +105,7 @@ describe('gradeExecution dispatcher', () => {
         graderModel: 'claude-sonnet-4-6',
         mode: 'claude-p',
         runClaudeP,
-      }),
+      })
     ).rejects.toThrow(/Grader \(claude-p\)/);
   });
 

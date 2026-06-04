@@ -27,7 +27,10 @@ const DEFAULT_TIMEOUT_MS = 2 * 60_000;
  * Used by the grader (claude-p mode) and the init command. Kept here so both
  * call sites share one well-tested wrapper.
  */
-export async function runClaudeP(prompt: string, options: RunClaudePOptions): Promise<string> {
+export async function runClaudeP(
+  prompt: string,
+  options: RunClaudePOptions
+): Promise<string> {
   const {
     model,
     claudeBin = 'claude',
@@ -86,9 +89,11 @@ export async function runClaudeP(prompt: string, options: RunClaudePOptions): Pr
           reject(
             new Error(
               timedOut
-                ? `claude -p timed out after ${timeoutMs}ms (elapsed=${Date.now() - started}ms)`
-                : 'claude -p aborted',
-            ),
+                ? `claude -p timed out after ${timeoutMs}ms (elapsed=${
+                    Date.now() - started
+                  }ms)`
+                : 'claude -p aborted'
+            )
           );
           return;
         }
@@ -102,7 +107,9 @@ export async function runClaudeP(prompt: string, options: RunClaudePOptions): Pr
           return;
         }
         if (code !== 0 && code !== null) {
-          const tail = stderrTail.trim() ? `\n--- stderr ---\n${stderrTail.trim()}` : '';
+          const tail = stderrTail.trim()
+            ? `\n--- stderr ---\n${stderrTail.trim()}`
+            : '';
           reject(new Error(`claude -p exited with code ${code}${tail}`));
           return;
         }

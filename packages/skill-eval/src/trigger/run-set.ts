@@ -10,7 +10,11 @@ import type {
 } from '../types.js';
 import { parseSkillMd } from '../util/parse-skill-md.js';
 
-import { runQuery as defaultRunQuery, type RunQueryOptions, type RunQueryResult } from './run-query.js';
+import {
+  runQuery as defaultRunQuery,
+  type RunQueryOptions,
+  type RunQueryResult,
+} from './run-query.js';
 
 export interface RunSetOptions {
   evalSet: EvalSet;
@@ -79,7 +83,9 @@ function computeSummary(results: QueryResult[]): TriggerSummary {
   };
 }
 
-export async function runSet(options: RunSetOptions): Promise<TriggerRunOutput> {
+export async function runSet(
+  options: RunSetOptions
+): Promise<TriggerRunOutput> {
   const {
     evalSet,
     skillPath,
@@ -101,7 +107,8 @@ export async function runSet(options: RunSetOptions): Promise<TriggerRunOutput> 
 
   const tasks = evalSet.evals.flatMap((item: EvalItem, queryIndex) => {
     const bucket = recordsByIndex[queryIndex];
-    if (!bucket) throw new Error(`internal: missing bucket for index ${queryIndex}`);
+    if (!bucket)
+      throw new Error(`internal: missing bucket for index ${queryIndex}`);
     return Array.from({ length: runsPerQuery }, (_unused, runIndex) =>
       limit(async () => {
         const result = await runQuery({
@@ -131,7 +138,7 @@ export async function runSet(options: RunSetOptions): Promise<TriggerRunOutput> 
           durationMs: result.durationMs,
           error: record.error,
         });
-      }),
+      })
     );
   });
 
@@ -148,8 +155,8 @@ export async function runSet(options: RunSetOptions): Promise<TriggerRunOutput> 
       denom === 0
         ? false
         : item.should_trigger
-          ? triggerRate >= triggerThreshold
-          : triggerRate < triggerThreshold;
+        ? triggerRate >= triggerThreshold
+        : triggerRate < triggerThreshold;
     return {
       query: item.query,
       should_trigger: item.should_trigger,

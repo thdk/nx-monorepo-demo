@@ -1,6 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-import type { ExpectationGrade, GradingResult, ExecutionResult } from '../types.js';
+import type {
+  ExpectationGrade,
+  GradingResult,
+  ExecutionResult,
+} from '../types.js';
 import { runClaudeP, type RunClaudePOptions } from '../util/claude-p.js';
 
 import {
@@ -37,15 +41,21 @@ interface RawGrading {
   expectations: Array<{ text: unknown; passed: unknown; evidence: unknown }>;
 }
 
-function coerceGrading(raw: unknown, expectations: string[]): ExpectationGrade[] {
+function coerceGrading(
+  raw: unknown,
+  expectations: string[]
+): ExpectationGrade[] {
   const r = raw as RawGrading | null | undefined;
   const items = Array.isArray(r?.expectations) ? r.expectations : [];
 
   return expectations.map((text, i) => {
     const item = items[i];
-    const passed = item && typeof item.passed === 'boolean' ? item.passed : false;
+    const passed =
+      item && typeof item.passed === 'boolean' ? item.passed : false;
     const evidence =
-      item && typeof item.evidence === 'string' ? item.evidence : 'grader returned no evidence';
+      item && typeof item.evidence === 'string'
+        ? item.evidence
+        : 'grader returned no evidence';
     return { text, passed, evidence };
   });
 }
@@ -58,13 +68,20 @@ function summarise(graded: ExpectationGrade[]): GradingResult {
       passed,
       failed: graded.length - passed,
       total: graded.length,
-      pass_rate: graded.length > 0 ? Number((passed / graded.length).toFixed(4)) : 0,
+      pass_rate:
+        graded.length > 0 ? Number((passed / graded.length).toFixed(4)) : 0,
     },
   };
 }
 
 async function gradeViaApi(options: GradeOptions): Promise<GradingResult> {
-  const { query, expectations, execution, graderModel, maxOutputTokens = 1024 } = options;
+  const {
+    query,
+    expectations,
+    execution,
+    graderModel,
+    maxOutputTokens = 1024,
+  } = options;
   const client = options.client ?? new Anthropic();
 
   const response = await client.messages.create({
@@ -107,7 +124,11 @@ async function gradeViaClaudeP(options: GradeOptions): Promise<GradingResult> {
   } = options;
 
   const prompt = buildClaudePGraderPrompt({ query, expectations, execution });
-  const responseText = await runner(prompt, { model: graderModel, claudeBin, timeoutMs });
+  const responseText = await runner(prompt, {
+    model: graderModel,
+    claudeBin,
+    timeoutMs,
+  });
 
   let raw: unknown;
   try {
@@ -120,7 +141,9 @@ async function gradeViaClaudeP(options: GradeOptions): Promise<GradingResult> {
   return summarise(coerceGrading(raw, expectations));
 }
 
-export async function gradeExecution(options: GradeOptions): Promise<GradingResult> {
+export async function gradeExecution(
+  options: GradeOptions
+): Promise<GradingResult> {
   if (options.expectations.length === 0) {
     return {
       expectations: [],

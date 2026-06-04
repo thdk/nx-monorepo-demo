@@ -14,7 +14,11 @@ import { parseSkillMd } from '../util/parse-skill-md.js';
 
 import { aggregateRuns, computeDelta } from './aggregate.js';
 import { executeQuery, type ExecutorOptions } from './executor.js';
-import { gradeExecution, type GradeOptions, type GraderMode } from './grader.js';
+import {
+  gradeExecution,
+  type GradeOptions,
+  type GraderMode,
+} from './grader.js';
 
 export interface OutputRunSetOptions {
   evalSet: EvalSet;
@@ -32,7 +36,9 @@ export interface OutputRunSetOptions {
   executorTimeoutMs?: number;
   claudeBin?: string;
   /** DI seam — override the executor (for tests). */
-  executor?: (options: ExecutorOptions) => Promise<import('../types.js').ExecutionResult>;
+  executor?: (
+    options: ExecutorOptions
+  ) => Promise<import('../types.js').ExecutionResult>;
   /** DI seam — override the grader (for tests). */
   grader?: (options: GradeOptions) => Promise<GradingResult>;
   onProgress?: (event: OutputProgressEvent) => void;
@@ -43,16 +49,25 @@ export interface OutputProgressEvent {
   evalName: string;
   configuration: 'with_skill' | 'without_skill';
   runNumber: number;
-  phase: 'execute-start' | 'execute-end' | 'grade-start' | 'grade-end' | 'skipped';
+  phase:
+    | 'execute-start'
+    | 'execute-end'
+    | 'grade-start'
+    | 'grade-end'
+    | 'skipped';
   durationMs?: number;
   passRate?: number;
   error?: string;
 }
 
-function evalsWithExpectations(evals: EvalItem[]): Array<{ index: number; item: EvalItem }> {
+function evalsWithExpectations(
+  evals: EvalItem[]
+): Array<{ index: number; item: EvalItem }> {
   return evals
     .map((item, index) => ({ index, item }))
-    .filter(({ item }) => item.should_trigger && (item.expectations?.length ?? 0) > 0);
+    .filter(
+      ({ item }) => item.should_trigger && (item.expectations?.length ?? 0) > 0
+    );
 }
 
 function nameFor(item: EvalItem, index: number): string {
@@ -63,7 +78,9 @@ function idFor(item: EvalItem, index: number): number {
   return item.id ?? index;
 }
 
-export async function runOutputSet(options: OutputRunSetOptions): Promise<OutputBenchmark> {
+export async function runOutputSet(
+  options: OutputRunSetOptions
+): Promise<OutputBenchmark> {
   const {
     evalSet,
     skillPath,
@@ -155,7 +172,8 @@ export async function runOutputSet(options: OutputRunSetOptions): Promise<Output
                   claudeBin,
                 });
               } catch (err) {
-                const message = err instanceof Error ? err.message : String(err);
+                const message =
+                  err instanceof Error ? err.message : String(err);
                 onProgress?.({
                   evalIndex: index,
                   evalName,
@@ -187,7 +205,10 @@ export async function runOutputSet(options: OutputRunSetOptions): Promise<Output
             }
 
             if (runDir && grading) {
-              writeFileSync(join(runDir, 'grading.json'), JSON.stringify(grading, null, 2));
+              writeFileSync(
+                join(runDir, 'grading.json'),
+                JSON.stringify(grading, null, 2)
+              );
             }
 
             return {
@@ -199,7 +220,7 @@ export async function runOutputSet(options: OutputRunSetOptions): Promise<Output
               execution,
               grading,
             };
-          }),
+          })
         );
       }
     }
@@ -216,7 +237,9 @@ export async function runOutputSet(options: OutputRunSetOptions): Promise<Output
       executor_model: executorModel,
       grader_model: graderModel,
       timestamp: new Date().toISOString(),
-      evals_run: Array.from(new Set(runs.map((r) => r.eval_id))).sort((a, b) => a - b),
+      evals_run: Array.from(new Set(runs.map((r) => r.eval_id))).sort(
+        (a, b) => a - b
+      ),
       runs_per_configuration: runsPerConfiguration,
     },
     runs,

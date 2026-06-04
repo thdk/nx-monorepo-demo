@@ -9,7 +9,9 @@ import {
   GRADER_TOOL,
 } from './grader-prompt.js';
 
-function makeExecution(overrides: Partial<ExecutionResult> = {}): ExecutionResult {
+function makeExecution(
+  overrides: Partial<ExecutionResult> = {}
+): ExecutionResult {
   return {
     final_text: 'Place the file at app/routes/admin/users/list.route.tsx',
     tool_uses: [{ name: 'Read', count: 2 }],
@@ -48,8 +50,12 @@ describe('buildUserMessage', () => {
   it('truncates very long final_text but preserves the expectation list intact', () => {
     const longText = 'X'.repeat(50_000);
     const msg = buildUserMessage(
-      { query: 'q', expectations: ['exp-1'], execution: makeExecution({ final_text: longText }) },
-      1_000,
+      {
+        query: 'q',
+        expectations: ['exp-1'],
+        execution: makeExecution({ final_text: longText }),
+      },
+      1_000
     );
     expect(msg).toContain('[... transcript truncated ...]');
     expect(msg).toContain('1. exp-1');
@@ -61,7 +67,7 @@ describe('buildUserMessage', () => {
       expectations: ['exp'],
       execution: makeExecution({ final_text: '' }),
     });
-    expect(msg).toContain("(no text response)");
+    expect(msg).toContain('(no text response)');
   });
 });
 
@@ -91,11 +97,14 @@ describe('buildClaudePGraderPrompt', () => {
 
 describe('extractJsonObject', () => {
   it('parses bare JSON', () => {
-    expect(extractJsonObject('{"expectations":[]}')).toEqual({ expectations: [] });
+    expect(extractJsonObject('{"expectations":[]}')).toEqual({
+      expectations: [],
+    });
   });
 
   it('strips a ```json fence', () => {
-    const text = '```json\n{"expectations":[{"text":"x","passed":true,"evidence":"y"}]}\n```';
+    const text =
+      '```json\n{"expectations":[{"text":"x","passed":true,"evidence":"y"}]}\n```';
     expect(extractJsonObject(text)).toEqual({
       expectations: [{ text: 'x', passed: true, evidence: 'y' }],
     });
@@ -107,7 +116,8 @@ describe('extractJsonObject', () => {
   });
 
   it('extracts a JSON object surrounded by prose', () => {
-    const text = "Sure, here's my grading:\n{\"expectations\":[]}\nHope this helps!";
+    const text =
+      'Sure, here\'s my grading:\n{"expectations":[]}\nHope this helps!';
     expect(extractJsonObject(text)).toEqual({ expectations: [] });
   });
 
@@ -122,6 +132,8 @@ describe('extractJsonObject', () => {
   });
 
   it('throws when no JSON object is present', () => {
-    expect(() => extractJsonObject('no braces here at all')).toThrow(/No JSON object/);
+    expect(() => extractJsonObject('no braces here at all')).toThrow(
+      /No JSON object/
+    );
   });
 });

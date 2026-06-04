@@ -8,7 +8,7 @@ function fakeRun(
   configuration: 'with_skill' | 'without_skill',
   passRate: number,
   durationMs: number,
-  totalTokens: number,
+  totalTokens: number
 ): OutputEvalRun {
   return {
     eval_id: 1,
@@ -37,7 +37,12 @@ describe('calculateStats', () => {
   });
 
   it('computes mean and zero stddev for a single value', () => {
-    expect(calculateStats([42])).toEqual({ mean: 42, stddev: 0, min: 42, max: 42 });
+    expect(calculateStats([42])).toEqual({
+      mean: 42,
+      stddev: 0,
+      min: 42,
+      max: 42,
+    });
   });
 
   it('computes sample stddev (n-1) for multiple values', () => {

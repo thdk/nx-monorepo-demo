@@ -79,7 +79,7 @@ description: a fake test skill
 ---
 
 # body
-`,
+`
     );
     expect(parseSkillMd(tmp)).toEqual({
       name: 'fake-skill',

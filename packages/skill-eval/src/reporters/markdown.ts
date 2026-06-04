@@ -19,7 +19,11 @@ export function renderMarkdown(output: TriggerRunOutput): string {
     '',
     `| Total | Passed | Failed | Errored | Precision | Recall | Accuracy |`,
     `|---:|---:|---:|---:|---:|---:|---:|`,
-    `| ${summary.total} | ${summary.passed} | ${summary.failed} | ${summary.errored} | ${pct(summary.precision)} | ${pct(summary.recall)} | ${pct(summary.accuracy)} |`,
+    `| ${summary.total} | ${summary.passed} | ${summary.failed} | ${
+      summary.errored
+    } | ${pct(summary.precision)} | ${pct(summary.recall)} | ${pct(
+      summary.accuracy
+    )} |`,
     '',
     '## Per-query results',
     '',
@@ -31,9 +35,12 @@ export function renderMarkdown(output: TriggerRunOutput): string {
     const status = r.pass ? '✓' : r.errors === r.runs ? '!' : '✗';
     const expected = r.should_trigger ? 'trigger' : 'no-trigger';
     const denom = r.triggers + r.misses;
-    const rate = denom > 0 ? `${r.triggers}/${denom} (${pct(r.trigger_rate)})` : '—';
+    const rate =
+      denom > 0 ? `${r.triggers}/${denom} (${pct(r.trigger_rate)})` : '—';
     const query = r.query.replace(/\|/g, '\\|').replace(/\n/g, ' ');
-    lines.push(`| ${status} | ${expected} | ${rate} | ${r.errors} | ${query} |`);
+    lines.push(
+      `| ${status} | ${expected} | ${rate} | ${r.errors} | ${query} |`
+    );
   }
 
   const erroredResults = results.filter((r) => r.errors > 0);
@@ -43,7 +50,14 @@ export function renderMarkdown(output: TriggerRunOutput): string {
       lines.push(`### \`${r.query.replace(/\n/g, ' ').slice(0, 100)}\``, '');
       const errored = r.records.filter((rec) => rec.outcome === 'error');
       errored.forEach((rec, i) => {
-        lines.push(`Run ${i + 1}:`, '', '```', rec.error ?? 'unknown error', '```', '');
+        lines.push(
+          `Run ${i + 1}:`,
+          '',
+          '```',
+          rec.error ?? 'unknown error',
+          '```',
+          ''
+        );
       });
     }
   }
@@ -51,6 +65,9 @@ export function renderMarkdown(output: TriggerRunOutput): string {
   return [...lines, ''].join('\n');
 }
 
-export function writeMarkdownReport(path: string, output: TriggerRunOutput): void {
+export function writeMarkdownReport(
+  path: string,
+  output: TriggerRunOutput
+): void {
   writeFileSync(path, renderMarkdown(output));
 }

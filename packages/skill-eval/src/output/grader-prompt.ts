@@ -66,10 +66,16 @@ const TRANSCRIPT_TRUNCATION_HINT = '\n\n[... transcript truncated ...]';
 
 function truncate(text: string, maxChars: number): string {
   if (text.length <= maxChars) return text;
-  return text.slice(0, maxChars - TRANSCRIPT_TRUNCATION_HINT.length) + TRANSCRIPT_TRUNCATION_HINT;
+  return (
+    text.slice(0, maxChars - TRANSCRIPT_TRUNCATION_HINT.length) +
+    TRANSCRIPT_TRUNCATION_HINT
+  );
 }
 
-export function buildUserMessage(inputs: GraderInputs, transcriptMaxChars = 30_000): string {
+export function buildUserMessage(
+  inputs: GraderInputs,
+  transcriptMaxChars = 30_000
+): string {
   const { query, expectations, execution } = inputs;
   return [
     `# User query`,
@@ -99,7 +105,10 @@ export function buildUserMessage(inputs: GraderInputs, transcriptMaxChars = 30_0
  * forcing available here, so the prompt asks firmly for a JSON-only response
  * and we lean on `extractJsonObject` to recover from minor formatting drift.
  */
-export function buildClaudePGraderPrompt(inputs: GraderInputs, transcriptMaxChars = 30_000): string {
+export function buildClaudePGraderPrompt(
+  inputs: GraderInputs,
+  transcriptMaxChars = 30_000
+): string {
   return [
     GRADER_SYSTEM_PROMPT,
     '',
@@ -152,7 +161,9 @@ export function extractJsonObject(text: string): unknown {
   const firstBrace = candidate.indexOf('{');
   const lastBrace = candidate.lastIndexOf('}');
   if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
-    throw new Error(`No JSON object found in grader response: ${candidate.slice(0, 200)}`);
+    throw new Error(
+      `No JSON object found in grader response: ${candidate.slice(0, 200)}`
+    );
   }
   return JSON.parse(candidate.slice(firstBrace, lastBrace + 1));
 }

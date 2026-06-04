@@ -12,7 +12,9 @@ function escapeXml(value: string): string {
 }
 
 function caseName(result: QueryResult): string {
-  const polarity = result.should_trigger ? 'should-trigger' : 'should-not-trigger';
+  const polarity = result.should_trigger
+    ? 'should-trigger'
+    : 'should-not-trigger';
   const snippet = result.query.replace(/\s+/g, ' ').slice(0, 80);
   return `[${polarity}] ${snippet}`;
 }
@@ -37,7 +39,9 @@ function errorBlock(result: QueryResult): string {
   const messages = errored
     .map((r, i) => `Run ${i + 1}: ${r.error ?? 'unknown error'}`)
     .join('\n\n');
-  return `<error message="${escapeXml(errored.length + ' run(s) errored')}">${escapeXml(messages)}</error>`;
+  return `<error message="${escapeXml(
+    errored.length + ' run(s) errored'
+  )}">${escapeXml(messages)}</error>`;
 }
 
 export function renderJunit(output: TriggerRunOutput): string {
@@ -67,7 +71,9 @@ ${inner.join('\n')}
   const { summary } = output;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <testsuites name="skill-eval">
-  <testsuite name="trigger:${escapeXml(output.skill_name)}" tests="${summary.total}" failures="${summary.failed}" errors="${summary.errored}" skipped="0">
+  <testsuite name="trigger:${escapeXml(output.skill_name)}" tests="${
+    summary.total
+  }" failures="${summary.failed}" errors="${summary.errored}" skipped="0">
 ${testcases}
   </testsuite>
 </testsuites>
