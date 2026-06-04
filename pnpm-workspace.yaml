@@ -8,7 +8,7 @@ packages:
   - 'scripts/*'
 
 allowBuilds:
-  '@nestjs/core': true
+  '@nestjs/core': false
   '@parcel/watcher': true
   '@swc/core': true
   esbuild: true
