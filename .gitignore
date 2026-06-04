@@ -65,3 +65,5 @@ gha-creds-*.json
 .nx/polygraph
 .nx/self-healing
 .claude/memory/
+
+skill-eval-out
