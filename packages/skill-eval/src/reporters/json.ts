@@ -1,11 +1,9 @@
 import { writeFileSync } from 'node:fs';
 
-import type { TriggerRunOutput } from '../types.js';
-
-export function renderJson(output: TriggerRunOutput): string {
+export function renderJson(output: unknown): string {
   return JSON.stringify(output, null, 2);
 }
 
-export function writeJsonReport(path: string, output: TriggerRunOutput): void {
+export function writeJsonReport(path: string, output: unknown): void {
   writeFileSync(path, renderJson(output));
 }

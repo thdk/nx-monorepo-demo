@@ -19,6 +19,7 @@
     "skill-eval": "./dist/bin.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.100.1",
     "p-limit": "6.2.0",
     "tslib": "2.8.1",
     "yaml": "2.9.0",

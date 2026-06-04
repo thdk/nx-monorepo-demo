@@ -64,6 +64,11 @@ gha-creds-*.json
 
 .nx/polygraph
 .nx/self-healing
+<<<<<<< Updated upstream
 .claude/memory/
 
 skill-eval-out
+=======
+
+skill-eval-out
+>>>>>>> Stashed changes

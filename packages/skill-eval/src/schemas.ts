@@ -11,6 +11,10 @@ export const evalItemSchema = z
     query: z.string().min(1),
     should_trigger: z.boolean(),
     note: z.string().optional(),
+    /** Output-eval fields (ignored by trigger eval): */
+    id: z.number().int().optional(),
+    name: z.string().optional(),
+    expectations: z.array(z.string().min(1)).optional(),
   })
   .strict();
 

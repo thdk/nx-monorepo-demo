@@ -5,13 +5,13 @@ import { evalSetSchema } from './schemas.js';
 describe('evalSetSchema', () => {
   it('parses a well-formed eval set', () => {
     const parsed = evalSetSchema.parse({
-      skill_name: 'react-router-file-structure-conventions',
+      skill_name: 'react-best-practices',
       evals: [
         { query: 'where does my admin/users route go?', should_trigger: true },
         { query: 'how do I configure React Router v7?', should_trigger: false },
       ],
     });
-    expect(parsed.skill_name).toBe('react-router-file-structure-conventions');
+    expect(parsed.skill_name).toBe('react-best-practices');
     expect(parsed.evals).toHaveLength(2);
   });
 
@@ -31,7 +31,7 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_naem: 'oops', // typo
         evals: [{ query: 'x', should_trigger: true }],
-      }),
+      })
     ).toThrow();
   });
 
@@ -40,12 +40,14 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_name: 'x',
         evals: [{ query: 'x', should_triger: true }], // typo
-      }),
+      })
     ).toThrow();
   });
 
   it('rejects missing skill_name', () => {
-    expect(() => evalSetSchema.parse({ evals: [{ query: 'x', should_trigger: true }] })).toThrow();
+    expect(() =>
+      evalSetSchema.parse({ evals: [{ query: 'x', should_trigger: true }] })
+    ).toThrow();
   });
 
   it('rejects empty evals array', () => {
@@ -57,7 +59,7 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_name: 'x',
         evals: [{ query: 'x', should_trigger: 'yes' }],
-      }),
+      })
     ).toThrow();
   });
 });

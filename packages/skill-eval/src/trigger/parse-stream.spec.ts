@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createParserState, feedEvent } from './parse-stream.js';
 
-const TRIGGER_ID = 'react-router-file-structure-conventions-skill-abc12345';
+const TRIGGER_ID = 'react-best-practices-skill-abc12345';
 
 function feed(events: Array<Record<string, unknown>>) {
   const state = createParserState();

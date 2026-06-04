@@ -45,6 +45,23 @@
         "note": {
           "type": "string",
           "description": "Optional internal note explaining what this query is meant to test. Ignored at runtime."
+        },
+        "id": {
+          "type": "integer",
+          "description": "Optional stable identifier for cross-iteration comparison."
+        },
+        "name": {
+          "type": "string",
+          "description": "Short human-readable name for display in output-eval benchmarks."
+        },
+        "expectations": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Output-eval mode: objectively verifiable statements about the model's response. Each becomes one JUnit testcase. Skipped by trigger-eval mode. Items without expectations are skipped by `skill-eval output`.",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

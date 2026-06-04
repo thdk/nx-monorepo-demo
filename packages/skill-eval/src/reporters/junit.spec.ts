@@ -6,7 +6,7 @@ import { renderJunit } from './junit.js';
 
 function makeOutput(): TriggerRunOutput {
   return {
-    skill_name: 'react-router-file-structure-conventions',
+    skill_name: 'react-best-practices',
     description: 'desc',
     model: 'claude-sonnet-4-6',
     runs_per_query: 3,
@@ -62,13 +62,17 @@ describe('renderJunit', () => {
     expect(xml).toContain('tests="2"');
     expect(xml).toContain('failures="1"');
     expect(xml).toContain('errors="0"');
-    expect(xml).toContain('name="trigger:react-router-file-structure-conventions"');
+    expect(xml).toContain('name="trigger:react-best-practices"');
   });
 
   it('emits a passing testcase with no failure child and a real wall time', () => {
     const xml = renderJunit(makeOutput());
-    expect(xml).toContain('[should-trigger] where does my admin/users page go?');
-    const passLine = xml.match(/<testcase[^>]*should-trigger[^>]*time="3\.200"[^>]*\/>/);
+    expect(xml).toContain(
+      '[should-trigger] where does my admin/users page go?'
+    );
+    const passLine = xml.match(
+      /<testcase[^>]*should-trigger[^>]*time="3\.200"[^>]*\/>/
+    );
     expect(passLine).not.toBeNull();
   });
 
@@ -93,7 +97,11 @@ describe('renderJunit', () => {
     const second = out.results[1];
     if (!second) throw new Error('test fixture broken');
     second.errors = 1;
-    second.records[1] = { outcome: 'error', duration_ms: 30000, error: 'timeout after 30000ms' };
+    second.records[1] = {
+      outcome: 'error',
+      duration_ms: 30000,
+      error: 'timeout after 30000ms',
+    };
     second.misses = 0;
     second.runs = 3;
     out.summary.errored = 1;
