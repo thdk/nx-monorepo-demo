@@ -10,7 +10,8 @@ ENV SERVICE_VERSION=$SERVICE_VERSION
 ARG PNPM_VERSION
 RUN corepack prepare pnpm@${PNPM_VERSION} --activate
 
-RUN corepack enable pnpm
+RUN corepack enable pnpm && \
+    pnpm approve-builds @nestjs/core
 
 WORKDIR /app
 
