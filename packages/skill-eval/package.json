@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.100.1",
+    "execa": "9.6.1",
     "p-limit": "6.2.0",
     "tslib": "2.8.1",
     "yaml": "2.9.0",
