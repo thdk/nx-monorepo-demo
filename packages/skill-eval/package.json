@@ -1,0 +1,37 @@
+{
+  "name": "@thdk/skill-eval",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./schema/eval-set.schema.json": "./schema/eval-set.schema.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "skill-eval": "./dist/bin.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.100.1",
+    "execa": "9.6.1",
+    "p-limit": "6.2.0",
+    "tslib": "2.8.1",
+    "yaml": "2.9.0",
+    "yargs": "17.7.2",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "ajv": "8.17.1"
+  },
+  "files": [
+    "dist",
+    "schema"
+  ]
+}

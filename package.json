@@ -102,6 +102,7 @@
     "@testing-library/dom": "10.4.0",
     "@testing-library/react": "16.3.0",
     "@thdk/nest-lib-a": "workspace:*",
+    "@thdk/skill-eval": "workspace:*",
     "@types/jest": "30.0.0",
     "@types/node": "22.15.21",
     "@types/react": "19.0.0",
