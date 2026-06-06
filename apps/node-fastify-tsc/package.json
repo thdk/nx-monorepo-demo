@@ -34,7 +34,6 @@
       },
       "prune-lockfile": {},
       "copy-workspace-modules": {},
-      "generate-pnpm-workspace-yaml": {},
       "prune": {}
     }
   },

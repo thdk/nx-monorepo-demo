@@ -15,7 +15,7 @@ RUN corepack enable pnpm
 WORKDIR /app
 
 # Copy manifests first so pnpm fetch layer is cached when only source changes
-COPY ./dist/pnpm-lock.yaml ./dist/pnpm-workspace.yaml ./dist/package.json ./
+COPY ./dist/pnpm-lock.yaml ./dist/package.json ./
 
 # Fetch dependencies into cache-mounted pnpm store
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \

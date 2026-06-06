@@ -21,7 +21,6 @@
             "cjs"
           ],
           "bundle": false,
-          "thirdParty": true,
           "generatePackageJson": false,
           "main": "apps/app-2/src/main.ts",
           "tsConfig": "apps/app-2/tsconfig.app.json",
@@ -73,7 +72,6 @@
       },
       "prune-lockfile": {},
       "copy-workspace-modules": {},
-      "generate-pnpm-workspace-yaml": {},
       "prune": {}
     }
   },

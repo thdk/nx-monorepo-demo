@@ -149,7 +149,7 @@
       "inputs": ["production", "^production"]
     },
     "docker:build": {
-      "dependsOn": ["build", "^build", "prune"]
+      "dependsOn": ["build", "prune"]
     },
     "prune-lockfile": {
       "dependsOn": ["build"],
@@ -157,7 +157,7 @@
       "executor": "@nx/js:prune-lockfile",
       "outputs": [
         "{projectRoot}/dist/package.json",
-        "{projectRoot}/dist/package-lock.json"
+        "{projectRoot}/dist/pnpm-lock.yaml"
       ],
       "options": {
         "buildTarget": "build"
@@ -172,21 +172,8 @@
         "buildTarget": "build"
       }
     },
-    "generate-pnpm-workspace-yaml": {
-      "dependsOn": ["copy-workspace-modules"],
-      "cache": true,
-      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "echo 'packages:\n  - workspace_modules/@*/*' > {projectRoot}/dist/pnpm-workspace.yaml"
-      }
-    },
     "prune": {
-      "dependsOn": [
-        "prune-lockfile",
-        "copy-workspace-modules",
-        "generate-pnpm-workspace-yaml"
-      ],
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     }
   },
