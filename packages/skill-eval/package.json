@@ -1,5 +1,9 @@
 {
   "name": "@thdk/skill-eval",
+  "repository": {
+    "directory": "packages/skill-eval",
+    "url": "https://github.com/thdk/nx-monorepo-demo"
+  },
   "version": "0.1.0",
   "private": false,
   "type": "module",
