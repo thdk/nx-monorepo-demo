@@ -181,7 +181,11 @@
     {
       "target": "prune",
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:noop"
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
+      "options": {
+        "command": "tsx ./scripts/bin/write-dist-pnpm-workspace.ts {projectRoot}/dist"
+      }
     }
   ],
   "generators": {

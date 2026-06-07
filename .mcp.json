@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "octocode": {
-      "command": "pnpm",
-      "args": ["exec", "octocode-mcp@latest"]
-    },
     "nx": {
       "transport": "stdio",
       "command": "pnpm",

@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__octocode__githubSearchRepositories",
+      "mcp__octocode__githubGetFileContent",
+      "mcp__octocode__githubViewRepoStructure",
+      "mcp__octocode__githubSearchCode"
+    ]
+  },
   "extraKnownMarketplaces": {
     "nx-claude-plugins": {
       "source": {
