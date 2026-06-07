@@ -3,7 +3,10 @@
   "version": "0.3.0",
   "private": true,
   "nx": {
-    "name": "app-3",
+    "name": "node-nest-webpack",
+    "tags": [
+      "deployable:docker"
+    ],
     "targets": {
       "build": {
         "executor": "nx:run-commands",

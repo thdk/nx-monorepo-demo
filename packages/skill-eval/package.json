@@ -16,7 +16,7 @@
     }
   },
   "bin": {
-    "skill-eval": "./dist/bin.js"
+    "skill-eval": "dist/bin.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.100.1",
@@ -36,6 +36,6 @@
   ],
   "repository": {
     "directory": "packages/skill-eval",
-    "url": "https://github.com/thdk/nx-monorepo-demo"
+    "url": "git+https://github.com/thdk/nx-monorepo-demo.git"
   }
 }
