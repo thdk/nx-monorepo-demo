@@ -1,3 +1,13 @@
+## 0.2.0 (2026-06-07)
+
+### New Features
+
+- **skill-eval:** set repo and directory in package.json ([806c605](https://github.com/thdk/nx-monorepo-demo/commit/806c605))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.1.0 (2026-06-06)
 
 ### New Features
