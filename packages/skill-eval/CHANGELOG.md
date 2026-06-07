@@ -1,3 +1,13 @@
+## 0.2.2 (2026-06-07)
+
+### Other Updates
+
+- upgrade nx ([158394f](https://github.com/thdk/nx-monorepo-demo/commit/158394f))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.1 (2026-06-07)
 
 ### New Features
