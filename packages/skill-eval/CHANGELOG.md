@@ -1,3 +1,13 @@
+## 0.2.1 (2026-06-07)
+
+### New Features
+
+- **node-nest-webpack:** deploy this app again ([f969816](https://github.com/thdk/nx-monorepo-demo/commit/f969816))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.0 (2026-06-07)
 
 ### New Features
