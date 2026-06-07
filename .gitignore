@@ -74,3 +74,5 @@ skill-eval-out
 >>>>>>> Stashed changes
 
 .nx/migrate-runs
+.claude/worktrees
+.claude/settings.local.json
