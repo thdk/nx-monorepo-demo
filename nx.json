@@ -134,24 +134,29 @@
       }
     }
   ],
-  "targetDefaults": {
-    "@nx/esbuild:esbuild": {
+  "targetDefaults": [
+    {
+      "executor": "@nx/esbuild:esbuild",
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "test": {
+    {
+      "target": "test",
       "dependsOn": ["^build"]
     },
-    "@nx/js:tsc": {
+    {
+      "executor": "@nx/js:tsc",
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "docker:build": {
+    {
+      "target": "docker:build",
       "dependsOn": ["build", "prune"]
     },
-    "prune-lockfile": {
+    {
+      "target": "prune-lockfile",
       "dependsOn": ["build"],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
@@ -163,7 +168,8 @@
         "buildTarget": "build"
       }
     },
-    "copy-workspace-modules": {
+    {
+      "target": "copy-workspace-modules",
       "dependsOn": ["build"],
       "cache": true,
       "outputs": ["{projectRoot}/dist/workspace_modules"],
@@ -172,11 +178,12 @@
         "buildTarget": "build"
       }
     },
-    "prune": {
+    {
+      "target": "prune",
       "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
       "executor": "nx:noop"
     }
-  },
+  ],
   "generators": {
     "@nx/react": {
       "application": {
