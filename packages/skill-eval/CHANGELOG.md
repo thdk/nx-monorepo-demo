@@ -1,3 +1,13 @@
+## 0.2.6 (2026-06-08)
+
+### New Features
+
+- **skill-eval:** set default relative output directory ([c3fcf19](https://github.com/thdk/nx-monorepo-demo/commit/c3fcf19))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.5 (2026-06-08)
 
 ### New Features
