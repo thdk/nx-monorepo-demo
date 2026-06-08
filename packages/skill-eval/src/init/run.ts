@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { EvalSet } from '../types.js';
 import { runClaudeP, type RunClaudePOptions } from '../util/claude-p.js';
-import { parseSkillMd } from '../util/parse-skill-md.js';
+import { findSkillFile, parseSkillMd } from '../util/parse-skill-md.js';
 import { extractJsonObject } from '../output/grader-prompt.js';
 import { evalSetSchema } from '../schemas.js';
 
@@ -90,7 +90,8 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
   }
 
   const skill = parseSkillMd(skillPath);
-  const skillContent = readFileSync(join(skillPath, 'SKILL.md'), 'utf-8');
+  const skillFile = findSkillFile(skillPath) ?? join(skillPath, 'SKILL.md');
+  const skillContent = readFileSync(skillFile, 'utf-8');
 
   const prompt = buildInitPrompt({
     skillName: skill.name,

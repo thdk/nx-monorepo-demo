@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { parse as parseYaml } from 'yaml';
@@ -27,8 +27,24 @@ function asString(value: unknown): string | null {
   return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
+/**
+ * Locate a SKILL.md file in `dir`, matching the filename case-insensitively
+ * (so `SKILL.md`, `Skill.md`, `skill.md` all work — including on Linux where
+ * the filesystem is case-sensitive). Returns the absolute path or null.
+ */
+export function findSkillFile(dir: string): string | null {
+  let entries: string[];
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return null;
+  }
+  const match = entries.find((e) => e.toLowerCase() === 'skill.md');
+  return match ? join(dir, match) : null;
+}
+
 export function parseSkillMd(skillPath: string): SkillMeta {
-  const skillFile = join(skillPath, 'SKILL.md');
+  const skillFile = findSkillFile(skillPath) ?? join(skillPath, 'SKILL.md');
   const source = readFileSync(skillFile, 'utf-8');
   const { meta } = parseFrontmatter(source);
 

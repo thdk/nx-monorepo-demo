@@ -18,6 +18,7 @@ import { runOutputSet } from './output/run-set.js';
 import { initEvalSet } from './init/run.js';
 import { execHint } from './util/package-manager.js';
 import { createTableRenderer, type TableRow } from './util/live-table.js';
+import { findSkillFile } from './util/parse-skill-md.js';
 
 const triggerOptions = {
   'eval-set': {
@@ -27,8 +28,8 @@ const triggerOptions = {
   },
   'skill-path': {
     type: 'string',
-    demandOption: true,
-    describe: 'Path to the skill directory (containing SKILL.md)',
+    describe:
+      'Path to the skill directory (containing SKILL.md). Defaults to the current directory if it contains a SKILL.md.',
   },
   model: {
     type: 'string',
@@ -77,8 +78,8 @@ const outputOptions = {
   },
   'skill-path': {
     type: 'string',
-    demandOption: true,
-    describe: 'Path to the skill directory (containing SKILL.md)',
+    describe:
+      'Path to the skill directory (containing SKILL.md). Defaults to the current directory if it contains a SKILL.md.',
   },
   'executor-model': {
     type: 'string',
@@ -144,8 +145,8 @@ type OutputArgs = InferredOptionTypes<typeof outputOptions>;
 const initOptions = {
   'skill-path': {
     type: 'string',
-    demandOption: true,
-    describe: 'Path to the skill directory (containing SKILL.md)',
+    describe:
+      'Path to the skill directory (containing SKILL.md). Defaults to the current directory if it contains a SKILL.md.',
   },
   out: {
     type: 'string',
@@ -197,6 +198,20 @@ function abs(p: string, cwd = process.cwd()): string {
   return isAbsolute(p) ? p : resolve(cwd, p);
 }
 
+function resolveSkillPath(override: string | undefined): string {
+  if (override) return abs(override);
+  const cwd = process.cwd();
+  if (findSkillFile(cwd)) return cwd;
+  process.stderr.write(
+    [
+      'Error: --skill-path is required.',
+      'Pass --skill-path <dir>, or run from a directory that contains a SKILL.md.',
+      '',
+    ].join('\n')
+  );
+  process.exit(2);
+}
+
 function resolveEvalSetPath(
   skillPath: string,
   override: string | undefined
@@ -236,7 +251,7 @@ function readPackageVersion(): string {
 }
 
 async function triggerCommand(args: TriggerArgs): Promise<void> {
-  const skillPath = abs(args['skill-path']);
+  const skillPath = resolveSkillPath(args['skill-path']);
   const evalSetPath = resolveEvalSetPath(skillPath, args['eval-set']);
   const outDir = args.out
     ? abs(args.out)
@@ -489,7 +504,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     assertApiGraderAuth();
   }
 
-  const skillPath = abs(args['skill-path']);
+  const skillPath = resolveSkillPath(args['skill-path']);
   const evalSetPath = resolveEvalSetPath(skillPath, args['eval-set']);
   const outDir = args.out
     ? abs(args.out)
@@ -820,7 +835,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 }
 
 async function initCommand(args: InitArgs): Promise<void> {
-  const skillPath = abs(args['skill-path']);
+  const skillPath = resolveSkillPath(args['skill-path']);
   const outPath = args.out ? abs(args.out) : undefined;
   const claudeBin = args['claude-bin'].includes('/')
     ? abs(args['claude-bin'])

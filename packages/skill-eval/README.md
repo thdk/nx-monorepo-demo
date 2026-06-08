@@ -42,7 +42,7 @@ pnpm exec skill-eval trigger \
   --out ./out/
 ```
 
-`--eval-set` is optional. If omitted it defaults to `<skill-path>/evals.json` (the upstream skill-creator convention), so colocating your evals with the skill keeps the CLI invocation minimal. Pass `--eval-set <path>` explicitly only when you want to point at a different file.
+`--skill-path` is optional when you run the command from inside a skill directory (i.e. one containing a `SKILL.md` — matched case-insensitively). `--eval-set` is also optional: if omitted it defaults to `<skill-path>/evals.json` (the upstream skill-creator convention), so colocating your evals with the skill keeps the CLI invocation minimal. Pass `--eval-set <path>` explicitly only when you want to point at a different file.
 
 Requires `claude` CLI on `PATH` and a valid `claude /login` session.
 

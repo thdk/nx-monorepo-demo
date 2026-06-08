@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { parseFrontmatter, parseSkillMd } from './parse-skill-md.js';
+import { findSkillFile, parseFrontmatter, parseSkillMd } from './parse-skill-md.js';
 
 describe('parseFrontmatter', () => {
   it('extracts simple key/value pairs', () => {
@@ -90,5 +90,42 @@ description: a fake test skill
   it('throws when description is missing', () => {
     writeFileSync(join(tmp, 'SKILL.md'), '---\nname: fake\n---\n');
     expect(() => parseSkillMd(tmp)).toThrow(/description/);
+  });
+
+  it('reads SKILL.md case-insensitively (e.g. skill.md)', () => {
+    writeFileSync(
+      join(tmp, 'skill.md'),
+      `---
+name: lowercase-skill
+description: case-insensitive lookup
+---
+`
+    );
+    expect(parseSkillMd(tmp)).toEqual({
+      name: 'lowercase-skill',
+      description: 'case-insensitive lookup',
+    });
+  });
+});
+
+describe('findSkillFile', () => {
+  let tmp: string;
+
+  beforeEach(() => {
+    tmp = mkdtempSync(join(tmpdir(), 'skill-eval-'));
+  });
+
+  afterEach(() => {
+    rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('matches SKILL.md, Skill.md, and skill.md', () => {
+    writeFileSync(join(tmp, 'Skill.md'), '');
+    expect(findSkillFile(tmp)).toBe(join(tmp, 'Skill.md'));
+  });
+
+  it('returns null when no SKILL.md is present', () => {
+    writeFileSync(join(tmp, 'README.md'), '');
+    expect(findSkillFile(tmp)).toBeNull();
   });
 });
