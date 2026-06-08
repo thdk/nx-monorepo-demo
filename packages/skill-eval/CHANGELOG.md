@@ -1,3 +1,14 @@
+## 0.2.5 (2026-06-08)
+
+### New Features
+
+- add dense and compact layout for output eval table with baseline ([05f2adc](https://github.com/thdk/nx-monorepo-demo/commit/05f2adc))
+- **skill-eval:** baseline by default and better live output table ([a33d721](https://github.com/thdk/nx-monorepo-demo/commit/a33d721))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.4 (2026-06-08)
 
 ### New Features
