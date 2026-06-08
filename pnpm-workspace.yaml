@@ -1,5 +1,10 @@
 verifyDepsBeforeRun: install
 
+# Hard-link workspace packages so `pnpm deploy` can filter to a single app's
+# actual graph instead of pulling every root dep. Required to use the non-legacy
+# deploy mode that powers @thdk/nx-pnpm-deploy.
+injectWorkspacePackages: true
+
 packages:
   - 'libs/**'
   - 'packages/**'

@@ -1,31 +1,17 @@
-# Run the container with `docker run -it --rm --init -p 8082:8082 --env PORT=8082 localhost/app-2:0.0.1`.
+# Built by the @thdk/nx-pnpm-deploy plugin: docker:build depends on `prune`,
+# which runs `pnpm --filter=@thdk/app-2 --prod deploy ./out`. That output
+# directory is self-contained — package.json, dist/, and a pnpm-resolved
+# node_modules/ with every transitive dep — so the runtime image is just a
+# COPY + CMD with no install step.
 FROM docker.io/node:lts-alpine
 
 ENV HOST=0.0.0.0
 ENV PORT=8080
-# Allow to set the service version via build arg
 ARG SERVICE_VERSION
 ENV SERVICE_VERSION=$SERVICE_VERSION
 
-ARG PNPM_VERSION
-RUN corepack prepare pnpm@${PNPM_VERSION} --activate
-
-RUN corepack enable pnpm
-
 WORKDIR /app
 
-# Copy manifests first so pnpm fetch layer is cached when only source changes
-COPY ./dist/pnpm-lock.yaml ./dist/package.json ./
+COPY ./out /app
 
-# Fetch dependencies into cache-mounted pnpm store
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm fetch --prod
-
-# Copy full dist output (including workspace_modules with compiled code)
-COPY ./dist .
-
-# Install offline from the cached store
-RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --offline --frozen-lockfile
-
-CMD [ "node", "main.js" ]
+CMD [ "node", "dist/main.js" ]
