@@ -57,8 +57,8 @@ const triggerOptions = {
   },
   out: {
     type: 'string',
-    default: './skill-eval-out',
-    describe: 'Output directory for results.json / junit.xml / summary.md',
+    describe:
+      'Output directory for results.json / junit.xml / summary.md. Defaults to `<skill-path>/.skill-eval/trigger`.',
   },
   'claude-bin': {
     type: 'string',
@@ -129,9 +129,8 @@ const outputOptions = {
   },
   out: {
     type: 'string',
-    default: './skill-eval-output',
     describe:
-      'Output directory for benchmark.json / junit.xml / summary.md and per-eval artifacts',
+      'Output directory for benchmark.json / junit.xml / summary.md and per-eval artifacts. Defaults to `<skill-path>/.skill-eval/output`.',
   },
   'claude-bin': {
     type: 'string',
@@ -239,7 +238,9 @@ function readPackageVersion(): string {
 async function triggerCommand(args: TriggerArgs): Promise<void> {
   const skillPath = abs(args['skill-path']);
   const evalSetPath = resolveEvalSetPath(skillPath, args['eval-set']);
-  const outDir = abs(args.out);
+  const outDir = args.out
+    ? abs(args.out)
+    : join(skillPath, '.skill-eval', 'trigger');
   // claude-bin: only resolve to absolute when it looks like a path. Bare names
   // like `claude` should still resolve via PATH.
   const claudeBin = args['claude-bin'].includes('/')
@@ -490,7 +491,9 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 
   const skillPath = abs(args['skill-path']);
   const evalSetPath = resolveEvalSetPath(skillPath, args['eval-set']);
-  const outDir = abs(args.out);
+  const outDir = args.out
+    ? abs(args.out)
+    : join(skillPath, '.skill-eval', 'output');
   const claudeBin = args['claude-bin'].includes('/')
     ? abs(args['claude-bin'])
     : args['claude-bin'];
@@ -630,9 +633,10 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const compactDeltaTokWidth = 5; // "+1.2k"
 
   // Dense: w-grade/b-grade holds "grade…" (6) or "100%" (4). Header is "w-grade" (7).
-  const denseGradeWidth = Math.max('w-grade'.length, 'grade…'.length);
-  const denseExecWidth = Math.max('w-exec'.length, 6);
-  const denseTokWidth = Math.max('w-tok'.length, 5);
+  // Add a bit of breathing room so labels and values aren't crammed against neighbours.
+  const denseGradeWidth = Math.max('w-grade'.length, 'grade…'.length) + 2;
+  const denseExecWidth = Math.max('w-exec'.length, 6) + 2;
+  const denseTokWidth = Math.max('w-tok'.length, 5) + 2;
 
   // ---------- header ----------
   const headerCols: string[] = [
