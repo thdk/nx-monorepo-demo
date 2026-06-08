@@ -25,7 +25,7 @@ pnpm exec skill-eval init --skill-path ./skills/react-best-practices
 Defaults to 8 positive + 5 negative queries via `claude -p` (no API key needed). Flags:
 
 - `--positive N` / `--negative N` — tune the counts
-- `--with-expectations` (plus `--expectations-per-positive N`) — also draft expectations so the file is ready for `skill-eval output` too
+- `--expectations N` — also draft N expectations per positive case so the file is ready for `skill-eval output` too (0 / omitted = trigger-only)
 - `--force` — overwrite an existing file
 - `--out <path>` — write somewhere other than `<skill-path>/evals.json`
 

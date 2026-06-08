@@ -11,8 +11,10 @@ export interface InitPromptOptions {
   skillContent: string;
   positiveCount: number;
   negativeCount: number;
-  /** When true, ask the model to also draft 2-3 expectations per positive case. */
-  withExpectations: boolean;
+  /**
+   * Number of expectations to draft per positive case. 0 disables expectation
+   * drafting — the prompt instructs the model to omit the field.
+   */
   expectationsPerPositive: number;
 }
 
@@ -83,13 +85,13 @@ export function buildInitPrompt(opts: InitPromptOptions): string {
     skillContent,
     positiveCount,
     negativeCount,
-    withExpectations,
     expectationsPerPositive,
   } = opts;
 
-  const expectationsClause = withExpectations
-    ? `For each positive case, also draft ${expectationsPerPositive} expectation(s) — objective, evidence-checkable statements that a grader can pass/fail with confidence. See the expectations guidance in the system prompt.`
-    : `Do NOT include the \`expectations\` field at all — this run is for trigger evals only.`;
+  const expectationsClause =
+    expectationsPerPositive > 0
+      ? `For each positive case, also draft ${expectationsPerPositive} expectation(s) — objective, evidence-checkable statements that a grader can pass/fail with confidence. See the expectations guidance in the system prompt.`
+      : `Do NOT include the \`expectations\` field at all — this run is for trigger evals only.`;
 
   return [
     INIT_SYSTEM_PROMPT,

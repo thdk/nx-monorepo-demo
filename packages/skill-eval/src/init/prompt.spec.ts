@@ -10,8 +10,7 @@ function baseOptions() {
       '---\nname: example-skill\ndescription: Does example things.\n---\n\n# body\n',
     positiveCount: 7,
     negativeCount: 4,
-    withExpectations: false,
-    expectationsPerPositive: 3,
+    expectationsPerPositive: 0,
   };
 }
 
@@ -30,16 +29,15 @@ describe('buildInitPrompt', () => {
     expect(prompt).toContain('exactly 4 negative');
   });
 
-  it('omits expectations when withExpectations is false', () => {
+  it('omits expectations when expectationsPerPositive is 0', () => {
     const prompt = buildInitPrompt(baseOptions());
     expect(prompt).toContain('Do NOT include the `expectations` field');
     expect(prompt).not.toContain('expectation(s) — objective');
   });
 
-  it('asks for expectations when withExpectations is true', () => {
+  it('asks for expectations when expectationsPerPositive > 0', () => {
     const prompt = buildInitPrompt({
       ...baseOptions(),
-      withExpectations: true,
       expectationsPerPositive: 2,
     });
     expect(prompt).toContain('2 expectation(s)');

@@ -16,6 +16,7 @@ import { writeOutputMarkdownReport } from './reporters/output-markdown.js';
 import { runSet } from './trigger/run-set.js';
 import { runOutputSet } from './output/run-set.js';
 import { initEvalSet } from './init/run.js';
+import { execHint } from './util/package-manager.js';
 
 const triggerOptions = {
   'eval-set': {
@@ -158,17 +159,11 @@ const initOptions = {
     default: 5,
     describe: 'Number of should-not-trigger (near-miss) queries to generate',
   },
-  'with-expectations': {
-    type: 'boolean',
-    default: false,
-    describe:
-      'Also draft 2-3 expectations per positive case (for output evals)',
-  },
-  'expectations-per-positive': {
+  expectations: {
     type: 'number',
-    default: 3,
+    default: 0,
     describe:
-      'How many expectations to draft per positive case (only used with --with-expectations)',
+      'Number of expectations to draft per positive case (for output evals). 0 disables expectation drafting.',
   },
   model: {
     type: 'string',
@@ -247,11 +242,39 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
 
   mkdirSync(outDir, { recursive: true });
 
-  const totalRuns = evalSet.evals.length * args.runs;
+  const evalCount = evalSet.evals.length;
+  const runCount = args.runs;
+  const totalRuns = evalCount * runCount;
   process.stderr.write(
-    `Running ${evalSet.evals.length} queries × ${args.runs} = ${totalRuns} total runs ` +
+    `Running ${evalCount} queries × ${runCount} = ${totalRuns} total runs ` +
       `(concurrency=${args.concurrency})\n`
   );
+
+  // One row per query (not per run). Each run lights up as an icon in the
+  // `runs` column:  ✓ = expected outcome,  ✗ = unexpected,  ! = errored.
+  const evalColWidth = Math.max('eval'.length, String(evalCount).length);
+  const runsColWidth = Math.max('runs'.length, runCount);
+  const rateColWidth = 4; // "100%"
+  const verdictColWidth = 5; // "ERROR"
+
+  process.stderr.write(
+    `  ${'eval'.padStart(evalColWidth)}  ${'runs'.padStart(
+      runsColWidth
+    )}  ${'rate'.padStart(rateColWidth)}  ${'verdict'.padEnd(
+      verdictColWidth
+    )}  query\n`
+  );
+
+  type RunBucket = { outcome: 'trigger' | 'miss' | 'error' };
+  const buckets: RunBucket[][] = evalSet.evals.map(() => []);
+  const lines: (string | null)[] = evalSet.evals.map(() => null);
+  let nextToPrint = 0;
+  const flushOrdered = (): void => {
+    while (nextToPrint < lines.length && lines[nextToPrint] !== null) {
+      process.stderr.write(lines[nextToPrint] as string);
+      nextToPrint++;
+    }
+  };
 
   const startedAt = Date.now();
   const output = await runSet({
@@ -263,32 +286,52 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
     triggerThreshold: args.threshold,
     timeoutMs: args.timeout * 1000,
     claudeBin,
-    onProgress: ({
-      query,
-      outcome,
-      durationMs,
-      queryIndex,
-      totalQueries,
-      runIndex,
-      runsPerQuery,
-      error,
-    }) => {
-      const tag =
-        outcome === 'trigger'
-          ? 'HIT  '
-          : outcome === 'miss'
-          ? 'miss '
-          : 'ERROR';
-      const progress = `${queryIndex + 1}/${totalQueries}·${
-        runIndex + 1
-      }/${runsPerQuery}`;
-      const snippet = query.replace(/\s+/g, ' ').slice(0, 64);
-      const errSuffix = error ? `  (${error.split('\n')[0]})` : '';
-      process.stderr.write(
-        `  [${tag}] ${progress.padEnd(9)} ${(durationMs / 1000).toFixed(
-          1
-        )}s  ${snippet}${errSuffix}\n`
-      );
+    onProgress: ({ queryIndex, outcome }) => {
+      const bucket = buckets[queryIndex];
+      const item = evalSet.evals[queryIndex];
+      if (!bucket || !item) return;
+      bucket.push({ outcome });
+      if (bucket.length < runCount) return;
+
+      const icons = bucket
+        .map((r) => {
+          if (r.outcome === 'error') return '!';
+          return (r.outcome === 'trigger') === item.should_trigger ? '✓' : '✗';
+        })
+        .join('');
+
+      const decided = bucket.filter((r) => r.outcome !== 'error').length;
+      const successes = bucket.filter(
+        (r) =>
+          r.outcome !== 'error' &&
+          (r.outcome === 'trigger') === item.should_trigger
+      ).length;
+      const rate =
+        decided > 0 ? `${Math.round((successes / decided) * 100)}%` : '—';
+
+      let verdict: string;
+      if (decided === 0) {
+        verdict = 'ERROR';
+      } else {
+        const triggers = bucket.filter((r) => r.outcome === 'trigger').length;
+        const triggerRate = triggers / decided;
+        const queryPasses = item.should_trigger
+          ? triggerRate >= args.threshold
+          : triggerRate < args.threshold;
+        verdict = queryPasses ? 'pass' : 'FAIL';
+      }
+
+      const evalCol = `${queryIndex + 1}`.padStart(evalColWidth);
+      const runsCol = icons.padStart(runsColWidth);
+      const rateCol = rate.padStart(rateColWidth);
+      const verdictCol = verdict.padEnd(verdictColWidth);
+      const prefix = `  ${evalCol}  ${runsCol}  ${rateCol}  ${verdictCol}  `;
+      const flat = item.query.replace(/\s+/g, ' ');
+      const maxCols = process.stderr.columns ?? 200;
+      const room = Math.max(20, maxCols - prefix.length - 1);
+      const snippet = flat.length > room ? flat.slice(0, room - 1) + '…' : flat;
+      lines[queryIndex] = `${prefix}${snippet}\n`;
+      flushOrdered();
     },
   });
 
@@ -298,8 +341,12 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
   const { summary } = output;
+  const passPct =
+    summary.total > 0
+      ? `${((summary.passed / summary.total) * 100).toFixed(0)}%`
+      : '—';
   process.stderr.write(
-    `\nDone in ${elapsed}s. ${summary.passed}/${summary.total} passed ` +
+    `\nDone in ${elapsed}s. ${summary.passed}/${summary.total} (${passPct}) passed ` +
       `(precision=${(summary.precision * 100).toFixed(0)}% recall=${(
         summary.recall * 100
       ).toFixed(0)}% ` +
@@ -452,9 +499,7 @@ async function initCommand(args: InitArgs): Promise<void> {
     `Drafting eval set for skill at ${skillPath} (${args.positive} positive + ${
       args.negative
     } negative${
-      args['with-expectations']
-        ? `, +${args['expectations-per-positive']} expectations/case`
-        : ''
+      args.expectations > 0 ? `, +${args.expectations} expectations/case` : ''
     })…\n`
   );
 
@@ -465,8 +510,7 @@ async function initCommand(args: InitArgs): Promise<void> {
       force: args.force,
       positiveCount: args.positive,
       negativeCount: args.negative,
-      withExpectations: args['with-expectations'],
-      expectationsPerPositive: args['expectations-per-positive'],
+      expectationsPerPositive: args.expectations,
       model: args.model,
       claudeBin,
       timeoutMs: args.timeout * 1000,
@@ -478,7 +522,7 @@ async function initCommand(args: InitArgs): Promise<void> {
     );
     process.stderr.write(
       `\nReview, refine the queries / expectations, then commit the file and run:\n` +
-        `  pnpm exec skill-eval trigger --skill-path ${skillPath}\n`
+        `  ${execHint('skill-eval', `trigger --skill-path ${skillPath}`)}\n`
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

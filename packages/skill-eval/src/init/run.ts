@@ -18,7 +18,10 @@ export interface InitOptions {
   force?: boolean;
   positiveCount?: number;
   negativeCount?: number;
-  withExpectations?: boolean;
+  /**
+   * Number of expectations to draft per positive case. 0 (default) disables
+   * expectation drafting — produces a trigger-only eval set.
+   */
   expectationsPerPositive?: number;
   model?: string;
   claudeBin?: string;
@@ -71,8 +74,7 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
     force = false,
     positiveCount = 8,
     negativeCount = 5,
-    withExpectations = false,
-    expectationsPerPositive = 3,
+    expectationsPerPositive = 0,
     model = DEFAULT_MODEL,
     claudeBin = 'claude',
     timeoutMs = DEFAULT_TIMEOUT_MS,
@@ -96,7 +98,6 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
     skillContent,
     positiveCount,
     negativeCount,
-    withExpectations,
     expectationsPerPositive,
   });
 
