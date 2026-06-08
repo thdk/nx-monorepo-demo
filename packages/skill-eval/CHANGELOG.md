@@ -1,3 +1,15 @@
+## 0.2.7 (2026-06-08)
+
+### New Features
+
+- make skill-eval public on npm registry ([5168780](https://github.com/thdk/nx-monorepo-demo/commit/5168780))
+- **skill-eval:** make skill-path param optional ([b92067d](https://github.com/thdk/nx-monorepo-demo/commit/b92067d))
+- publish to npm registry ([dd2bb93](https://github.com/thdk/nx-monorepo-demo/commit/dd2bb93))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.6 (2026-06-08)
 
 ### New Features
