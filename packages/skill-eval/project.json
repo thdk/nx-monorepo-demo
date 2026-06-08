@@ -2,7 +2,8 @@
   "targets": {
     "nx-release-publish": {
       "options": {
-        "registry": "https://registry.npmjs.org/"
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
       }
     }
   }
