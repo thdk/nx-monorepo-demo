@@ -55,13 +55,14 @@ pnpm exec skill-eval output \
   --grader-model claude-sonnet-4-6 \
   --runs 1 \
   --concurrency 3 \
-  --baseline \
   --out ./out/
 ```
 
 Same `--eval-set` default applies — `<skill-path>/evals.json` unless overridden.
 
 No extra credentials needed beyond your existing `claude /login` — by default the grader also goes through `claude -p` and reuses your local Claude Code session.
+
+`output` runs each eval twice by default: once `with_skill` and once `without_skill` (baseline). The footer shows pass-rate, exec time, and tokens for both, plus the delta — that's the comparison that tells you whether the skill is actually pulling its weight. Pass `--no-baseline` to skip the baseline (cuts run time and tokens in half) when you just need to confirm the skill still works.
 
 Per-eval artifacts (`transcript.jsonl`, `transcript.md`, `timing.json`, `grading.json`, any output files the model wrote) land under `<out>/<eval-name>/{with_skill,without_skill}/run-N/`. The aggregated `benchmark.json` + JUnit + markdown summary live at the root of `<out>`.
 

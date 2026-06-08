@@ -57,6 +57,8 @@ export interface OutputProgressEvent {
     | 'skipped';
   durationMs?: number;
   passRate?: number;
+  /** Populated on `execute-end` — total tokens consumed by the executor run. */
+  tokens?: number;
   error?: string;
 }
 
@@ -150,6 +152,7 @@ export async function runOutputSet(
               runNumber,
               phase: 'execute-end',
               durationMs: Date.now() - execStarted,
+              tokens: execution.usage.total_tokens,
               error: execution.ok ? undefined : execution.error,
             });
 

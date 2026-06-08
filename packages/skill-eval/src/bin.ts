@@ -17,6 +17,7 @@ import { runSet } from './trigger/run-set.js';
 import { runOutputSet } from './output/run-set.js';
 import { initEvalSet } from './init/run.js';
 import { execHint } from './util/package-manager.js';
+import { createTableRenderer, type TableRow } from './util/live-table.js';
 
 const triggerOptions = {
   'eval-set': {
@@ -110,8 +111,9 @@ const outputOptions = {
   },
   baseline: {
     type: 'boolean',
-    default: false,
-    describe: 'Also run a without_skill baseline for delta comparison',
+    default: true,
+    describe:
+      'Run a without_skill baseline alongside with_skill so you can see whether the skill is worth its token cost. Pass --no-baseline to skip (cuts run time and tokens in half, but you lose the comparison).',
   },
   'executor-timeout': {
     type: 'number',
@@ -250,8 +252,9 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
       `(concurrency=${args.concurrency})\n`
   );
 
-  // One row per query (not per run). Each run lights up as an icon in the
-  // `runs` column:  ✓ = expected outcome,  ✗ = unexpected,  ! = errored.
+  // One row per query (not per run). Each run lights up an icon in the
+  // `runs` column:  ✓ = expected outcome,  ✗ = unexpected,  ! = errored,
+  // · = not yet run. Re-rendered after every progress event.
   const evalColWidth = Math.max('eval'.length, String(evalCount).length);
   const runsColWidth = Math.max('runs'.length, runCount);
   const rateColWidth = 4; // "100%"
@@ -267,14 +270,65 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
 
   type RunBucket = { outcome: 'trigger' | 'miss' | 'error' };
   const buckets: RunBucket[][] = evalSet.evals.map(() => []);
-  const lines: (string | null)[] = evalSet.evals.map(() => null);
-  let nextToPrint = 0;
-  const flushOrdered = (): void => {
-    while (nextToPrint < lines.length && lines[nextToPrint] !== null) {
-      process.stderr.write(lines[nextToPrint] as string);
-      nextToPrint++;
+  const renderer = createTableRenderer();
+
+  const buildRow = (queryIndex: number): TableRow => {
+    const item = evalSet.evals[queryIndex];
+    const bucket = buckets[queryIndex] ?? [];
+    if (!item) return { content: '', final: true };
+    const isFinal = bucket.length === runCount;
+
+    const completedIcons = bucket
+      .map((r) => {
+        if (r.outcome === 'error') return '!';
+        return (r.outcome === 'trigger') === item.should_trigger ? '✓' : '✗';
+      })
+      .join('');
+    const icons = completedIcons + '·'.repeat(runCount - bucket.length);
+
+    let rate: string;
+    let verdict: string;
+    if (!isFinal) {
+      rate = '—';
+      verdict = '…';
+    } else {
+      const decided = bucket.filter((r) => r.outcome !== 'error').length;
+      const successes = bucket.filter(
+        (r) =>
+          r.outcome !== 'error' &&
+          (r.outcome === 'trigger') === item.should_trigger
+      ).length;
+      rate = decided > 0 ? `${Math.round((successes / decided) * 100)}%` : '—';
+      if (decided === 0) {
+        verdict = 'ERROR';
+      } else {
+        const triggers = bucket.filter((r) => r.outcome === 'trigger').length;
+        const triggerRate = triggers / decided;
+        const queryPasses = item.should_trigger
+          ? triggerRate >= args.threshold
+          : triggerRate < args.threshold;
+        verdict = queryPasses ? 'pass' : 'FAIL';
+      }
     }
+
+    const evalCol = `${queryIndex + 1}`.padStart(evalColWidth);
+    const runsCol = icons.padStart(runsColWidth);
+    const rateCol = rate.padStart(rateColWidth);
+    const verdictCol = verdict.padEnd(verdictColWidth);
+    const prefix = `  ${evalCol}  ${runsCol}  ${rateCol}  ${verdictCol}  `;
+    const flat = item.query.replace(/\s+/g, ' ');
+    const maxCols = process.stderr.columns ?? 200;
+    const room = Math.max(20, maxCols - prefix.length - 1);
+    const snippet = flat.length > room ? flat.slice(0, room - 1) + '…' : flat;
+    return { content: `${prefix}${snippet}`, final: isFinal };
   };
+
+  const renderAll = (): void => {
+    renderer.render(evalSet.evals.map((_, i) => buildRow(i)));
+  };
+
+  // Initial frame — all rows pending.
+  renderAll();
 
   const startedAt = Date.now();
   const output = await runSet({
@@ -288,52 +342,12 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
     claudeBin,
     onProgress: ({ queryIndex, outcome }) => {
       const bucket = buckets[queryIndex];
-      const item = evalSet.evals[queryIndex];
-      if (!bucket || !item) return;
+      if (!bucket) return;
       bucket.push({ outcome });
-      if (bucket.length < runCount) return;
-
-      const icons = bucket
-        .map((r) => {
-          if (r.outcome === 'error') return '!';
-          return (r.outcome === 'trigger') === item.should_trigger ? '✓' : '✗';
-        })
-        .join('');
-
-      const decided = bucket.filter((r) => r.outcome !== 'error').length;
-      const successes = bucket.filter(
-        (r) =>
-          r.outcome !== 'error' &&
-          (r.outcome === 'trigger') === item.should_trigger
-      ).length;
-      const rate =
-        decided > 0 ? `${Math.round((successes / decided) * 100)}%` : '—';
-
-      let verdict: string;
-      if (decided === 0) {
-        verdict = 'ERROR';
-      } else {
-        const triggers = bucket.filter((r) => r.outcome === 'trigger').length;
-        const triggerRate = triggers / decided;
-        const queryPasses = item.should_trigger
-          ? triggerRate >= args.threshold
-          : triggerRate < args.threshold;
-        verdict = queryPasses ? 'pass' : 'FAIL';
-      }
-
-      const evalCol = `${queryIndex + 1}`.padStart(evalColWidth);
-      const runsCol = icons.padStart(runsColWidth);
-      const rateCol = rate.padStart(rateColWidth);
-      const verdictCol = verdict.padEnd(verdictColWidth);
-      const prefix = `  ${evalCol}  ${runsCol}  ${rateCol}  ${verdictCol}  `;
-      const flat = item.query.replace(/\s+/g, ' ');
-      const maxCols = process.stderr.columns ?? 200;
-      const room = Math.max(20, maxCols - prefix.length - 1);
-      const snippet = flat.length > room ? flat.slice(0, room - 1) + '…' : flat;
-      lines[queryIndex] = `${prefix}${snippet}\n`;
-      flushOrdered();
+      renderAll();
     },
   });
+  renderer.done();
 
   writeJsonReport(join(outDir, 'results.json'), output);
   writeJunitReport(join(outDir, 'junit.xml'), output);
@@ -360,6 +374,84 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   if (summary.failed > 0 || summary.errored > 0) {
     process.exitCode = 1;
   }
+}
+
+function writeComparisonSummary(
+  benchmark: import('./types.js').OutputBenchmark,
+  stream: NodeJS.WriteStream
+): void {
+  const configs = benchmark.run_summary.configurations;
+  const withSkill = configs['with_skill'];
+  const withoutSkill = configs['without_skill'];
+
+  const fmtPct = (x: number | undefined): string =>
+    x == null ? '—' : `${(x * 100).toFixed(0)}%`;
+  const fmtSec = (x: number | undefined): string =>
+    x == null ? '—' : `${x.toFixed(1)}s`;
+  const fmtTok = (x: number | undefined): string => {
+    if (x == null) return '—';
+    if (x < 1000) return `${Math.round(x)}`;
+    if (x < 10000) return `${(x / 1000).toFixed(1)}k`;
+    return `${Math.round(x / 1000)}k`;
+  };
+
+  if (!withoutSkill) {
+    // No baseline — single-config report.
+    stream.write(
+      `  with_skill: pass=${fmtPct(withSkill?.pass_rate.mean)}  ` +
+        `exec=${fmtSec(withSkill?.time_seconds.mean)}  ` +
+        `tokens=${fmtTok(withSkill?.tokens.mean)}\n` +
+        `  (run with --baseline to see whether the skill is worth its token cost)\n`
+    );
+    return;
+  }
+
+  const passDeltaPp =
+    (withSkill?.pass_rate.mean ?? 0) - (withoutSkill?.pass_rate.mean ?? 0);
+  const tokenDelta =
+    (withSkill?.tokens.mean ?? 0) - (withoutSkill?.tokens.mean ?? 0);
+  const timeDelta =
+    (withSkill?.time_seconds.mean ?? 0) -
+    (withoutSkill?.time_seconds.mean ?? 0);
+
+  const sign = (n: number, fmt: (x: number) => string): string =>
+    `${n > 0 ? '+' : n < 0 ? '−' : '±'}${fmt(Math.abs(n))}`;
+
+  // Aligned 2-col table: with_skill, without_skill, Δ
+  stream.write(
+    `                  with_skill     without_skill  Δ\n` +
+      `  pass_rate       ${fmtPct(withSkill?.pass_rate.mean).padEnd(13)}  ${fmtPct(
+        withoutSkill?.pass_rate.mean
+      ).padEnd(13)}  ${sign(passDeltaPp * 100, (n) => `${n.toFixed(0)}pp`)}\n` +
+      `  exec time       ${fmtSec(withSkill?.time_seconds.mean).padEnd(
+        13
+      )}  ${fmtSec(withoutSkill?.time_seconds.mean).padEnd(13)}  ${sign(
+        timeDelta,
+        (n) => `${n.toFixed(1)}s`
+      )}\n` +
+      `  tokens / run    ${fmtTok(withSkill?.tokens.mean).padEnd(13)}  ${fmtTok(
+        withoutSkill?.tokens.mean
+      ).padEnd(13)}  ${sign(tokenDelta, fmtTok)}\n`
+  );
+
+  // Verdict line — was the skill worth it?
+  const passPp = passDeltaPp * 100;
+  let verdict: string;
+  if (passPp > 0.5) {
+    verdict =
+      `→ Skill helped: +${passPp.toFixed(0)}pp pass rate at ` +
+      `${sign(tokenDelta, fmtTok)} tokens/run.`;
+  } else if (passPp < -0.5) {
+    verdict =
+      `→ Skill hurt: ${passPp.toFixed(0)}pp pass rate, and ` +
+      `${sign(tokenDelta, fmtTok)} tokens/run. Worth investigating.`;
+  } else {
+    verdict =
+      `→ No measurable benefit: pass rate unchanged, ` +
+      `${sign(tokenDelta, fmtTok)} tokens/run for nothing. ` +
+      `Either the skill isn't engaging on these evals, or the baseline already nails them.`;
+  }
+  stream.write(`\n${verdict}\n`);
 }
 
 function assertApiGraderAuth(): void {
@@ -399,9 +491,14 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const raw = JSON.parse(readFileSync(evalSetPath, 'utf-8')) as unknown;
   const evalSet = evalSetSchema.parse(raw);
 
-  const toRun = evalSet.evals.filter(
-    (item) => item.should_trigger && (item.expectations?.length ?? 0) > 0
-  );
+  // Preserve original indices so the eval column matches what's in evals.json
+  // (skipping any items without expectations).
+  const toRun = evalSet.evals
+    .map((item, index) => ({ item, index }))
+    .filter(
+      ({ item }) =>
+        item.should_trigger && (item.expectations?.length ?? 0) > 0
+    );
   if (toRun.length === 0) {
     process.stderr.write(
       'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n'
@@ -411,14 +508,120 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 
   mkdirSync(outDir, { recursive: true });
 
-  const configurations = args.baseline ? 2 : 1;
+  const configs: Array<'with_skill' | 'without_skill'> = args.baseline
+    ? ['with_skill', 'without_skill']
+    : ['with_skill'];
+  const runCount = args.runs;
   process.stderr.write(
-    `Running ${toRun.length} evals × ${configurations} config × ${
-      args.runs
-    } runs = ${
-      toRun.length * configurations * args.runs
+    `Running ${toRun.length} evals × ${configs.length} config × ${runCount} runs = ${
+      toRun.length * configs.length * runCount
     } executions (concurrency=${args.concurrency})\n`
   );
+
+  // ---------------- live table setup ----------------
+  const showConfig = configs.length > 1;
+  const showRun = runCount > 1;
+
+  const evalOrderByIndex = new Map<number, number>();
+  toRun.forEach(({ index }, order) => evalOrderByIndex.set(index, order));
+
+  const displayId = (entry: { item: { id?: number }; index: number }): string =>
+    `${entry.item.id ?? entry.index + 1}`;
+  const displayName = (entry: { item: { name?: string; id?: number }; index: number }): string =>
+    entry.item.name ??
+    (entry.item.id != null ? `eval-${entry.item.id}` : `eval-${entry.index}`);
+
+  const maxIdWidth = Math.max(...toRun.map((e) => displayId(e).length));
+  const evalColWidth = Math.max('eval'.length, maxIdWidth);
+  const NAME_MAX = 40;
+  const nameColWidth = Math.min(
+    NAME_MAX,
+    Math.max('name'.length, ...toRun.map((e) => displayName(e).length))
+  );
+  const configColWidth = 'without_skill'.length;
+  const runColWidth = Math.max('run'.length, `${runCount}/${runCount}`.length);
+  const statusColWidth = 'grade…'.length;
+  const execColWidth = 6; // "999.9s"
+  const tokensColWidth = Math.max('tokens'.length, 6);
+  const gradeColWidth = Math.max('grade'.length, 4);
+
+  type Status = 'wait' | 'exec…' | 'grade…' | 'pass' | 'FAIL' | 'ERROR';
+  interface SlotState {
+    status: Status;
+    execTimeS?: number;
+    tokens?: number;
+    passRate?: number;
+    final: boolean;
+  }
+  const totalSlots = toRun.length * configs.length * runCount;
+  const slots: SlotState[] = Array.from({ length: totalSlots }, () => ({
+    status: 'wait',
+    final: false,
+  }));
+
+  const slotIndex = (evalIndex: number, configuration: 'with_skill' | 'without_skill', runNumber: number): number => {
+    const evalOrder = evalOrderByIndex.get(evalIndex) ?? 0;
+    const configIdx = configs.indexOf(configuration);
+    return evalOrder * configs.length * runCount + configIdx * runCount + (runNumber - 1);
+  };
+
+  const truncate = (s: string, width: number): string =>
+    s.length > width ? `${s.slice(0, width - 1)}…` : s.padEnd(width);
+
+  const formatTokens = (n: number | undefined): string => {
+    if (n == null) return '—';
+    if (n < 1000) return `${n}`;
+    if (n < 10000) return `${(n / 1000).toFixed(1)}k`;
+    return `${Math.round(n / 1000)}k`;
+  };
+
+  // Header
+  const headerCols: string[] = [
+    'eval'.padStart(evalColWidth),
+    'name'.padEnd(nameColWidth),
+  ];
+  if (showConfig) headerCols.push('config'.padEnd(configColWidth));
+  if (showRun) headerCols.push('run'.padStart(runColWidth));
+  headerCols.push('status'.padEnd(statusColWidth));
+  headerCols.push('exec'.padStart(execColWidth));
+  headerCols.push('tokens'.padStart(tokensColWidth));
+  headerCols.push('grade'.padStart(gradeColWidth));
+  process.stderr.write(`  ${headerCols.join('  ')}\n`);
+
+  const renderer = createTableRenderer();
+
+  const buildSlotRow = (slotIdx: number): TableRow => {
+    const evalOrder = Math.floor(slotIdx / (configs.length * runCount));
+    const remainder = slotIdx % (configs.length * runCount);
+    const configIdx = Math.floor(remainder / runCount);
+    const runIdx = remainder % runCount;
+    const entry = toRun[evalOrder];
+    if (!entry) return { content: '', final: true };
+    const state = slots[slotIdx]!;
+
+    const idCol = displayId(entry).padStart(evalColWidth);
+    const nameCol = truncate(displayName(entry), nameColWidth);
+    const cols: string[] = [idCol, nameCol];
+    if (showConfig) cols.push((configs[configIdx] ?? '').padEnd(configColWidth));
+    if (showRun) cols.push(`${runIdx + 1}/${runCount}`.padStart(runColWidth));
+    cols.push(state.status.padEnd(statusColWidth));
+    cols.push(
+      (state.execTimeS != null ? `${state.execTimeS.toFixed(1)}s` : '—').padStart(execColWidth)
+    );
+    cols.push(formatTokens(state.tokens).padStart(tokensColWidth));
+    cols.push(
+      (state.passRate != null ? `${Math.round(state.passRate * 100)}%` : '—').padStart(
+        gradeColWidth
+      )
+    );
+    return { content: `  ${cols.join('  ')}`, final: state.final };
+  };
+
+  const renderAll = (): void => {
+    renderer.render(slots.map((_, i) => buildSlotRow(i)));
+  };
+
+  renderAll();
 
   const startedAt = Date.now();
   const benchmark = await runOutputSet({
@@ -434,48 +637,51 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     executorTimeoutMs: args['executor-timeout'] * 1000,
     claudeBin,
     onProgress: (event) => {
-      const tag =
-        event.phase === 'execute-start'
-          ? 'exec…'
-          : event.phase === 'execute-end'
-          ? event.error
-            ? 'EXEC!'
-            : 'exec✓'
-          : event.phase === 'grade-start'
-          ? 'grade'
-          : event.phase === 'grade-end'
-          ? event.error
-            ? 'GRD!'
-            : `grade=${
-                event.passRate != null
-                  ? (event.passRate * 100).toFixed(0) + '%'
-                  : '?'
-              }`
-          : 'skip';
-      const dur = event.durationMs
-        ? ` ${(event.durationMs / 1000).toFixed(1)}s`
-        : '';
-      const err = event.error ? `  (${event.error.split('\n')[0]})` : '';
-      process.stderr.write(
-        `  [${tag.padEnd(9)}] ${event.evalName}/${event.configuration}/run-${
-          event.runNumber
-        }${dur}${err}\n`
-      );
+      const idx = slotIndex(event.evalIndex, event.configuration, event.runNumber);
+      const state = slots[idx];
+      if (!state) return;
+
+      switch (event.phase) {
+        case 'execute-start':
+          state.status = 'exec…';
+          break;
+        case 'execute-end':
+          if (event.durationMs != null) state.execTimeS = event.durationMs / 1000;
+          if (event.tokens != null) state.tokens = event.tokens;
+          if (event.error) {
+            state.status = 'ERROR';
+            state.final = true;
+          }
+          break;
+        case 'grade-start':
+          state.status = 'grade…';
+          break;
+        case 'grade-end':
+          if (event.error) {
+            state.status = 'ERROR';
+          } else if (event.passRate != null) {
+            state.passRate = event.passRate;
+            state.status = event.passRate >= 1.0 ? 'pass' : 'FAIL';
+          }
+          state.final = true;
+          break;
+        case 'skipped':
+          state.status = 'ERROR';
+          state.final = true;
+          break;
+      }
+      renderAll();
     },
   });
+  renderer.done();
 
   writeJsonReport(join(outDir, 'benchmark.json'), benchmark);
   writeOutputJunitReport(join(outDir, 'junit.xml'), benchmark);
   writeOutputMarkdownReport(join(outDir, 'summary.md'), benchmark);
 
   const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  const withSkill = benchmark.run_summary.configurations['with_skill'];
-  const passRate = withSkill?.pass_rate.mean ?? 0;
-  process.stderr.write(
-    `\nDone in ${elapsed}s. with_skill pass_rate=${(passRate * 100).toFixed(
-      0
-    )}%\n`
-  );
+  process.stderr.write(`\nDone in ${elapsed}s.\n`);
+  writeComparisonSummary(benchmark, process.stderr);
   process.stderr.write(`Artifacts: ${outDir}\n`);
 
   // Exit non-zero if any run had an exec error or any expectation failed.
