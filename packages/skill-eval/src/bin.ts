@@ -115,6 +115,13 @@ const outputOptions = {
     describe:
       'Run a without_skill baseline alongside with_skill so you can see whether the skill is worth its token cost. Pass --no-baseline to skip (cuts run time and tokens in half, but you lose the comparison).',
   },
+  layout: {
+    type: 'string',
+    choices: ['compact', 'dense'] as const,
+    default: 'dense' as 'compact' | 'dense',
+    describe:
+      'Live-table layout: `dense` shows every metric inline (with-grade, exec, tokens × both configs + deltas — needs ~110 columns). `compact` shows only verdict + grade + deltas (~75 columns).',
+  },
   'executor-timeout': {
     type: 'number',
     default: 300,
@@ -519,7 +526,9 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   );
 
   // ---------------- live table setup ----------------
-  const showConfig = configs.length > 1;
+  // One row per (eval, run). Each row reads state from both the with_skill
+  // and (optionally) without_skill slots so the user sees the comparison live.
+  const hasBaseline = configs.length > 1;
   const showRun = runCount > 1;
 
   const evalOrderByIndex = new Map<number, number>();
@@ -527,7 +536,10 @@ async function outputCommand(args: OutputArgs): Promise<void> {
 
   const displayId = (entry: { item: { id?: number }; index: number }): string =>
     `${entry.item.id ?? entry.index + 1}`;
-  const displayName = (entry: { item: { name?: string; id?: number }; index: number }): string =>
+  const displayName = (entry: {
+    item: { name?: string; id?: number };
+    index: number;
+  }): string =>
     entry.item.name ??
     (entry.item.id != null ? `eval-${entry.item.id}` : `eval-${entry.index}`);
 
@@ -538,12 +550,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     NAME_MAX,
     Math.max('name'.length, ...toRun.map((e) => displayName(e).length))
   );
-  const configColWidth = 'without_skill'.length;
   const runColWidth = Math.max('run'.length, `${runCount}/${runCount}`.length);
-  const statusColWidth = 'grade…'.length;
-  const execColWidth = 6; // "999.9s"
-  const tokensColWidth = Math.max('tokens'.length, 6);
-  const gradeColWidth = Math.max('grade'.length, 4);
 
   type Status = 'wait' | 'exec…' | 'grade…' | 'pass' | 'FAIL' | 'ERROR';
   interface SlotState {
@@ -559,66 +566,180 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     final: false,
   }));
 
-  const slotIndex = (evalIndex: number, configuration: 'with_skill' | 'without_skill', runNumber: number): number => {
+  const slotIndex = (
+    evalIndex: number,
+    configuration: 'with_skill' | 'without_skill',
+    runNumber: number
+  ): number => {
     const evalOrder = evalOrderByIndex.get(evalIndex) ?? 0;
     const configIdx = configs.indexOf(configuration);
-    return evalOrder * configs.length * runCount + configIdx * runCount + (runNumber - 1);
+    return (
+      evalOrder * configs.length * runCount +
+      configIdx * runCount +
+      (runNumber - 1)
+    );
   };
+  const slotFor = (evalOrder: number, configIdx: number, runIdx: number): SlotState | undefined =>
+    slots[evalOrder * configs.length * runCount + configIdx * runCount + runIdx];
 
   const truncate = (s: string, width: number): string =>
     s.length > width ? `${s.slice(0, width - 1)}…` : s.padEnd(width);
 
   const formatTokens = (n: number | undefined): string => {
     if (n == null) return '—';
-    if (n < 1000) return `${n}`;
+    if (n < 1000) return `${Math.round(n)}`;
     if (n < 10000) return `${(n / 1000).toFixed(1)}k`;
     return `${Math.round(n / 1000)}k`;
   };
 
-  // Header
+  const formatExec = (s: number | undefined): string =>
+    s == null ? '—' : `${s.toFixed(1)}s`;
+
+  // Compact-mode "verdict + grade" cell: "✓ 100%", "✗  33%", or a status word.
+  const compactCell = (state: SlotState): string => {
+    if (state.status === 'pass' || state.status === 'FAIL') {
+      const pct = state.passRate != null
+        ? `${Math.round(state.passRate * 100).toString().padStart(3)}%`
+        : '  —';
+      return `${state.status === 'pass' ? '✓' : '✗'} ${pct}`;
+    }
+    return state.status; // wait, exec…, grade…, ERROR — left-aligned word
+  };
+
+  // Dense-mode grade cell: status word while pending, then "%"
+  const denseGradeCell = (state: SlotState): string => {
+    if (state.passRate != null) return `${Math.round(state.passRate * 100)}%`;
+    return state.status;
+  };
+
+  // Signed delta string. ±0 when ~zero, — when either side missing.
+  const fmtDelta = (
+    value: number | undefined,
+    epsilon: number,
+    formatter: (n: number) => string
+  ): string => {
+    if (value == null) return '—';
+    if (Math.abs(value) < epsilon) return '±0';
+    return `${value > 0 ? '+' : '−'}${formatter(Math.abs(value))}`;
+  };
+
+  // ---------- column widths per layout ----------
+  // Compact: verdict cell holds "✓ 100%" (6), "grade…" (6), "ERROR" (5).
+  const compactCellWidth = 6;
+  const compactDeltaGradeWidth = 6; // "+100pp"
+  const compactDeltaTokWidth = 5; // "+1.2k"
+
+  // Dense: w-grade/b-grade holds "grade…" (6) or "100%" (4). Header is "w-grade" (7).
+  const denseGradeWidth = Math.max('w-grade'.length, 'grade…'.length);
+  const denseExecWidth = Math.max('w-exec'.length, 6);
+  const denseTokWidth = Math.max('w-tok'.length, 5);
+
+  // ---------- header ----------
   const headerCols: string[] = [
     'eval'.padStart(evalColWidth),
     'name'.padEnd(nameColWidth),
   ];
-  if (showConfig) headerCols.push('config'.padEnd(configColWidth));
   if (showRun) headerCols.push('run'.padStart(runColWidth));
-  headerCols.push('status'.padEnd(statusColWidth));
-  headerCols.push('exec'.padStart(execColWidth));
-  headerCols.push('tokens'.padStart(tokensColWidth));
-  headerCols.push('grade'.padStart(gradeColWidth));
+
+  if (args.layout === 'compact') {
+    headerCols.push('with'.padEnd(compactCellWidth));
+    if (hasBaseline) {
+      headerCols.push('base'.padEnd(compactCellWidth));
+      headerCols.push('Δgrade'.padStart(compactDeltaGradeWidth));
+      headerCols.push('Δtok'.padStart(compactDeltaTokWidth));
+    }
+  } else {
+    // dense
+    headerCols.push('w-grade'.padStart(denseGradeWidth));
+    headerCols.push('w-exec'.padStart(denseExecWidth));
+    headerCols.push('w-tok'.padStart(denseTokWidth));
+    if (hasBaseline) {
+      headerCols.push('b-grade'.padStart(denseGradeWidth));
+      headerCols.push('b-exec'.padStart(denseExecWidth));
+      headerCols.push('b-tok'.padStart(denseTokWidth));
+      headerCols.push('Δgrade'.padStart(compactDeltaGradeWidth));
+      headerCols.push('Δtok'.padStart(compactDeltaTokWidth));
+    }
+  }
   process.stderr.write(`  ${headerCols.join('  ')}\n`);
 
   const renderer = createTableRenderer();
 
-  const buildSlotRow = (slotIdx: number): TableRow => {
-    const evalOrder = Math.floor(slotIdx / (configs.length * runCount));
-    const remainder = slotIdx % (configs.length * runCount);
-    const configIdx = Math.floor(remainder / runCount);
-    const runIdx = remainder % runCount;
+  const buildRow = (rowIdx: number): TableRow => {
+    const evalOrder = Math.floor(rowIdx / runCount);
+    const runIdx = rowIdx % runCount;
     const entry = toRun[evalOrder];
     if (!entry) return { content: '', final: true };
-    const state = slots[slotIdx]!;
+    const withState = slotFor(evalOrder, 0, runIdx);
+    const baseState = hasBaseline ? slotFor(evalOrder, 1, runIdx) : undefined;
+    if (!withState) return { content: '', final: true };
 
-    const idCol = displayId(entry).padStart(evalColWidth);
-    const nameCol = truncate(displayName(entry), nameColWidth);
-    const cols: string[] = [idCol, nameCol];
-    if (showConfig) cols.push((configs[configIdx] ?? '').padEnd(configColWidth));
+    const isFinal = withState.final && (baseState?.final ?? true);
+
+    const cols: string[] = [
+      displayId(entry).padStart(evalColWidth),
+      truncate(displayName(entry), nameColWidth),
+    ];
     if (showRun) cols.push(`${runIdx + 1}/${runCount}`.padStart(runColWidth));
-    cols.push(state.status.padEnd(statusColWidth));
-    cols.push(
-      (state.execTimeS != null ? `${state.execTimeS.toFixed(1)}s` : '—').padStart(execColWidth)
-    );
-    cols.push(formatTokens(state.tokens).padStart(tokensColWidth));
-    cols.push(
-      (state.passRate != null ? `${Math.round(state.passRate * 100)}%` : '—').padStart(
-        gradeColWidth
-      )
-    );
-    return { content: `  ${cols.join('  ')}`, final: state.final };
+
+    if (args.layout === 'compact') {
+      cols.push(compactCell(withState).padEnd(compactCellWidth));
+      if (baseState) {
+        cols.push(compactCell(baseState).padEnd(compactCellWidth));
+        // Deltas only meaningful when both sides have graded; otherwise '—'.
+        const deltaGrade =
+          withState.passRate != null && baseState.passRate != null
+            ? (withState.passRate - baseState.passRate) * 100
+            : undefined;
+        cols.push(
+          fmtDelta(deltaGrade, 0.5, (n) => `${n.toFixed(0)}pp`).padStart(
+            compactDeltaGradeWidth
+          )
+        );
+        const deltaTok =
+          withState.tokens != null && baseState.tokens != null
+            ? withState.tokens - baseState.tokens
+            : undefined;
+        cols.push(
+          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth)
+        );
+      }
+    } else {
+      // dense
+      cols.push(denseGradeCell(withState).padStart(denseGradeWidth));
+      cols.push(formatExec(withState.execTimeS).padStart(denseExecWidth));
+      cols.push(formatTokens(withState.tokens).padStart(denseTokWidth));
+      if (baseState) {
+        cols.push(denseGradeCell(baseState).padStart(denseGradeWidth));
+        cols.push(formatExec(baseState.execTimeS).padStart(denseExecWidth));
+        cols.push(formatTokens(baseState.tokens).padStart(denseTokWidth));
+        const deltaGrade =
+          withState.passRate != null && baseState.passRate != null
+            ? (withState.passRate - baseState.passRate) * 100
+            : undefined;
+        cols.push(
+          fmtDelta(deltaGrade, 0.5, (n) => `${n.toFixed(0)}pp`).padStart(
+            compactDeltaGradeWidth
+          )
+        );
+        const deltaTok =
+          withState.tokens != null && baseState.tokens != null
+            ? withState.tokens - baseState.tokens
+            : undefined;
+        cols.push(
+          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth)
+        );
+      }
+    }
+
+    return { content: `  ${cols.join('  ')}`, final: isFinal };
   };
 
+  const rowCount = toRun.length * runCount;
   const renderAll = (): void => {
-    renderer.render(slots.map((_, i) => buildSlotRow(i)));
+    const rows: TableRow[] = [];
+    for (let i = 0; i < rowCount; i++) rows.push(buildRow(i));
+    renderer.render(rows);
   };
 
   renderAll();
