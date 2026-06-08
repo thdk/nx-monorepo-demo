@@ -1,3 +1,13 @@
+## 0.2.4 (2026-06-08)
+
+### New Features
+
+- **skill-eval:** update trigger command ([7506e7f](https://github.com/thdk/nx-monorepo-demo/commit/7506e7f))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.3 (2026-06-07)
 
 This was a version bump only for @thdk/skill-eval to align it with other projects, there were no code changes.
