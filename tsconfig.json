@@ -4,52 +4,52 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/app-1"
+      "path": "./apps/nx-demo/app-1"
     },
     {
-      "path": "./scripts"
+      "path": "./apps/nx-demo/app-2"
     },
     {
-      "path": "./packages/lib-a"
+      "path": "./apps/nx-demo/node-fastify-tsc"
     },
     {
-      "path": "./packages/lib-b"
+      "path": "./apps/nx-demo/node-nest-webpack"
     },
     {
-      "path": "./apps/react-app-1"
+      "path": "./apps/nx-demo/node-tsc"
     },
     {
-      "path": "./packages/lib-c"
+      "path": "./apps/nx-demo/react-app-1"
     },
     {
-      "path": "./tools/nx-terraform"
+      "path": "./apps/nx-demo/react-router-app-1"
     },
     {
-      "path": "./tools/nx-pnpm-deploy"
+      "path": "./apps/nx-demo/react-router-app-1-e2e"
     },
     {
-      "path": "./apps/app-2"
+      "path": "./packages/nx-demo/lib-a"
     },
     {
-      "path": "./apps/node-nest-webpack"
+      "path": "./packages/nx-demo/lib-b"
     },
     {
-      "path": "./apps/react-router-app-1-e2e"
+      "path": "./packages/nx-demo/lib-c"
     },
     {
-      "path": "./apps/react-router-app-1"
+      "path": "./packages/nx-demo/nest-lib-a"
     },
     {
-      "path": "./apps/node-fastify-tsc"
+      "path": "./packages/nx-plugins/nx-terraform"
     },
     {
-      "path": "./apps/node-tsc"
-    },
-    {
-      "path": "./packages/nest-lib-a"
+      "path": "./packages/nx-plugins/nx-pnpm-deploy"
     },
     {
       "path": "./packages/skill-eval"
+    },
+    {
+      "path": "./scripts"
     }
   ]
 }

@@ -1,0 +1,60 @@
+{
+  "name": "@thdk/nx-pnpm-deploy",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "development": "./src/plugins/plugin.ts",
+      "default": "./dist/plugins/plugin.js"
+    },
+    "./plugin": {
+      "development": "./src/plugins/plugin.ts",
+      "default": "./dist/plugins/plugin.js"
+    }
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "executor": "@nx/js:tsc",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "{projectRoot}/dist",
+          "main": "{projectRoot}/src/index.ts",
+          "rootDir": "{projectRoot}/src",
+          "tsConfig": "{projectRoot}/tsconfig.lib.json",
+          "generatePackageJson": false,
+          "assets": [
+            {
+              "input": "{projectRoot}/src",
+              "glob": "**/!(*.ts)",
+              "output": "."
+            },
+            {
+              "input": "{projectRoot}/src",
+              "glob": "**/*.d.ts",
+              "output": "."
+            }
+          ]
+        }
+      }
+    },
+    "tags": [
+      "scope:nx-plugins"
+    ]
+  },
+  "dependencies": {
+    "@nx/devkit": "23.0.0-beta.22",
+    "nx": "23.0.0-beta.22",
+    "tslib": "2.8.1"
+  },
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo"
+  ]
+}

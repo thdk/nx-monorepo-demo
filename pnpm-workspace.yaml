@@ -6,10 +6,9 @@ verifyDepsBeforeRun: install
 injectWorkspacePackages: true
 
 packages:
-  - 'libs/**'
+  - 'apps/**'
   - 'packages/**'
-  - 'apps/*'
-  - 'tools/*'
+  - 'tools/**'
   - 'scripts/*'
 
 allowBuilds:

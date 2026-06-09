@@ -1,0 +1,80 @@
+{
+  "name": "@thdk/node-nest-webpack",
+  "version": "0.3.0",
+  "private": true,
+  "nx": {
+    "name": "node-nest-webpack",
+    "tags": [
+      "deployable:docker",
+      "scope:nx-demo"
+    ],
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "--node-env=production"
+          ],
+          "cwd": "{projectRoot}"
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "--node-env=development"
+            ]
+          }
+        }
+      },
+      "prune-lockfile": {
+        "options": {
+          "buildTarget": "build",
+          "outputPath": "{projectRoot}/dist"
+        }
+      },
+      "copy-workspace-modules": {},
+      "prune": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "prune-lockfile",
+          "copy-workspace-modules"
+        ],
+        "outputs": [
+          "{projectRoot}/dist/pnpm-workspace.yaml"
+        ],
+        "options": {
+          "command": "tsx ./scripts/bin/write-dist-pnpm-workspace.ts {projectRoot}/dist"
+        }
+      },
+      "serve": {
+        "continuous": true,
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "node-nest-webpack:build",
+          "runBuildTargetDependencies": false
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "node-nest-webpack:build:development"
+          },
+          "production": {
+            "buildTarget": "node-nest-webpack:build:production"
+          }
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@nestjs/common": "11.0.0",
+    "@nestjs/core": "11.0.0",
+    "@nestjs/platform-fastify": "^11.1.24",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "11.0.0"
+  }
+}

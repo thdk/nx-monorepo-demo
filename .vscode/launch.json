@@ -15,7 +15,7 @@
       "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
       "outFiles": [
-        "${workspaceFolder}/apps/app-3/dist/**/*.(m|c|)js",
+        "${workspaceFolder}/apps/nx-demo/node-nest-webpack/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }

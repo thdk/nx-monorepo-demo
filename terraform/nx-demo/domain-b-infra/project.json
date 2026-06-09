@@ -1,0 +1,6 @@
+{
+  "name": "domain-b-infra",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["bootstrap-infra", "node-nest-webpack"],
+  "tags": ["scope:nx-demo"]
+}

@@ -1,6 +1,19 @@
 - Always use nx targets to run terraform commands
 - always use infra as code if the resource are managed in terraform instead of suggesting to use the native cli to make changes
 
+## Folder layout
+
+This workspace groups projects by domain. New projects must land in the right scope folder:
+
+- `apps/nx-demo/<app>` — apps that exist purely to showcase Nx (Fastify/Nest/React/etc. permutations)
+- `packages/nx-demo/<lib>` — libraries that exist purely to showcase Nx (lib-a/b/c, nest-lib-a)
+- `packages/nx-plugins/<plugin>` — custom Nx plugins consumed by this workspace (real, not demo)
+- `packages/skill-eval/` — real product package; flat at `packages/<name>/` when it's the only thing in its scope
+- `terraform/nx-demo/<project>` — IaC scoped to the demo (incl. its `bootstrap-infra` for the demo's GCP project); a new domain bringing its own GCP project would go in `terraform/<new-scope>/`
+- `tools/` — workspace-internal-only tooling (never published)
+
+Tag each project with `scope:<domain>` (e.g. `scope:nx-demo`, `scope:nx-plugins`, `scope:skill-eval`) and let folder location and tags agree. Cross-scope imports should be restricted via `@nx/enforce-module-boundaries`.
+
 <!-- nx configuration start-->
 <!-- Leave the start & end comments to automatically receive updates. -->
 

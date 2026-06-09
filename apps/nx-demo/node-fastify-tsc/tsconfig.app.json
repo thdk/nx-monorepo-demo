@@ -1,0 +1,33 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "emitDeclarationOnly": false,
+    "declarationDir": "out-tsc"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "out-tsc",
+    "dist",
+    "jest.config.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "eslint.config.js",
+    "eslint.config.cjs",
+    "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../../packages/nx-demo/lib-c/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../packages/nx-demo/lib-b/tsconfig.lib.json"
+    },
+    {
+      "path": "../../../packages/nx-demo/lib-a/tsconfig.lib.json"
+    }
+  ]
+}
