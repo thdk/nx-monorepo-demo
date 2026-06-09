@@ -26,6 +26,6 @@ COPY ./dist .
 
 # Install offline from the cached store
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --prod --offline --frozen-lockfile
+    pnpm install --prod --offline --frozen-lockfile --config.inject-workspace-packages=true
 
 CMD [ "node", "main.js" ]
