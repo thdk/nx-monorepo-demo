@@ -25,6 +25,9 @@
       "path": "./tools/nx-terraform"
     },
     {
+      "path": "./tools/nx-pnpm-deploy"
+    },
+    {
       "path": "./apps/app-2"
     },
     {

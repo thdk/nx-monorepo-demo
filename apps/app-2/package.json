@@ -2,6 +2,7 @@
   "name": "@thdk/app-2",
   "version": "0.4.0",
   "private": true,
+  "main": "dist/main.js",
   "nx": {
     "name": "app-2",
     "tags": [
@@ -69,10 +70,7 @@
         "options": {
           "passWithNoTests": true
         }
-      },
-      "prune-lockfile": {},
-      "copy-workspace-modules": {},
-      "prune": {}
+      }
     }
   },
   "dependencies": {
@@ -83,5 +81,9 @@
     "fastify": "5.2.1",
     "fastify-plugin": "5.0.1",
     "tslib": "2.8.1"
-  }
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ]
 }

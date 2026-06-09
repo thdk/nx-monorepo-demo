@@ -10,6 +10,7 @@
 # compiled output
 dist
 tmp
+out
 out-tsc
 
 # dependencies
@@ -64,9 +65,10 @@ gha-creds-*.json
 
 .nx/polygraph
 .nx/self-healing
-.claude/memory/
 
 .skill-eval
+
+.claude/memory/
 
 .nx/migrate-runs
 .claude/worktrees

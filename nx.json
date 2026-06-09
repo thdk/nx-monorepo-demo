@@ -94,6 +94,12 @@
       "plugin": "@thdk/nx-terraform/plugin"
     },
     {
+      "plugin": "@thdk/nx-pnpm-deploy/plugin",
+      "options": {
+        "exclude": ["node-nest-webpack", "node-fastify-tsc"]
+      }
+    },
+    {
       "plugin": "@nx/docker",
       "options": {
         "buildTarget": {
@@ -176,15 +182,6 @@
       "executor": "@nx/js:copy-workspace-modules",
       "options": {
         "buildTarget": "build"
-      }
-    },
-    {
-      "target": "prune",
-      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
-      "executor": "nx:run-commands",
-      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
-      "options": {
-        "command": "tsx ./scripts/bin/write-dist-pnpm-workspace.ts {projectRoot}/dist"
       }
     }
   ],

@@ -1,6 +1,7 @@
 # Ignore everything
 *
 
-# Except the dist folder
-!dist/
-!dist/**
+# Except the out folder produced by `pnpm deploy` via the
+# @thdk/nx-pnpm-deploy plugin
+!out/
+!out/**
