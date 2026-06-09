@@ -9,6 +9,17 @@ const config = {
       dependencyTypes: ['prod', 'dev', 'peer'],
       pinVersion: 'workspace:*',
     },
+    {
+      label:
+        '@nx/* packages are only allowed in root, @thdk/nx-terraform, and @thdk/nx-pnpm-deploy',
+      dependencies: ['@nx/**', 'nx'],
+      packages: [
+        '!@thdk/source',
+        '!@thdk/nx-terraform',
+        '!@thdk/nx-pnpm-deploy',
+      ],
+      isBanned: true,
+    },
   ],
   semverGroups: [
     {
