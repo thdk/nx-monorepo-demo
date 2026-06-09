@@ -28,7 +28,7 @@
       "path": "./apps/app-2"
     },
     {
-      "path": "./apps/app-3"
+      "path": "./apps/node-nest-webpack"
     },
     {
       "path": "./apps/react-router-app-1-e2e"

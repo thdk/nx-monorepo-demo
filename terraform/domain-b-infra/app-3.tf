@@ -1,22 +1,22 @@
-module "app_3_git_tag" {
+module "node_nest_webpack_git_tag" {
   source            = "../modules/data-git-tag"
-  tag_pattern       = "app-3@*"
+  tag_pattern       = "node-nest-webpack@*"
   versioning_scheme = "calendar"
 }
 
 locals {
-  app_3_service_name         = "app-3"
-  app_3_version_from_git_tag = module.app_3_git_tag.version
-  app_3_version              = coalesce(var.app_3_version, local.app_3_version_from_git_tag)
-  app_3_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.app_3_service_name}"
+  node_nest_webpack_service_name         = "node-nest-webpack"
+  node_nest_webpack_version_from_git_tag = module.node_nest_webpack_git_tag.version
+  node_nest_webpack_version              = coalesce(var.node_nest_webpack_version, local.node_nest_webpack_version_from_git_tag)
+  node_nest_webpack_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.node_nest_webpack_service_name}"
 }
 
-module "app_3_service" {
+module "node_nest_webpack_service" {
   source = "../modules/cloud-run-service"
 
-  service_name                     = local.app_3_service_name
+  service_name                     = local.node_nest_webpack_service_name
   location                         = var.google_region
-  image                            = "${local.app_3_image_name}:${local.app_3_version}"
+  image                            = "${local.node_nest_webpack_image_name}:${local.node_nest_webpack_version}"
   container_port                   = 8080
   cpu_limit                        = "250m"
   memory_limit                     = "128Mi"
@@ -26,7 +26,7 @@ module "app_3_service" {
   allow_public_access              = true
 }
 
-output "app_3_url" {
+output "node_nest_webpack_url" {
   description = "The URL of the Cloud Run service"
-  value       = module.app_3_service.service_url
+  value       = module.node_nest_webpack_service.service_url
 }

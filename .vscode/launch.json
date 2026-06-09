@@ -4,9 +4,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug @thdk/app-3 with Nx",
+      "name": "Debug @thdk/node-nest-webpack with Nx",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["exec", "nx", "serve", "@thdk/app-3"],
+      "runtimeArgs": ["exec", "nx", "serve", "@thdk/node-nest-webpack"],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
