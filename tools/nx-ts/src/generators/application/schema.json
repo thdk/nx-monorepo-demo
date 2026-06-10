@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "ThdkNxTsApplication",
+  "title": "Nx TypeScript Application (no bundler)",
+  "description": "Create a TypeScript Node application built with tsc (no bundler). Optional fastify framework and Dockerfile.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The short name of the application (also used as @<scope>/<name>).",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9-_]*$",
+      "$default": { "$source": "argv", "index": 0 },
+      "x-prompt": "What name would you like to use for the app?",
+      "x-priority": "important"
+    },
+    "directory": {
+      "type": "string",
+      "description": "The directory to create the application in. Defaults to apps/<name>."
+    },
+    "scope": {
+      "type": "string",
+      "description": "The npm scope (without the leading @).",
+      "default": "thdk"
+    },
+    "framework": {
+      "type": "string",
+      "enum": ["none", "fastify"],
+      "default": "none",
+      "description": "Pre-wired framework for src/main.ts.",
+      "x-prompt": {
+        "message": "Which framework do you want to use?",
+        "type": "list",
+        "items": [
+          { "value": "none", "label": "None — bare console.log starter" },
+          { "value": "fastify", "label": "Fastify" }
+        ]
+      },
+      "x-priority": "important"
+    },
+    "docker": {
+      "type": "boolean",
+      "default": true,
+      "description": "Add a Dockerfile and tag the project deployable:docker. @nx/docker plugin will infer docker:build."
+    },
+    "dockerStrategy": {
+      "type": "string",
+      "enum": ["pnpm-deploy", "pnpm-fetch"],
+      "default": "pnpm-deploy",
+      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy (single COPY, no install). pnpm-fetch: layered cache via @nx/js:prune-lockfile + workspace_modules + offline pnpm install."
+    },
+    "port": {
+      "type": "number",
+      "default": 3000,
+      "description": "Default port the framework starter listens on."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": [],
+      "description": "Extra project tags (deployable:docker is added automatically when docker is true)."
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "default": false,
+      "x-priority": "internal"
+    }
+  },
+  "required": ["name"]
+}

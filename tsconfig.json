@@ -25,7 +25,7 @@
       "path": "./apps/nx-demo/react-router-app-1"
     },
     {
-      "path": "./apps/nx-demo/react-router-app-1-e2e"
+      "path": "./tools/nx-ts"
     },
     {
       "path": "./packages/nx-demo/lib-a"
@@ -47,6 +47,9 @@
     },
     {
       "path": "./packages/skill-eval"
+    },
+    {
+      "path": "./apps/nx-demo/react-router-app-1-e2e"
     },
     {
       "path": "./scripts"

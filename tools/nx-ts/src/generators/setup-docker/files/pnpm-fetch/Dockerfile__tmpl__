@@ -1,0 +1,30 @@
+# pnpm-fetch strategy: @nx/js:prune-lockfile emits dist/package.json +
+# pnpm-lock.yaml, @nx/js:copy-workspace-modules copies compiled workspace
+# deps into dist/workspace_modules, and the buildkit cache mount keeps the
+# pnpm store warm between builds.
+ARG NODE_VERSION=lts-alpine
+FROM docker.io/node:${NODE_VERSION}
+
+ENV HOST=0.0.0.0
+ENV PORT=<%= port %>
+ARG SERVICE_VERSION
+ENV SERVICE_VERSION=$SERVICE_VERSION
+
+ARG PNPM_VERSION
+RUN corepack prepare pnpm@${PNPM_VERSION} --activate
+RUN corepack enable pnpm
+
+WORKDIR /app
+
+# Copy manifests first so the pnpm fetch layer caches when only source changes.
+COPY ./dist/pnpm-lock.yaml ./dist/package.json ./dist/pnpm-workspace.yaml ./
+
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm fetch --prod
+
+COPY ./dist .
+
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
+    pnpm install --prod --offline --frozen-lockfile --ignore-scripts
+
+CMD [ "node", "main.js" ]

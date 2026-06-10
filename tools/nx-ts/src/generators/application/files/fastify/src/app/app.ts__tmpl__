@@ -1,0 +1,9 @@
+import sensible from '@fastify/sensible';
+import type { FastifyPluginAsync } from 'fastify';
+import fp from 'fastify-plugin';
+
+export const app: FastifyPluginAsync = fp(async (fastify) => {
+  await fastify.register(sensible);
+
+  fastify.get('/', async () => ({ hello: '<%= name %>' }));
+});

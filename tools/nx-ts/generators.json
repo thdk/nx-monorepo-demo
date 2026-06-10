@@ -1,0 +1,16 @@
+{
+  "generators": {
+    "application": {
+      "factory": "./dist/generators/application/application.impl.js",
+      "schema": "./dist/generators/application/schema.json",
+      "aliases": ["app"],
+      "x-type": "application",
+      "description": "Create a TypeScript Node application built with tsc (no bundler). Optional fastify framework and Dockerfile."
+    },
+    "setup-docker": {
+      "factory": "./dist/generators/setup-docker/setup-docker.impl.js",
+      "schema": "./dist/generators/setup-docker/schema.json",
+      "description": "Add a Dockerfile (pnpm-deploy thin or pnpm-fetch layered) to an existing app, tag it deployable:docker."
+    }
+  }
+}

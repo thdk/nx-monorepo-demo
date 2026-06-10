@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "cli": "nx",
+  "$id": "ThdkNxTsSetupDocker",
+  "title": "Add a Dockerfile to a TypeScript app",
+  "description": "Adds a Dockerfile (pnpm-deploy thin or pnpm-fetch layered) and the deployable:docker tag. For pnpm-fetch, also wires the prune target chain and excludes the project from @thdk/nx-pnpm-deploy.",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The Nx project to add a Dockerfile to.",
+      "$default": { "$source": "projectName" },
+      "x-prompt": "Which project would you like to add a Dockerfile to?",
+      "x-priority": "important"
+    },
+    "strategy": {
+      "type": "string",
+      "enum": ["pnpm-deploy", "pnpm-fetch"],
+      "default": "pnpm-deploy",
+      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy. pnpm-fetch: layered cache via prune-lockfile + workspace_modules.",
+      "x-prompt": {
+        "message": "Which Docker build strategy?",
+        "type": "list",
+        "items": [
+          {
+            "value": "pnpm-deploy",
+            "label": "pnpm-deploy — single COPY, no install (uses @thdk/nx-pnpm-deploy)"
+          },
+          {
+            "value": "pnpm-fetch",
+            "label": "pnpm-fetch — layered cache, offline pnpm install (uses @nx/js:prune-lockfile)"
+          }
+        ]
+      }
+    },
+    "port": {
+      "type": "number",
+      "default": 3000,
+      "description": "Default PORT env value baked into the Dockerfile."
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "default": false,
+      "x-priority": "internal"
+    }
+  },
+  "required": ["project"]
+}
