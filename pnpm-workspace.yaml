@@ -6,10 +6,12 @@ verifyDepsBeforeRun: install
 injectWorkspacePackages: true
 
 packages:
-  - 'apps/*/*'
+  - 'apps/**'
   - 'packages/**'
   - 'tools/**'
   - 'scripts/*'
+  - '!apps/**/out'
+  - '!apps/**/dist/**'
 
 allowBuilds:
   '@nestjs/core': false
