@@ -341,51 +341,6 @@ importers:
         specifier: 2.8.1
         version: 2.8.1
 
-  apps/nx-demo/node-fastify-tsc/dist:
-    dependencies:
-      '@fastify/sensible':
-        specifier: 6.0.2
-        version: 6.0.2
-      '@thdk/lib-a':
-        specifier: file:./workspace_modules/@thdk/lib-a
-        version: link:workspace_modules/@thdk/lib-a
-      '@thdk/lib-b':
-        specifier: file:./workspace_modules/@thdk/lib-b
-        version: link:workspace_modules/@thdk/lib-b
-      '@thdk/lib-c':
-        specifier: file:./workspace_modules/@thdk/lib-c
-        version: link:workspace_modules/@thdk/lib-c
-      fastify:
-        specifier: 5.2.1
-        version: 5.2.1
-      fastify-plugin:
-        specifier: 5.0.1
-        version: 5.0.1
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-
-  apps/nx-demo/node-fastify-tsc/dist/workspace_modules/@thdk/lib-a:
-    dependencies:
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-
-  apps/nx-demo/node-fastify-tsc/dist/workspace_modules/@thdk/lib-b:
-    dependencies:
-      nanoid:
-        specifier: 3.3.11
-        version: 3.3.11
-      tslib:
-        specifier: 2.8.1
-        version: 2.8.1
-
-  apps/nx-demo/node-fastify-tsc/dist/workspace_modules/@thdk/lib-c:
-    dependencies:
-      tslib:
-        specifier: ^2.8.1
-        version: 2.8.1
-
   apps/nx-demo/node-nest-webpack:
     dependencies:
       '@nestjs/common':
