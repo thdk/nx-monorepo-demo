@@ -1,3 +1,7 @@
+## 0.20.7 (2026-06-10)
+
+This was a version bump only for @thdk/lib-c to align it with other projects, there were no code changes.
+
 ## 0.20.6 (2026-06-09)
 
 This was a version bump only for @thdk/lib-c to align it with other projects, there were no code changes.
