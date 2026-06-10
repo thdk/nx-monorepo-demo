@@ -8,7 +8,8 @@ locals {
   node_nest_webpack_service_name         = "node-nest-webpack"
   node_nest_webpack_version_from_git_tag = module.node_nest_webpack_git_tag.version
   node_nest_webpack_version              = coalesce(var.node_nest_webpack_version, local.node_nest_webpack_version_from_git_tag)
-  node_nest_webpack_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.node_nest_webpack_service_name}"
+  node_nest_webpack_image_name_prefix    = "apps-nx-demo"
+  node_nest_webpack_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/${local.node_nest_webpack_image_name_prefix}-${local.node_nest_webpack_service_name}"
 }
 
 module "node_nest_webpack_service" {

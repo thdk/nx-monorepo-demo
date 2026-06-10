@@ -8,7 +8,8 @@ locals {
   app_2_service_name         = "app-2"
   app_2_version_from_git_tag = module.app_2_git_tag.version
   app_2_version              = coalesce(var.app_2_version, local.app_2_version_from_git_tag)
-  app_2_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/apps-${local.app_2_service_name}"
+  app_2_image_name_prefix    = "apps-nx-demo"
+  app_2_image_name           = "${var.google_region}-docker.pkg.dev/${data.google_project.current.project_id}/${data.google_artifact_registry_repository.docker_registry.repository_id}/${local.app_2_image_name_prefix}-${local.app_2_service_name}"
 }
 
 module "app_2_service" {
