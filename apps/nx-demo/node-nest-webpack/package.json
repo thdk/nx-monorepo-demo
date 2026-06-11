@@ -74,6 +74,7 @@
     "@nestjs/common": "11.0.0",
     "@nestjs/core": "11.0.0",
     "@nestjs/platform-fastify": "^11.1.24",
+    "fastify": "5.2.1",
     "tslib": "2.8.1"
   },
   "devDependencies": {
