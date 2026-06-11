@@ -17,6 +17,8 @@ const config = {
         '!@thdk/source',
         '!@thdk/nx-terraform',
         '!@thdk/nx-pnpm-deploy',
+        '!@thdk/scripts',
+        '!@thdk/nx-ts',
       ],
       isBanned: true,
     },
