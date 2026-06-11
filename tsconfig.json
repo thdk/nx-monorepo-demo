@@ -53,6 +53,9 @@
     },
     {
       "path": "./scripts"
+    },
+    {
+      "path": "./packages/nx-demo/react-components-css-vite"
     }
   ]
 }

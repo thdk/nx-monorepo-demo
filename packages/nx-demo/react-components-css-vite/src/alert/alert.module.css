@@ -1,0 +1,41 @@
+.alert {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border-left: 4px solid;
+  font-size: 0.875rem;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.body {
+  line-height: 1.5;
+}
+
+.info {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e3a8a;
+}
+
+.success {
+  background: #f0fdf4;
+  border-color: #22c55e;
+  color: #14532d;
+}
+
+.warning {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #78350f;
+}
+
+.error {
+  background: #fef2f2;
+  border-color: #ef4444;
+  color: #7f1d1d;
+}
