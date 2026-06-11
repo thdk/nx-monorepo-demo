@@ -9,18 +9,22 @@
         "executor": "nx:run-commands",
         "options": {
           "commands": [
-            "nx format",
-            "nx syncpack-fix",
-            "nx affected --target lint -- --fix",
-            "nx affected --target build test typecheck terraform-format"
+            "nx format:check",
+            "nx run-many --target build test typecheck terraform-check lint syncpack"
           ],
           "parallel": false
         }
       },
-      "run-affected": {
+      "all:fix": {
         "executor": "nx:run-commands",
         "options": {
-          "command": "nx affected --target build lint test syncpack"
+          "commands": [
+            "nx format",
+            "nx syncpack-fix",
+            "nx run-many --target lint -- --fix",
+            "nx run-many --target build test typecheck terraform-format"
+          ],
+          "parallel": false
         }
       },
       "release-custom": {
