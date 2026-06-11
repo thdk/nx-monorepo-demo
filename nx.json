@@ -12,7 +12,8 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/test-setup.[jt]s",
       "!{projectRoot}/playwright.config.[jt]s",
-      "!{projectRoot}/webpack.config.[jt]s"
+      "!{projectRoot}/webpack.config.[jt]s",
+      "!{projectRoot}/vite.config.mts"
     ],
     "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
@@ -45,7 +46,11 @@
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
-      }
+      },
+      "include": [
+        "apps/nx-demo/node-tsc/**",
+        "apps/nx-demo/node-fastify-tsc/**"
+      ]
     },
     {
       "plugin": "@nx/eslint/plugin",
@@ -198,7 +203,8 @@
       },
       "library": {
         "style": "css",
-        "linter": "eslint"
+        "linter": "eslint",
+        "unitTestRunner": "vitest"
       }
     },
     "@thdk/nx-terraform": {
