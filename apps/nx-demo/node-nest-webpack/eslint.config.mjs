@@ -9,7 +9,12 @@ export default [
         'error',
         {
           runtimeHelpers: ['tslib'],
-          ignoredDependencies: ['@fastify/view', '@fastify/static', 'fastify'],
+          ignoredDependencies: [
+            '@fastify/view',
+            '@fastify/static',
+            'fastify',
+            'fastify-plugin',
+          ],
         },
       ],
     },
