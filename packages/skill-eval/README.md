@@ -46,6 +46,29 @@ pnpm exec skill-eval trigger \
 
 Requires `claude` CLI on `PATH` and a valid `claude /login` session.
 
+### Running a subset (`--filter` / `-f`)
+
+Both `trigger` and `output` accept `--filter` (alias `-f`) to narrow a run to one or more evals — useful when iterating on a single failing query without paying for the whole set.
+
+```bash
+# Run just eval #3 (id, or 1-based position when no id is set).
+pnpm exec skill-eval trigger -f 3
+
+# Repeat the flag or comma-separate to pick several.
+pnpm exec skill-eval trigger -f 1 -f 4
+pnpm exec skill-eval trigger -f 1,4
+
+# Match by `name` (case-insensitive, exact). Useful in output mode where evals are usually named.
+pnpm exec skill-eval output -f flat-route-placement -f nested-route
+```
+
+Matching is exact and predictable:
+
+- A purely numeric token matches `item.id`, falling back to the 1-based position shown in the live table when no `id` is set.
+- Any other token matches `item.name` (case-insensitive). No substring / regex magic — copy what the table shows.
+
+Unmatched tokens print a warning and the run continues with whatever did match. If nothing matches at all, the command exits with code 2 so a typo in CI doesn't quietly skip the whole eval set.
+
 ## Output eval quick start
 
 ```bash

@@ -8,6 +8,7 @@ import yargs, { type InferredOptionTypes } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { evalSetSchema } from './schemas.js';
+import type { EvalSet } from './types.js';
 import { writeJsonReport } from './reporters/json.js';
 import { writeJunitReport } from './reporters/junit.js';
 import { writeMarkdownReport } from './reporters/markdown.js';
@@ -19,6 +20,7 @@ import { initEvalSet } from './init/run.js';
 import { execHint } from './util/package-manager.js';
 import { createTableRenderer, type TableRow } from './util/live-table.js';
 import { findSkillFile } from './util/parse-skill-md.js';
+import { selectEvals, type EvalSelection } from './util/select-evals.js';
 
 const triggerOptions = {
   'eval-set': {
@@ -55,6 +57,17 @@ const triggerOptions = {
     type: 'number',
     default: 30,
     describe: 'Per-query timeout in seconds',
+  },
+  filter: {
+    type: 'string',
+    array: true,
+    alias: 'f',
+    default: [] as string[],
+    describe:
+      'Run only matching evals. Repeatable or comma-separated (-f 1 -f 3, or -f 1,3). ' +
+      'Numeric values match the eval `id` (or 1-based position when `id` is absent); ' +
+      'string values match `name` (case-insensitive, exact). Unmatched filters print a ' +
+      'warning; the command exits 2 if no eval matches.',
   },
   out: {
     type: 'string',
@@ -127,6 +140,17 @@ const outputOptions = {
     type: 'number',
     default: 300,
     describe: 'Per-execution timeout in seconds (default 300 = 5 minutes)',
+  },
+  filter: {
+    type: 'string',
+    array: true,
+    alias: 'f',
+    default: [] as string[],
+    describe:
+      'Run only matching evals. Repeatable or comma-separated (-f 1 -f flat-route, or -f 1,2). ' +
+      'Numeric values match the eval `id` (or 1-based position when `id` is absent); ' +
+      'string values match `name` (case-insensitive, exact). Unmatched filters print a ' +
+      'warning; the command exits 2 if no eval matches.',
   },
   out: {
     type: 'string',
@@ -239,6 +263,28 @@ function resolveEvalSetPath(
   return fallback;
 }
 
+function applyEvalSelection(
+  evalSet: EvalSet,
+  filters: readonly string[]
+): EvalSelection {
+  const selection = selectEvals(evalSet, filters);
+  if (selection.unmatchedFilters.length > 0) {
+    const quoted = selection.unmatchedFilters
+      .map((f) => JSON.stringify(f))
+      .join(', ');
+    process.stderr.write(
+      `Warning: --filter matched nothing for: ${quoted}\n`
+    );
+  }
+  if (filters.length > 0 && selection.evalSet.evals.length === 0) {
+    process.stderr.write(
+      'Error: --filter excluded all evals (nothing to run).\n'
+    );
+    process.exit(2);
+  }
+  return selection;
+}
+
 function readPackageVersion(): string {
   try {
     const here = dirname(fileURLToPath(import.meta.url));
@@ -263,7 +309,11 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
     : args['claude-bin'];
 
   const raw = JSON.parse(readFileSync(evalSetPath, 'utf-8')) as unknown;
-  const evalSet = evalSetSchema.parse(raw);
+  const fullEvalSet = evalSetSchema.parse(raw);
+  const { evalSet, originalIndices } = applyEvalSelection(
+    fullEvalSet,
+    args.filter
+  );
 
   mkdirSync(outDir, { recursive: true });
 
@@ -278,7 +328,13 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   // One row per query (not per run). Each run lights up an icon in the
   // `runs` column:  ✓ = expected outcome,  ✗ = unexpected,  ! = errored,
   // · = not yet run. Re-rendered after every progress event.
-  const evalColWidth = Math.max('eval'.length, String(evalCount).length);
+  const maxDisplayedPosition = originalIndices.length > 0
+    ? (originalIndices[originalIndices.length - 1] ?? 0) + 1
+    : evalCount;
+  const evalColWidth = Math.max(
+    'eval'.length,
+    String(maxDisplayedPosition).length
+  );
   const runsColWidth = Math.max('runs'.length, runCount);
   const rateColWidth = 4; // "100%"
   const verdictColWidth = 5; // "ERROR"
@@ -334,7 +390,8 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
       }
     }
 
-    const evalCol = `${queryIndex + 1}`.padStart(evalColWidth);
+    const originalIndex = originalIndices[queryIndex] ?? queryIndex;
+    const evalCol = `${originalIndex + 1}`.padStart(evalColWidth);
     const runsCol = icons.padStart(runsColWidth);
     const rateCol = rate.padStart(rateColWidth);
     const verdictCol = verdict.padEnd(verdictColWidth);
@@ -514,19 +571,31 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     : args['claude-bin'];
 
   const raw = JSON.parse(readFileSync(evalSetPath, 'utf-8')) as unknown;
-  const evalSet = evalSetSchema.parse(raw);
+  const fullEvalSet = evalSetSchema.parse(raw);
+  const { evalSet, originalIndices } = applyEvalSelection(
+    fullEvalSet,
+    args.filter
+  );
 
   // Preserve original indices so the eval column matches what's in evals.json
-  // (skipping any items without expectations).
+  // (skipping any items without expectations). `index` stays in the
+  // (post-filter) evalSet space so it lines up with `runOutputSet`'s
+  // progress events; `originalIndex` is what we display to the user.
   const toRun = evalSet.evals
-    .map((item, index) => ({ item, index }))
+    .map((item, index) => ({
+      item,
+      index,
+      originalIndex: originalIndices[index] ?? index,
+    }))
     .filter(
       ({ item }) =>
         item.should_trigger && (item.expectations?.length ?? 0) > 0
     );
   if (toRun.length === 0) {
     process.stderr.write(
-      'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n'
+      args.filter.length > 0
+        ? 'No eval items with expectations matched --filter. Add `expectations: [...]` or broaden the filter.\n'
+        : 'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n'
     );
     process.exit(2);
   }
@@ -552,14 +621,18 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const evalOrderByIndex = new Map<number, number>();
   toRun.forEach(({ index }, order) => evalOrderByIndex.set(index, order));
 
-  const displayId = (entry: { item: { id?: number }; index: number }): string =>
-    `${entry.item.id ?? entry.index + 1}`;
+  const displayId = (entry: {
+    item: { id?: number };
+    originalIndex: number;
+  }): string => `${entry.item.id ?? entry.originalIndex + 1}`;
   const displayName = (entry: {
     item: { name?: string; id?: number };
-    index: number;
+    originalIndex: number;
   }): string =>
     entry.item.name ??
-    (entry.item.id != null ? `eval-${entry.item.id}` : `eval-${entry.index}`);
+    (entry.item.id != null
+      ? `eval-${entry.item.id}`
+      : `eval-${entry.originalIndex}`);
 
   const maxIdWidth = Math.max(...toRun.map((e) => displayId(e).length));
   const evalColWidth = Math.max('eval'.length, maxIdWidth);
