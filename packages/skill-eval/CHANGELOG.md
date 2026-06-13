@@ -1,3 +1,13 @@
+## 0.2.16 (2026-06-13)
+
+### New Features
+
+- **skill-eval:** add --filter / -f argument to trigger and output commands ([d974603](https://github.com/thdk/nx-monorepo-demo/commit/d974603))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.15 (2026-06-12)
 
 This was a version bump only for @thdk/skill-eval to align it with other projects, there were no code changes.
