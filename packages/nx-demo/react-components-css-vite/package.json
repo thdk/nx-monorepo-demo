@@ -1,6 +1,6 @@
 {
   "name": "@thdk/react-components-css-vite",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "sideEffects": [
     "**/*.css"

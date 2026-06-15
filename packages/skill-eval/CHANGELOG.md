@@ -1,3 +1,7 @@
+## 0.2.17 (2026-06-15)
+
+This was a version bump only for @thdk/skill-eval to align it with other projects, there were no code changes.
+
 ## 0.2.16 (2026-06-13)
 
 ### New Features
