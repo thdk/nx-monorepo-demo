@@ -10,7 +10,7 @@
     "setup-docker": {
       "factory": "./dist/generators/setup-docker/setup-docker.impl.js",
       "schema": "./dist/generators/setup-docker/schema.json",
-      "description": "Add a Dockerfile (pnpm-deploy thin or pnpm-fetch layered) to an existing app, tag it deployable:docker."
+      "description": "Add a Dockerfile (pnpm-deploy thin or nx-prune layered) to an existing app, tag it deployable:docker."
     }
   }
 }

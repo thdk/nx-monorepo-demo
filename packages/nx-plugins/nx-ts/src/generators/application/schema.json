@@ -45,9 +45,9 @@
     },
     "dockerStrategy": {
       "type": "string",
-      "enum": ["pnpm-deploy", "pnpm-fetch"],
+      "enum": ["pnpm-deploy", "nx-prune"],
       "default": "pnpm-deploy",
-      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy (single COPY, no install). pnpm-fetch: layered cache via @nx/js:prune-lockfile + workspace_modules + offline pnpm install."
+      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy (single COPY, no install). nx-prune: layered cache via @nx/js:prune-lockfile + workspace_modules + offline pnpm install."
     },
     "port": {
       "type": "number",

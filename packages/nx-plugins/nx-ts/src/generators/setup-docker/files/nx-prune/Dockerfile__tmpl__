@@ -1,4 +1,4 @@
-# pnpm-fetch strategy: @nx/js:prune-lockfile emits dist/package.json +
+# nx-prune strategy: @nx/js:prune-lockfile emits dist/package.json +
 # pnpm-lock.yaml, @nx/js:copy-workspace-modules copies compiled workspace
 # deps into dist/workspace_modules, and the buildkit cache mount keeps the
 # pnpm store warm between builds.

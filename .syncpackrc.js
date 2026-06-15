@@ -11,7 +11,7 @@ const config = {
     },
     {
       label:
-        '@nx/* packages are only allowed in root, @thdk/nx-terraform, and @thdk/nx-pnpm-deploy',
+        '@nx/* packages are only allowed in root, @thdk/nx-terraform, @thdk/nx-pnpm-deploy, and @thdk/nx-ts',
       dependencies: ['@nx/**', 'nx'],
       packages: [
         '!@thdk/source',
