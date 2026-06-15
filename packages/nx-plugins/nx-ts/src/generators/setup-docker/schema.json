@@ -3,7 +3,7 @@
   "cli": "nx",
   "$id": "ThdkNxTsSetupDocker",
   "title": "Add a Dockerfile to a TypeScript app",
-  "description": "Adds a Dockerfile (pnpm-deploy thin or pnpm-fetch layered) and the deployable:docker tag. For pnpm-fetch, also wires the prune target chain and excludes the project from @thdk/nx-pnpm-deploy.",
+  "description": "Adds a Dockerfile (pnpm-deploy thin or nx-prune layered) and the deployable:docker tag. For nx-prune, also wires the prune target chain and excludes the project from @thdk/nx-pnpm-deploy.",
   "type": "object",
   "properties": {
     "project": {
@@ -15,9 +15,9 @@
     },
     "strategy": {
       "type": "string",
-      "enum": ["pnpm-deploy", "pnpm-fetch"],
+      "enum": ["pnpm-deploy", "nx-prune"],
       "default": "pnpm-deploy",
-      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy. pnpm-fetch: layered cache via prune-lockfile + workspace_modules.",
+      "description": "pnpm-deploy: thin image via @thdk/nx-pnpm-deploy. nx-prune: layered cache via prune-lockfile + workspace_modules.",
       "x-prompt": {
         "message": "Which Docker build strategy?",
         "type": "list",
@@ -27,8 +27,8 @@
             "label": "pnpm-deploy — single COPY, no install (uses @thdk/nx-pnpm-deploy)"
           },
           {
-            "value": "pnpm-fetch",
-            "label": "pnpm-fetch — layered cache, offline pnpm install (uses @nx/js:prune-lockfile)"
+            "value": "nx-prune",
+            "label": "nx-prune — layered cache, offline pnpm install (uses @nx/js:prune-lockfile)"
           }
         ]
       }

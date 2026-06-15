@@ -4,7 +4,7 @@ export interface ApplicationGeneratorSchema {
   scope?: string;
   framework?: 'none' | 'fastify';
   docker?: boolean;
-  dockerStrategy?: 'pnpm-deploy' | 'pnpm-fetch';
+  dockerStrategy?: 'pnpm-deploy' | 'nx-prune';
   port?: number;
   tags?: string[];
   skipFormat?: boolean;

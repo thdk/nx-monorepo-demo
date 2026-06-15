@@ -19,7 +19,7 @@ const PNPM_DEPLOY_PLUGIN = '@thdk/nx-pnpm-deploy/plugin';
 
 export const setupDockerGenerator = async (
   tree: Tree,
-  schema: SetupDockerGeneratorSchema
+  schema: SetupDockerGeneratorSchema,
 ): Promise<GeneratorCallback> => {
   const project = readProjectConfiguration(tree, schema.project);
   const strategy = schema.strategy ?? 'pnpm-deploy';
@@ -43,8 +43,8 @@ export const setupDockerGenerator = async (
   const tags = new Set([...(project.tags ?? []), DEPLOYABLE_DOCKER_TAG]);
 
   // 3. Strategy-specific wiring.
-  if (strategy === 'pnpm-fetch') {
-    // The fetch strategy relies on nx.json targetDefaults for prune-lockfile
+  if (strategy === 'nx-prune') {
+    // The nx-prune strategy relies on nx.json targetDefaults for prune-lockfile
     // and copy-workspace-modules — declaring the targets empty here is enough
     // for Nx to apply those defaults. The `prune` target itself is custom
     // (workspace_modules workaround) and lives on the project.
@@ -89,7 +89,7 @@ function excludeFromPnpmDeployPlugin(tree: Tree, projectName: string): void {
       typeof entry === 'object' &&
       entry !== null &&
       'plugin' in entry &&
-      entry.plugin === PNPM_DEPLOY_PLUGIN
+      entry.plugin === PNPM_DEPLOY_PLUGIN,
   );
 
   if (!pluginEntry) return;

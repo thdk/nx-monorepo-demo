@@ -22,11 +22,11 @@ const TSLIB_VERSION = '2.8.1';
 
 export const applicationGenerator = async (
   tree: Tree,
-  schema: ApplicationGeneratorSchema
+  schema: ApplicationGeneratorSchema,
 ): Promise<GeneratorCallback> => {
   if (!/^[a-zA-Z][a-zA-Z0-9-_]*$/.test(schema.name)) {
     throw new Error(
-      `Invalid application name "${schema.name}". Use letters, digits, "-" or "_".`
+      `Invalid application name "${schema.name}". Use letters, digits, "-" or "_".`,
     );
   }
 
@@ -83,7 +83,7 @@ export const applicationGenerator = async (
     tree,
     join(__dirname, 'files', 'common'),
     projectRoot,
-    substitutions
+    substitutions,
   );
 
   // 3. Framework overlay — currently only fastify replaces src/main.ts and
@@ -93,7 +93,7 @@ export const applicationGenerator = async (
       tree,
       join(__dirname, 'files', framework),
       projectRoot,
-      substitutions
+      substitutions,
     );
   }
 
@@ -109,8 +109,8 @@ export const applicationGenerator = async (
       tree,
       dependencies,
       {},
-      joinPathFragments(projectRoot, 'package.json')
-    )
+      joinPathFragments(projectRoot, 'package.json'),
+    ),
   );
 
   // 5. Docker — delegates Dockerfile + tag + (fetch) prune wiring.
