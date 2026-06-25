@@ -96,6 +96,30 @@ const fixtures: Fixture[] = [
     input: { skill_name: 'x', evals: [{ query: 'q', should_trigger: 'yes' }] },
   },
   {
+    name: 'eval item with per-eval timeout',
+    expectValid: true,
+    input: {
+      skill_name: 'x',
+      evals: [{ query: 'q', should_trigger: true, timeout: 120 }],
+    },
+  },
+  {
+    name: 'eval item with non-positive timeout',
+    expectValid: false,
+    input: {
+      skill_name: 'x',
+      evals: [{ query: 'q', should_trigger: true, timeout: 0 }],
+    },
+  },
+  {
+    name: 'eval item with non-numeric timeout',
+    expectValid: false,
+    input: {
+      skill_name: 'x',
+      evals: [{ query: 'q', should_trigger: true, timeout: '120' }],
+    },
+  },
+  {
     name: 'unknown top-level field (typo)',
     expectValid: false,
     input: {

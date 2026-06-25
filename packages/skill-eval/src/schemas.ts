@@ -15,6 +15,8 @@ export const evalItemSchema = z
     id: z.number().int().optional(),
     name: z.string().optional(),
     expectations: z.array(z.string().min(1)).optional(),
+    /** Per-eval timeout in seconds, overriding the CLI default for this query. */
+    timeout: z.number().positive().optional(),
   })
   .strict();
 

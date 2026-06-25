@@ -109,6 +109,9 @@ export async function runSet(
     const bucket = recordsByIndex[queryIndex];
     if (!bucket)
       throw new Error(`internal: missing bucket for index ${queryIndex}`);
+    // Per-eval timeout (seconds) overrides the CLI default for this query only.
+    const itemTimeoutMs =
+      item.timeout != null ? item.timeout * 1000 : timeoutMs;
     return Array.from({ length: runsPerQuery }, (_unused, runIndex) =>
       limit(async () => {
         const result = await runQuery({
@@ -117,7 +120,7 @@ export async function runSet(
           skillDescription: skill.description,
           projectRoot,
           model,
-          timeoutMs,
+          timeoutMs: itemTimeoutMs,
           claudeBin,
         });
 

@@ -116,6 +116,9 @@ export async function runOutputSet(
     const evalName = nameFor(item, index);
     const evalId = idFor(item, index);
     const expectations = item.expectations ?? [];
+    // Per-eval timeout (seconds) overrides the CLI default for this query only.
+    const itemTimeoutMs =
+      item.timeout != null ? item.timeout * 1000 : executorTimeoutMs;
 
     for (const configuration of configs) {
       for (let runNumber = 1; runNumber <= runsPerConfiguration; runNumber++) {
@@ -139,7 +142,7 @@ export async function runOutputSet(
               skillPath,
               skillName: skill.name,
               baseline: configuration === 'without_skill',
-              timeoutMs: executorTimeoutMs,
+              timeoutMs: itemTimeoutMs,
               model: executorModel,
               claudeBin,
               artifactsDir: runDir,
