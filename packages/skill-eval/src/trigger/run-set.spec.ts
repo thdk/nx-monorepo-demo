@@ -215,6 +215,31 @@ describe('runSet', () => {
     }
   });
 
+  it('forwards a per-eval timeout override, falling back to the CLI default', async () => {
+    const skill = makeSkill(tmp);
+    const seen: Array<number | undefined> = [];
+    await runSet({
+      evalSet: {
+        skill_name: 'fake-skill',
+        evals: [
+          { query: 'default', should_trigger: true },
+          { query: 'override', should_trigger: true, timeout: 120 },
+        ],
+      },
+      skillPath: skill,
+      runsPerQuery: 1,
+      timeoutMs: 30_000,
+      runQuery: async (options: RunQueryOptions): Promise<RunQueryResult> => {
+        seen.push(options.timeoutMs);
+        return { outcome: 'trigger', triggerId: 't', durationMs: 1 };
+      },
+    });
+
+    // `default` keeps the CLI default; `override` uses its own 120s = 120_000ms.
+    expect(seen).toContain(30_000);
+    expect(seen).toContain(120_000);
+  });
+
   it('respects concurrency', async () => {
     const skill = makeSkill(tmp);
     let active = 0;

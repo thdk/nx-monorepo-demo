@@ -10,6 +10,12 @@ export interface EvalItem {
    * If absent or empty, the eval is skipped by `skill-eval output`.
    */
   expectations?: string[];
+  /**
+   * Per-eval timeout in seconds, overriding the CLI default for this query
+   * only (`--timeout` for `trigger`, `--executor-timeout` for `output`).
+   * Useful when a single query legitimately needs longer than the rest.
+   */
+  timeout?: number;
 }
 
 export interface EvalSet {

@@ -114,6 +114,7 @@ The CLI pre-flight-checks for `ANTHROPIC_API_KEY` only when `--grader-mode api`,
       "name": "flat-route-placement",
       "query": "where does my admin/users list page go?",
       "should_trigger": true,
+      "timeout": 120,
       "expectations": [
         "Recommends a flat `.route.tsx` file (not a subfolder) because nothing is co-located",
         "Recommends the file live under the feature folder, not directly under app/routes/"
@@ -124,6 +125,16 @@ The CLI pre-flight-checks for `ANTHROPIC_API_KEY` only when `--grader-mode api`,
 ```
 
 The same file feeds both modes. `trigger` uses `query` + `should_trigger`; `output` additionally needs `expectations[]` and only runs items where both `should_trigger: true` and a non-empty `expectations` are present.
+
+### Per-eval timeout
+
+Both commands take a default timeout on the CLI — `--timeout` (seconds, default 30) for `trigger` and `--executor-timeout` (seconds, default 300) for `output`. Any eval can override that default for itself with a `timeout` field (also in seconds):
+
+```json
+{ "query": "do the slow thing", "should_trigger": true, "timeout": 120 }
+```
+
+When present, `timeout` wins for that query only; every other eval keeps the CLI default. This keeps one slow query from forcing you to raise the timeout for the whole set.
 
 ### IDE validation
 
