@@ -1,3 +1,13 @@
+## 0.2.18 (2026-06-25)
+
+### New Features
+
+- **skill-eval:** allow to specify a timeout per eval query ([#33](https://github.com/thdk/nx-monorepo-demo/pull/33))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.17 (2026-06-15)
 
 This was a version bump only for @thdk/skill-eval to align it with other projects, there were no code changes.
