@@ -56,12 +56,8 @@ async function createNodesInternal(
           'terraform-init': {
             executor: 'nx:run-commands',
             options: {
-              parallel: false,
               cwd: workspaceRoot,
-              commands: [
-                `terraform -chdir=${projectRoot} init --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
-                `echo $NX_TASK_TARGET_CONFIGURATION > ${projectRoot}/.terraform/init-configuration`,
-              ],
+              command: `terraform -chdir=${projectRoot} init --backend-config=backend/$NX_TASK_TARGET_CONFIGURATION.tfbackend`,
               env: {
                 TF_CLI_ARGS_init: `--reconfigure`,
               },
@@ -125,8 +121,10 @@ async function createNodesInternal(
               cwd: workspaceRoot,
               // Must stay a single command: nx:run-commands only runs in a
               // pseudo-terminal (required for interactive approval in the Nx
-              // TUI) when there is exactly one command.
-              command: `if [ "$(cat ${projectRoot}/.terraform/init-configuration)" = "$NX_TASK_TARGET_CONFIGURATION" ]; then terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars {args}; else echo 'First run terraform-init for this configuration!'; exit 1; fi`,
+              // TUI) when there is exactly one command. Running init first for
+              // the matching configuration is enforced by the task graph
+              // (apply -> plan -> init, configuration propagates down).
+              command: `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars {args}`,
               env: {
                 // In CI, applies must be non-interactive: skip the approval
                 // prompt and fail (instead of prompting inside the pty) on
