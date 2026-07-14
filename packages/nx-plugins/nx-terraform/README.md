@@ -10,15 +10,70 @@ Add an entry to the `plugins` section of `nx.json`.
 { "plugin": "@thdk/nx-terraform/plugin" }
 ```
 
-### Conventions
+### Layouts
 
-#### var files
+The plugin supports the two common ways of laying out Terraform environments. In both, every environment becomes an **Nx configuration** on the inferred targets, so `nx run my-infra:terraform-apply:production` means the same thing regardless of layout. The layout is detected per project, so both can coexist in one workspace.
 
-A project must have a `vars` folder with at least one file `{configuration}.tfvars`. The project may have multiple var files, and the plugin will infer an Nx configuration for each of them. The first var file determines the default configuration.
+A project is any folder with a `project.json` (or `package.json`) that contains terraform in one of these shapes:
 
-#### backend configuration
+#### var-file layout
 
-A project must have a `backend` folder with a file for each nx configuration: `{configuration}.tfbackend`.
+One root module shared by all environments; environments differ only in variables and backend:
+
+```
+my-infra/
+├── project.json
+├── main.tf
+├── vars/
+│   ├── development.tfvars      # one Nx configuration per var file
+│   └── production.tfvars
+└── backend/
+    ├── development.tfbackend   # one backend config per configuration
+    └── production.tfbackend
+```
+
+The plugin selects the environment via `--var-file=vars/{configuration}.tfvars` and `init --backend-config=backend/{configuration}.tfbackend --reconfigure`. The first var file determines the default configuration. This layout enforces environment parity: the same code is applied everywhere.
+
+#### folder-per-environment layout
+
+One root module per environment (thin wrappers calling shared modules), following the widely used `environments/` convention:
+
+```
+my-infra/
+├── project.json               # no main.tf at the project root!
+├── environments/
+│   ├── development/
+│   │   ├── main.tf             # one Nx configuration per folder
+│   │   └── backend + vars inside the module
+│   └── production/
+│       └── main.tf
+└── modules/                    # ignored — not an environment
+    └── vpc/
+        └── main.tf
+```
+
+The plugin selects the environment by running terraform with `-chdir={projectRoot}/environments/{configuration}`; backend and variables live inside each environment's own module. Environment folders are subfolders of `environments/` that contain a `main.tf`, sorted alphabetically (first = default configuration). This layout allows environments to diverge — that flexibility is the trade-off you opt into.
+
+A project mixing both shapes (root `main.tf` + `vars/` **and** environment folders) is an error.
+
+### Plugin options
+
+Configure via the plugin entry in `nx.json`:
+
+```json
+{
+  "plugin": "@thdk/nx-terraform/plugin",
+  "options": {
+    "environmentsDir": "envs",
+    "environments": ["development", "production"]
+  }
+}
+```
+
+| Option            | Type     | Default        | Description                                                                                                                                                                                                                               |
+| ----------------- | -------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `environmentsDir` | string   | `environments` | Folder holding the per-environment root modules. Set to `.` for flat layouts (`my-infra/{env}/main.tf`) which requires `environments` to be set explicitly, because a flat environment folder is indistinguishable from a modules folder. |
+| `environments`    | string[] | detected       | Explicit environment names. Acts as a filter and defines the order (first entry = default configuration).                                                                                                                                 |
 
 ### Inferred targets
 
@@ -26,7 +81,7 @@ This plugin will, once added to your Nx workspace, infer the following targets f
 
 #### terraform-init
 
-Runs `terraform init --backend-config=backend/{configuration}.tfbackend --reconfigure`. Not cached, so it re-runs (with the right backend for the configuration) before every plan/validate/apply via the task graph.
+Runs `terraform init` for the selected configuration (var-file layout: with `--backend-config=backend/{configuration}.tfbackend --reconfigure`; folder layout: inside the environment folder). Not cached, so it re-runs (against the right backend for the configuration) before every plan/validate/apply via the task graph.
 
 #### terraform-format
 
@@ -42,7 +97,7 @@ Runs `terraform validate` (cached). Depends on `terraform-init`.
 
 #### terraform-plan
 
-Runs `terraform plan --out=tfplan --var-file=vars/{configuration}.tfvars`. Depends on `terraform-init`.
+Runs `terraform plan --out=tfplan` for the selected configuration (var-file layout: with `--var-file=vars/{configuration}.tfvars`). Depends on `terraform-init`.
 
 #### terraform-show
 
@@ -52,12 +107,12 @@ Runs `terraform show tfplan` to render the plan file saved by `terraform-plan`.
 
 Behaves differently locally and in CI (see [Local vs CI behavior](#local-vs-ci-behavior)):
 
-|                | local                                          | CI (`CI` env var set)                       |
-| -------------- | ---------------------------------------------- | ------------------------------------------- |
-| command        | `terraform apply --var-file=... {args}`        | `terraform apply -input=false tfplan`       |
-| approval       | interactive prompt                             | none — the saved plan is applied as-is      |
-| depends on     | `terraform-init`, `^terraform-apply`           | `terraform-plan`, `^terraform-apply`        |
-| extra CLI args | forwarded to `terraform apply` via `{args}`    | not supported — pass them at plan time      |
+|                | local                                       | CI (`CI` env var set)                  |
+| -------------- | ------------------------------------------- | -------------------------------------- |
+| command        | `terraform apply [--var-file=...] {args}`   | `terraform apply -input=false tfplan`  |
+| approval       | interactive prompt                          | none — the saved plan is applied as-is |
+| depends on     | `terraform-init`, `^terraform-apply`        | `terraform-plan`, `^terraform-apply`   |
+| extra CLI args | forwarded to `terraform apply` via `{args}` | not supported — pass them at plan time |
 
 The `^terraform-apply` dependency ensures dependency projects are applied before dependent ones.
 
@@ -79,7 +134,7 @@ pnpm exec nx run my-infra:terraform -- state list
 
 ### Local vs CI behavior
 
-The plugin detects CI through the `CI` environment variable (set and not `"false"`) when the project graph is computed. The principle in both environments is the same — *a deliberate decision gates every apply* — expressed in each environment's terms:
+The plugin detects CI through the `CI` environment variable (set and not `"false"`) when the project graph is computed. The principle in both environments is the same: _a deliberate decision gates every apply_. Expressed in each environment's terms:
 
 - **Locally**, plan and apply are fully interactive. Apply re-plans internally and waits for your approval on a freshly computed diff. A separate plan run beforehand would be duplicate work, so apply only depends on init.
 - **In CI**, apply consumes the `tfplan` artifact produced by `terraform-plan`, guaranteeing that the plan reviewed in the pipeline logs is byte-for-byte what gets applied (terraform fails on a stale plan if state moved in between). Prompts are disabled: the plugin injects `TF_CLI_ARGS_plan: -input=false` and `TF_CLI_ARGS_apply: -auto-approve -input=false` into the task environment, so a missing input fails fast instead of hanging the job at an invisible prompt inside the pseudo-terminal.
