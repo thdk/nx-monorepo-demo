@@ -5,13 +5,11 @@ import {
   CreateNodesV2,
 } from '@nx/devkit';
 import { existsSync } from 'fs';
-import {readdir} from 'fs/promises';
+import { readdir } from 'fs/promises';
 import { dirname, join } from 'path';
 
- 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
-export interface NxTerraformPluginOptions {
-}
+export interface NxTerraformPluginOptions {}
 
 export const createNodesV2: CreateNodesV2<NxTerraformPluginOptions> = [
   '**/main.tf',
@@ -21,7 +19,7 @@ export const createNodesV2: CreateNodesV2<NxTerraformPluginOptions> = [
         createNodesInternal(configFile, options, context),
       configFiles,
       options,
-      context
+      context,
     );
   },
 ];
@@ -29,23 +27,23 @@ export const createNodesV2: CreateNodesV2<NxTerraformPluginOptions> = [
 async function createNodesInternal(
   configFilePath: string,
   options: NxTerraformPluginOptions | undefined = {},
-  context: CreateNodesContextV2
+  context: CreateNodesContextV2,
 ) {
   const projectRoot = dirname(configFilePath);
-  
+
   const isProject =
-  existsSync(join(projectRoot, 'project.json')) ||
-  existsSync(join(projectRoot, 'package.json'));
+    existsSync(join(projectRoot, 'project.json')) ||
+    existsSync(join(projectRoot, 'package.json'));
   if (!isProject) {
     return {};
   }
-  
+
   const configurationsObject = await getConfigurationsFromVarFiles({
     projectRoot,
   });
-  
+
   const defaultConfiguration = Object.keys(configurationsObject)[0];
-  
+
   const workspaceRoot = context.workspaceRoot;
 
   return {
@@ -63,7 +61,7 @@ async function createNodesInternal(
               ],
               env: {
                 TF_CLI_ARGS_init: `--reconfigure`,
-              }
+              },
             },
             configurations: configurationsObject,
             defaultConfiguration,
@@ -90,7 +88,7 @@ async function createNodesInternal(
             cache: true,
             options: {
               cwd: workspaceRoot,
-              command: `terraform -chdir=${projectRoot} validate`
+              command: `terraform -chdir=${projectRoot} validate`,
             },
           },
           'terraform-plan': {
@@ -117,30 +115,25 @@ async function createNodesInternal(
             executor: 'nx:run-commands',
             dependsOn: ['terraform-plan', '^terraform-apply'],
             options: {
-              parallel: false,
               cwd: workspaceRoot,
-              commands:
-                [
-                  `[ $(cat ${projectRoot}/.terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1`,
-                  `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
-                ],
+              commands: [
+                `[ $(cat ${projectRoot}/.terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1`,
+                `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
+              ],
               env: {
                 TF_CLI_ARGS_apply: '--auto-approve',
-              }
+              },
             },
             configurations: configurationsObject,
             defaultConfiguration,
           },
-          'terraform': {
+          terraform: {
             executor: 'nx:run-commands',
             dependsOn: ['terraform-init'],
             options: {
               parallel: false,
               cwd: workspaceRoot,
-              commands:
-                [
-                  `terraform -chdir=${projectRoot}`,
-                ],
+              commands: [`terraform -chdir=${projectRoot}`],
             },
             configurations: configurationsObject,
             defaultConfiguration,
@@ -159,11 +152,7 @@ async function getConfigurationsFromVarFiles({
   projectRoot: string;
 }) {
   const varsFolder = join(projectRoot, 'vars');
-  const varsFiles = existsSync(varsFolder)
-    ? await readdir(varsFolder)
-    : [];
-
-
+  const varsFiles = existsSync(varsFolder) ? await readdir(varsFolder) : [];
 
   const configurations = varsFiles.map((file) => {
     const match = file.match(/(.*)\.tfvars/);
@@ -181,6 +170,6 @@ async function getConfigurationsFromVarFiles({
       acc[configuration] = {};
       return acc;
     },
-    {}
+    {},
   );
 }
