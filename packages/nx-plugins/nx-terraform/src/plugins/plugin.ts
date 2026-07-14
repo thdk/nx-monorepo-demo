@@ -11,6 +11,9 @@ import { dirname, join } from 'path';
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
 export interface NxTerraformPluginOptions {}
 
+// Evaluated when the project graph is computed on the running machine.
+const isCI = !!process.env.CI && process.env.CI !== 'false';
+
 export const createNodesV2: CreateNodesV2<NxTerraformPluginOptions> = [
   '**/main.tf',
   async (configFiles, options, context) => {
@@ -98,7 +101,11 @@ async function createNodesInternal(
               cwd: workspaceRoot,
               command: `terraform -chdir=${projectRoot} plan --out=tfplan --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
               env: {
-                TF_CLI_ARGS_plan: '--input=false',
+                // In CI, fail on missing input instead of prompting inside
+                // the pty. Locally the key stays unset so plan can prompt for
+                // missing variables interactively (options.env would override
+                // a developer's own TF_CLI_ARGS_plan otherwise).
+                ...(isCI ? { TF_CLI_ARGS_plan: '-input=false' } : {}),
               },
             },
             configurations: configurationsObject,
@@ -116,12 +123,17 @@ async function createNodesInternal(
             dependsOn: ['terraform-plan', '^terraform-apply'],
             options: {
               cwd: workspaceRoot,
-              commands: [
-                `[ $(cat ${projectRoot}/.terraform/init-configuration) = $NX_TASK_TARGET_CONFIGURATION ] && exit 0 || echo 'First run terraform-init for this configuration!' && exit 1`,
-                `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars`,
-              ],
+              // Must stay a single command: nx:run-commands only runs in a
+              // pseudo-terminal (required for interactive approval in the Nx
+              // TUI) when there is exactly one command.
+              command: `if [ "$(cat ${projectRoot}/.terraform/init-configuration)" = "$NX_TASK_TARGET_CONFIGURATION" ]; then terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars {args}; else echo 'First run terraform-init for this configuration!'; exit 1; fi`,
               env: {
-                TF_CLI_ARGS_apply: '--auto-approve',
+                // In CI, applies must be non-interactive: skip the approval
+                // prompt and fail (instead of prompting inside the pty) on
+                // any missing input. Locally the key must stay UNSET — not
+                // set to '' — because options.env overrides the process env
+                // and would clobber a developer's own TF_CLI_ARGS_apply.
+                ...(isCI ? { TF_CLI_ARGS_apply: '-auto-approve -input=false' } : {}),
               },
             },
             configurations: configurationsObject,
