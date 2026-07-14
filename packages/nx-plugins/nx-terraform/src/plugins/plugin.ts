@@ -116,7 +116,13 @@ async function createNodesInternal(
           },
           'terraform-apply': {
             executor: 'nx:run-commands',
-            dependsOn: ['terraform-plan', '^terraform-apply'],
+            // In CI apply consumes the tfplan artifact, so it depends on
+            // terraform-plan. Locally apply re-plans internally (showing the
+            // diff at the approval prompt), so a separate plan run would be
+            // duplicate work — only init is needed.
+            dependsOn: isCI
+              ? ['terraform-plan', '^terraform-apply']
+              : ['terraform-init', '^terraform-apply'],
             options: {
               cwd: workspaceRoot,
               // Must stay a single command: nx:run-commands only runs in a
@@ -124,14 +130,18 @@ async function createNodesInternal(
               // TUI) when there is exactly one command. Running init first for
               // the matching configuration is enforced by the task graph
               // (apply -> plan -> init, configuration propagates down).
-              command: `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars {args}`,
+              command: isCI
+                ? `terraform -chdir=${projectRoot} apply -input=false tfplan`
+                : `terraform -chdir=${projectRoot} apply --var-file=vars/$NX_TASK_TARGET_CONFIGURATION.tfvars {args}`,
               env: {
                 // In CI, applies must be non-interactive: skip the approval
                 // prompt and fail (instead of prompting inside the pty) on
                 // any missing input. Locally the key must stay UNSET — not
                 // set to '' — because options.env overrides the process env
                 // and would clobber a developer's own TF_CLI_ARGS_apply.
-                ...(isCI ? { TF_CLI_ARGS_apply: '-auto-approve -input=false' } : {}),
+                ...(isCI
+                  ? { TF_CLI_ARGS_apply: '-auto-approve -input=false' }
+                  : {}),
               },
             },
             configurations: configurationsObject,
