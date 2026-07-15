@@ -1,29 +1,20 @@
 {
   "name": "app-2",
-  "tags": [
-    "deployable:docker",
-    "scope:nx-demo"
-  ],
+  "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "platform": "node",
         "outputPath": "{projectRoot}/dist",
-        "format": [
-          "cjs"
-        ],
+        "format": ["cjs"],
         "bundle": false,
         "generatePackageJson": false,
         "main": "{projectRoot}/src/main.ts",
         "tsConfig": "{projectRoot}/tsconfig.app.json",
-        "assets": [
-          "{projectRoot}/src/assets"
-        ],
+        "assets": ["{projectRoot}/src/assets"],
         "esbuildOptions": {
           "sourcemap": true,
           "outExtension": {
@@ -46,9 +37,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "app-2:build",
         "runBuildTargetDependencies": false

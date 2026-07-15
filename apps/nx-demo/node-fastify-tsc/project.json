@@ -1,16 +1,11 @@
 {
   "name": "node-fastify-tsc",
-  "tags": [
-    "deployable:docker",
-    "scope:nx-demo"
-  ],
+  "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "node-fastify-tsc:build",
         "runBuildTargetDependencies": false
@@ -33,13 +28,8 @@
     "copy-workspace-modules": {},
     "prune": {
       "executor": "nx:run-commands",
-      "dependsOn": [
-        "prune-lockfile",
-        "copy-workspace-modules"
-      ],
-      "outputs": [
-        "{projectRoot}/dist/pnpm-workspace.yaml"
-      ],
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
       "options": {
         "command": "tsx ./scripts/bin/write-dist-pnpm-workspace.ts {projectRoot}/dist"
       }

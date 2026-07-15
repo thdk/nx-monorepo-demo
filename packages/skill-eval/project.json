@@ -7,9 +7,6 @@
       }
     }
   },
-  "tags": [
-    "npm:public",
-    "scope:skill-eval"
-  ],
+  "tags": ["npm:public", "scope:skill-eval"],
   "name": "skill-eval"
 }

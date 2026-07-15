@@ -1,7 +1,4 @@
 {
-  "tags": [
-    "npm:public",
-    "scope:nx-demo"
-  ],
+  "tags": ["npm:public", "scope:nx-demo"],
   "name": "lib-c"
 }

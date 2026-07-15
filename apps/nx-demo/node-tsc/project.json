@@ -4,9 +4,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "node-tsc:build",
         "runBuildTargetDependencies": false
@@ -21,7 +19,5 @@
       }
     }
   },
-  "tags": [
-    "scope:nx-demo"
-  ]
+  "tags": ["scope:nx-demo"]
 }

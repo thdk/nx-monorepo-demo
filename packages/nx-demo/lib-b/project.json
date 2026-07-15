@@ -2,22 +2,16 @@
   "targets": {
     "build": {
       "executor": "@nx/esbuild:esbuild",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "{projectRoot}/dist",
         "main": "{projectRoot}/src/index.ts",
         "tsConfig": "{projectRoot}/tsconfig.lib.json",
-        "format": [
-          "esm"
-        ],
+        "format": ["esm"],
         "declarationRootDir": "{projectRoot}/src"
       }
     }
   },
-  "tags": [
-    "scope:nx-demo"
-  ],
+  "tags": ["scope:nx-demo"],
   "name": "lib-b"
 }

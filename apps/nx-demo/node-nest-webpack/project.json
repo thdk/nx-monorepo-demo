@@ -1,24 +1,17 @@
 {
   "name": "node-nest-webpack",
-  "tags": [
-    "deployable:docker",
-    "scope:nx-demo"
-  ],
+  "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
         "command": "webpack-cli build",
-        "args": [
-          "--node-env=production"
-        ],
+        "args": ["--node-env=production"],
         "cwd": "{projectRoot}"
       },
       "configurations": {
         "development": {
-          "args": [
-            "--node-env=development"
-          ]
+          "args": ["--node-env=development"]
         }
       }
     },
@@ -31,13 +24,8 @@
     "copy-workspace-modules": {},
     "prune": {
       "executor": "nx:run-commands",
-      "dependsOn": [
-        "prune-lockfile",
-        "copy-workspace-modules"
-      ],
-      "outputs": [
-        "{projectRoot}/dist/pnpm-workspace.yaml"
-      ],
+      "dependsOn": ["prune-lockfile", "copy-workspace-modules"],
+      "outputs": ["{projectRoot}/dist/pnpm-workspace.yaml"],
       "options": {
         "command": "tsx ./scripts/bin/write-dist-pnpm-workspace.ts {projectRoot}/dist"
       }
@@ -46,9 +34,7 @@
       "continuous": true,
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "node-nest-webpack:build",
         "runBuildTargetDependencies": false

@@ -1,9 +1,5 @@
 {
-  "implicitDependencies": [
-    "react-router-app-1"
-  ],
-  "tags": [
-    "scope:nx-demo"
-  ],
+  "implicitDependencies": ["react-router-app-1"],
+  "tags": ["scope:nx-demo"],
   "name": "react-router-app-1-e2e"
 }

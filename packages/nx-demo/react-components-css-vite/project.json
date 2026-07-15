@@ -1,6 +1,4 @@
 {
-  "tags": [
-    "scope:nx-demo"
-  ],
+  "tags": ["scope:nx-demo"],
   "name": "react-components-css-vite"
 }
