@@ -6,5 +6,7 @@
         "access": "public"
       }
     }
-  }
+  },
+  "tags": ["npm:public", "scope:skill-eval"],
+  "name": "skill-eval"
 }

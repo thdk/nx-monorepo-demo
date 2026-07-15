@@ -1,0 +1,23 @@
+{
+  "name": "node-tsc",
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "node-tsc:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "node-tsc:build:development"
+        },
+        "production": {
+          "buildTarget": "node-tsc:build:production"
+        }
+      }
+    }
+  },
+  "tags": ["scope:nx-demo"]
+}

@@ -109,8 +109,19 @@
       "options": {
         "buildTarget": {
           "name": "docker:build",
-          "args": ["--platform", "linux/amd64"],
-          "DOCKER_BUILDKIT": "1"
+          "args": [
+            "--tag",
+            "{projectName}:latest",
+            "--platform",
+            "linux/amd64",
+            "--label",
+            "project={projectName}",
+            "--build-arg",
+            "PNPM_VERSION=${PNPM_VERSION}"
+          ],
+          "env": {
+            "DOCKER_BUILDKIT": "1"
+          }
         },
         "runTarget": {
           "name": "docker:run",
@@ -146,6 +157,10 @@
     }
   ],
   "targetDefaults": [
+    {
+      "target": "lint",
+      "dependsOn": ["build"]
+    },
     {
       "executor": "@nx/esbuild:esbuild",
       "cache": true,

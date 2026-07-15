@@ -1,13 +1,5 @@
 {
   "name": "@thdk/react-router-app-1-e2e",
   "version": "0.0.1",
-  "private": true,
-  "nx": {
-    "implicitDependencies": [
-      "@thdk/react-router-app-1"
-    ],
-    "tags": [
-      "scope:nx-demo"
-    ]
-  }
+  "private": true
 }

@@ -19,11 +19,5 @@
     "dist",
     "!**/*.tsbuildinfo"
   ],
-  "registry": "https://github.com/thdk/nx-monorepo-demo",
-  "nx": {
-    "tags": [
-      "npm:public",
-      "scope:nx-demo"
-    ]
-  }
+  "registry": "https://github.com/thdk/nx-monorepo-demo"
 }

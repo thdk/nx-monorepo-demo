@@ -3,7 +3,7 @@ description: 'Setup Playwright with caching'
 
 inputs:
   browsers:
-    description: 'Comma-separated list of browsers to install (e.g., chrome, firefox)'
+    description: 'Comma-separated list of browsers to install (e.g., chromium, firefox). Leave empty for all.'
     required: false
     default: ''
 
@@ -31,17 +31,21 @@ runs:
 
     - name: Cache Playwright
       id: playwright-cache
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}-${{ env.BROWSERS }}
+        key: playwright-v2-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}-${{ env.BROWSERS }}
 
-    - name: Install Playwright dependencies
+    - name: Install Playwright system dependencies
+      shell: bash
+      run: pnpm exec playwright install-deps ${{ inputs.browsers }}
+
+    - name: Install Playwright browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
         if [ -z "${{ inputs.browsers }}" ]; then
-          pnpm exec playwright install --with-deps --no-shell
+          pnpm exec playwright install
         else
-          BROWSERS="${{ inputs.browsers }}"
-          pnpm exec playwright install $BROWSERS --with-deps --no-shell
+          pnpm exec playwright install ${{ inputs.browsers }}
         fi

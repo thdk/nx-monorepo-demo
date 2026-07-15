@@ -20,11 +20,6 @@
     },
     "./*/styles.css": "./dist/*/styles.css"
   },
-  "nx": {
-    "tags": [
-      "scope:nx-demo"
-    ]
-  },
   "dependencies": {
     "tslib": "^2.8.1"
   },
