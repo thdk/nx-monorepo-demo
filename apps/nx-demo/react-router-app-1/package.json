@@ -20,10 +20,5 @@
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0"
   },
-  "sideEffects": false,
-  "nx": {
-    "tags": [
-      "scope:nx-demo"
-    ]
-  }
+  "sideEffects": false
 }

@@ -12,10 +12,5 @@
     },
     "./package.json": "./package.json"
   },
-  "dependencies": {},
-  "nx": {
-    "tags": [
-      "scope:nx-demo"
-    ]
-  }
+  "dependencies": {}
 }

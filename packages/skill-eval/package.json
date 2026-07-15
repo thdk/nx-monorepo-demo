@@ -15,12 +15,6 @@
       "default": "./dist/index.js"
     }
   },
-  "nx": {
-    "tags": [
-      "npm:public",
-      "scope:skill-eval"
-    ]
-  },
   "bin": {
     "skill-eval": "dist/bin.js"
   },

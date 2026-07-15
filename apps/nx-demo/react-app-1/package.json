@@ -3,12 +3,6 @@
   "version": "0.17.0",
   "private": true,
   "type": "module",
-  "nx": {
-    "name": "react-app-1",
-    "tags": [
-      "scope:nx-demo"
-    ]
-  },
   "dependencies": {
     "@thdk/lib-b": "workspace:*",
     "@vitejs/plugin-react": "6.0.2",
