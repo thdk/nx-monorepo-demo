@@ -1,3 +1,13 @@
+## 0.20.14 (2026-07-15)
+
+### New Features
+
+- **nx-terraform:** improvements for inferred terraform targets ([#34](https://github.com/thdk/nx-monorepo-demo/pull/34))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.20.13 (2026-06-15)
 
 This was a version bump only for @thdk/lib-c to align it with other projects, there were no code changes.

@@ -1,6 +1,6 @@
 {
   "name": "@thdk/skill-eval",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",

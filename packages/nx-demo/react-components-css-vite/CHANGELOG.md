@@ -1,3 +1,14 @@
+## 0.0.5 (2026-07-15)
+
+### New Features
+
+- **nx-terraform:** improvements for inferred terraform targets ([#34](https://github.com/thdk/nx-monorepo-demo/pull/34))
+- add react component lib ([a5286ac](https://github.com/thdk/nx-monorepo-demo/commit/a5286ac))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.0.4 (2026-06-15)
 
 This was a version bump only for @thdk/react-components-css-vite to align it with other projects, there were no code changes.

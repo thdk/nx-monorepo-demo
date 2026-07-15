@@ -1,3 +1,31 @@
+## 0.2.19 (2026-07-15)
+
+### New Features
+
+- **nx-terraform:** improvements for inferred terraform targets ([#34](https://github.com/thdk/nx-monorepo-demo/pull/34))
+- **skill-eval:** allow to specify a timeout per eval query ([#33](https://github.com/thdk/nx-monorepo-demo/pull/33))
+- **skill-eval:** add --filter / -f argument to trigger and output commands ([d974603](https://github.com/thdk/nx-monorepo-demo/commit/d974603))
+- make skill-eval public on npm registry ([5168780](https://github.com/thdk/nx-monorepo-demo/commit/5168780))
+- **skill-eval:** make skill-path param optional ([b92067d](https://github.com/thdk/nx-monorepo-demo/commit/b92067d))
+- publish to npm registry ([dd2bb93](https://github.com/thdk/nx-monorepo-demo/commit/dd2bb93))
+- **skill-eval:** set default relative output directory ([c3fcf19](https://github.com/thdk/nx-monorepo-demo/commit/c3fcf19))
+- add dense and compact layout for output eval table with baseline ([05f2adc](https://github.com/thdk/nx-monorepo-demo/commit/05f2adc))
+- **skill-eval:** baseline by default and better live output table ([a33d721](https://github.com/thdk/nx-monorepo-demo/commit/a33d721))
+- **skill-eval:** update trigger command ([7506e7f](https://github.com/thdk/nx-monorepo-demo/commit/7506e7f))
+- **node-nest-webpack:** deploy this app again ([f969816](https://github.com/thdk/nx-monorepo-demo/commit/f969816))
+- **skill-eval:** set repo and directory in package.json ([806c605](https://github.com/thdk/nx-monorepo-demo/commit/806c605))
+- **skill-eval:** add init and output commands ([06263b3](https://github.com/thdk/nx-monorepo-demo/commit/06263b3))
+- add skill-eval lib ([cdbcd79](https://github.com/thdk/nx-monorepo-demo/commit/cdbcd79))
+
+### Other Updates
+
+- upgrade nx ([158394f](https://github.com/thdk/nx-monorepo-demo/commit/158394f))
+- make skill-eval publishable ([1fba53f](https://github.com/thdk/nx-monorepo-demo/commit/1fba53f))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.2.18 (2026-06-25)
 
 ### New Features
