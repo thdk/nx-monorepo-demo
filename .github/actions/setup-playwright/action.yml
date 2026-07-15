@@ -34,7 +34,7 @@ runs:
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ~/.cache/ms-playwright
-        key: playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}-${{ env.BROWSERS }}
+        key: playwright-v2-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}-${{ env.BROWSERS }}
 
     - name: Install Playwright system dependencies
       shell: bash
@@ -45,7 +45,7 @@ runs:
       shell: bash
       run: |
         if [ -z "${{ inputs.browsers }}" ]; then
-          pnpm exec playwright install --no-shell
+          pnpm exec playwright install
         else
-          pnpm exec playwright install ${{ inputs.browsers }} --no-shell
+          pnpm exec playwright install ${{ inputs.browsers }}
         fi
