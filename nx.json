@@ -160,6 +160,10 @@
   ],
   "targetDefaults": [
     {
+      "target": "lint",
+      "dependsOn": ["build"]
+    },
+    {
       "executor": "@nx/esbuild:esbuild",
       "cache": true,
       "dependsOn": ["^build"],
