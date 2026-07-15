@@ -110,8 +110,6 @@
         "buildTarget": {
           "name": "docker:build",
           "args": [
-            "--platform",
-            "linux/amd64",
             "--tag",
             "{projectName}:latest",
             "--platform",
