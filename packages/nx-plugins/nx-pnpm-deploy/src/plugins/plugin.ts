@@ -23,22 +23,37 @@ export interface NxPnpmDeployPluginOptions {
    */
   outputDir?: string;
   /**
-   * Skip emitting the target for projects matching any of these patterns.
+   * Restrict the target to only the projects matching any of these patterns.
+   * When omitted (or empty), every workspace package (any project with a
+   * package.json) is eligible. When set, a project must match at least one
+   * pattern to get the target — this is the allowlist.
+   *
    * Forwarded directly to Nx's findMatchingProjects, so it accepts the same
    * syntax as `nx run-many --projects=...`:
-   *   - "node-nest-webpack"      (name)
-   *   - "apps/legacy-*"          (directory glob)
-   *   - "tag:legacy"             (tag prefix)
-   *   - "!apps/keep-*"           (negation)
+   *   - "app-1"                  (name)
+   *   - "apps/nx-demo/*"         (directory glob)
+   *   - "tag:deployable:docker"  (tag prefix)
+   *   - "!apps/legacy-*"         (negation, to carve exceptions out of a glob)
    *
-   * Use this to opt projects out of the pnpm-deploy flow (e.g. while they
+   * `include` and `exclude` compose: a project is emitted when it matches
+   * `include` (or `include` is empty) AND does not match `exclude`.
+   */
+  include?: string[];
+  /**
+   * Skip emitting the target for projects matching any of these patterns.
+   * Same matcher syntax as `include`. Applied after `include`, so it always
+   * wins. Use it to opt projects out of the pnpm-deploy flow (e.g. while they
    * still use the Nx-native prune chain).
    */
   exclude?: string[];
 }
 
 export const createNodesV2: CreateNodesV2<NxPnpmDeployPluginOptions> = [
-  '**/Dockerfile',
+  // Trigger on package.json rather than Dockerfile: `pnpm deploy` targets a
+  // workspace package, so a package.json is the real prerequisite. This lets
+  // non-containerized deployables (e.g. tag:deployable:zip Lambdas without a
+  // Dockerfile) get a prune target too. `include`/`exclude` do the selecting.
+  '**/package.json',
   async (configFiles, options, context) => {
     if (!existsSync(join(context.workspaceRoot, 'pnpm-lock.yaml'))) {
       return [];
@@ -87,10 +102,12 @@ async function createNodesInternal(
     packageName.replace(/^@[^/]+\//, '');
   const tags = [...(projectJson.tags ?? []), ...(packageJson.nx?.tags ?? [])];
 
+  const include = options.include ?? [];
   const exclude = options.exclude ?? [];
-  if (exclude.length > 0) {
+  if (include.length > 0 || exclude.length > 0) {
     // Build the one-project map findMatchingProjects expects. We pass only the
-    // current candidate; if the patterns match it, we exclude.
+    // current candidate and test whether the patterns match it. This lets
+    // include/exclude accept names, directory globs, and tag: patterns.
     const candidate: Record<string, ProjectGraphProjectNode> = {
       [projectName]: {
         name: projectName,
@@ -98,7 +115,15 @@ async function createNodesInternal(
         data: { root: projectRoot, tags },
       },
     };
-    if (findMatchingProjects(exclude, candidate).includes(projectName)) {
+    const matches = (patterns: string[]) =>
+      findMatchingProjects(patterns, candidate).includes(projectName);
+
+    // Allowlist: when include is set, the project must match it.
+    if (include.length > 0 && !matches(include)) {
+      return {};
+    }
+    // Denylist: exclude always wins over include.
+    if (exclude.length > 0 && matches(exclude)) {
       return {};
     }
   }

@@ -30,7 +30,7 @@ scripts/                         Workspace utility scripts
 | `scope:nx-plugins`  | `packages/nx-plugins/`               | private (for now)               |
 | `scope:skill-eval`  | `packages/skill-eval/`               | yes                             |
 
-Apps that get a Docker image also carry `deployable:docker`. Published packages carry `npm:public` (auto-inferred from `package.json` `private` flag).
+Apps that get a Docker image also carry `deployable:docker`; apps that ship as a zip artifact carry `deployable:zip` instead. Published packages carry `npm:public` (auto-inferred from `package.json` `private` flag).
 
 ## What this repo demonstrates
 
@@ -39,7 +39,7 @@ Apps that get a Docker image also carry `deployable:docker`. Published packages 
 - **End-to-end release-to-deploy** — `nx release` creates git tags; Terraform reads them to resolve Docker image versions. No manual version wiring between CI and deployment.
 - **Mixed module formats** — intentionally mixes CJS and ESM across apps and libs with different bundlers (esbuild, webpack, Vite, tsc) to exercise real-world module interop.
 - **Bundled vs. unbundled Docker** — side-by-side comparison of fully bundled single-stage and unbundled multi-stage `pnpm --prod install` strategies.
-- **Three-tier release groups** — `apps` (Docker images), `packages` (npm), and `releases` (a unified version tracker via a phantom project with no code).
+- **Multi-tier release groups** — `apps` (Docker images), `lambda` (zip artifacts, tagged `deployable:zip`), `packages` (npm), and `releases` (a unified version tracker via a phantom project with no code).
 
 ## Setup
 
