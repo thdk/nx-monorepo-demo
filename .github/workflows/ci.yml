@@ -56,7 +56,7 @@ jobs:
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
 
       - name: Build lint test affected projects and prepare apps for containerization
-        run: pnpm exec nx affected --targets lint test build e2e
+        run: pnpm exec nx affected --targets lint test build e2e zip
 
       - name: Version
         run: |
@@ -74,6 +74,8 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # TODO: version and store non container build artifacts (e.g. )
 
       - name: Authenticate GCP
         uses: './.github/actions/authenticate-gcp'
