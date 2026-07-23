@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeCatalogApp",
+  "title": "Scaffold the plugin catalog SPA",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "App project name (also the apps/<name> folder). Default: catalog.",
+      "default": "catalog",
+      "x-prompt": "Catalog app name?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "directory": {
+      "type": "string",
+      "description": "Workspace-relative directory for the app. Default: apps/<name>."
+    },
+    "base": {
+      "type": "string",
+      "description": "Vite base path for static hosting (e.g. '/repo/' for GitHub Pages). Default: './' (works under any subpath).",
+      "default": "./"
+    },
+    "dataProject": {
+      "type": "string",
+      "description": "Nx project that owns the catalog data target.",
+      "default": "inthepocket"
+    },
+    "dataTarget": {
+      "type": "string",
+      "description": "Catalog data target name to depend on.",
+      "default": "catalog"
+    }
+  },
+  "required": []
+}

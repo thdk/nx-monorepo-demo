@@ -1,0 +1,25 @@
+{
+  "name": "nx-claude",
+  "version": "0.0.1",
+  "private": false,
+  "type": "commonjs",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./version-actions": "./src/version-actions.ts",
+    "./package.json": "./package.json",
+    "./executors.json": "./executors.json",
+    "./generators.json": "./generators.json",
+    "./catalog.schema.json": "./src/schemas/catalog.schema.json"
+  },
+  "executors": "./executors.json",
+  "generators": "./generators.json",
+  "dependencies": {
+    "@nx/devkit": "21.6.11",
+    "ajv": "^8.17.1",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.21"
+  }
+}

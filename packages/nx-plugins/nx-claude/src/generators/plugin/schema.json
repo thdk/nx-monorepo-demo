@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudePlugin",
+  "title": "Create a Claude plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin leaf name (kebab-case, e.g. payments). Slashes add sub-namespaces under the directory.",
+      "x-prompt": "Plugin name?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "directory": {
+      "type": "string",
+      "description": "Workspace-relative parent directory. Default: plugins. Use e.g. 'plugins/team-a' to nest under a namespace."
+    },
+    "pluginName": {
+      "type": "string",
+      "description": "Explicit plugin + marketplace name. Defaults to <namePrefix><path-based-name>."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description for plugin.json and README."
+    }
+  },
+  "required": ["name"]
+}

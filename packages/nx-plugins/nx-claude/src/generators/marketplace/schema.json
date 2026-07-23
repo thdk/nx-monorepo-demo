@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeMarketplace",
+  "title": "Create a Claude marketplace",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Workspace-relative path to the marketplace.json to create (e.g. .claude-plugin/marketplace.json).",
+      "x-prompt": "Marketplace file path?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "name": {
+      "type": "string",
+      "description": "Marketplace name. Default: the file name without extension."
+    },
+    "owner": {
+      "type": "string",
+      "description": "Owner name. Default: the configured owner, or a placeholder."
+    }
+  },
+  "required": ["path"]
+}
