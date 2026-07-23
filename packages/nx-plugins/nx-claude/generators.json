@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "generators": {
+    "plugin": {
+      "factory": "./src/generators/plugin/generator",
+      "schema": "./src/generators/plugin/schema.json",
+      "description": "Scaffold a new Claude plugin folder and register it in marketplace.json."
+    },
+    "remove": {
+      "factory": "./src/generators/remove/generator",
+      "schema": "./src/generators/remove/schema.json",
+      "description": "Delete a Claude plugin folder and remove its marketplace.json entries."
+    },
+    "marketplace": {
+      "factory": "./src/generators/marketplace/generator",
+      "schema": "./src/generators/marketplace/schema.json",
+      "description": "Create a new, empty Claude marketplace.json."
+    },
+    "catalog-app": {
+      "factory": "./src/generators/catalog-app/generator",
+      "schema": "./src/generators/catalog-app/schema.json",
+      "description": "Scaffold a static Vite + React SPA that renders the plugin catalog JSON."
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeRemovePlugin",
+  "title": "Remove a Claude plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin to remove: its folder path (e.g. plugins/team-a/payments) or its marketplace name (e.g. team-a-payments).",
+      "x-prompt": "Which plugin to remove (folder path under plugins/, or its marketplace name)?",
+      "$default": { "$source": "argv", "index": 0 }
+    }
+  },
+  "required": ["name"]
+}

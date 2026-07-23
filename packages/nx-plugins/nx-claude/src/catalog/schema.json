@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "outputPath": {
+      "type": "string",
+      "description": "Workspace-relative path to write the aggregated catalog JSON.",
+      "default": "dist/catalog/plugins-catalog.json"
+    },
+    "pretty": {
+      "type": "boolean",
+      "description": "Pretty-print the JSON (2-space indent).",
+      "default": true
+    },
+    "warnOnMissing": {
+      "type": "boolean",
+      "description": "Warn and skip a plugin when its source/manifest is missing or malformed, instead of failing.",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

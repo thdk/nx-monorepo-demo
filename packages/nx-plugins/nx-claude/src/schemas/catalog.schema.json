@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nx-claude/catalog.schema.json",
+  "title": "Aggregated plugin catalog (plugins-catalog.json)",
+  "type": "object",
+  "required": ["schemaVersion", "marketplace", "plugins"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "marketplace": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "owner": { "$ref": "#/definitions/person" },
+        "description": { "type": "string" }
+      }
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "source", "path", "skills"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "source": { "type": "string" },
+          "path": { "type": "array", "items": { "type": "string" } },
+          "strict": { "type": "boolean" },
+          "description": { "type": "string" },
+          "keywords": { "type": "array", "items": { "type": "string" } },
+          "author": { "$ref": "#/definitions/person" },
+          "repository": { "type": "string" },
+          "license": { "type": "string" },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "description", "userInvocable", "body"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "userInvocable": { "type": "boolean" },
+                "body": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "person": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    }
+  }
+}
