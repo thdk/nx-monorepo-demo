@@ -1,11 +1,10 @@
 {
   "extends": "../../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "emitDeclarationOnly": false,
-    "types": ["node"]
-  },
-  "include": ["src/**/*.ts", "src/**/*.json"],
-  "exclude": ["src/generators/*/files/**"]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
 }

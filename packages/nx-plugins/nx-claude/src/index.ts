@@ -70,7 +70,7 @@ function pluginProject(
   }
 
   const lintTarget: TargetConfiguration = {
-    executor: 'nx-claude:lint',
+    executor: '@thdk/nx-claude:lint',
     cache: true,
     inputs: [
       '{projectRoot}/**/*',
@@ -99,7 +99,7 @@ function pluginProject(
             // first release (no tag yet) fall back to the version in plugin.json.
             currentVersionResolver: 'git-tag',
             fallbackCurrentVersionResolver: 'disk',
-            versionActions: 'nx-claude/version-actions',
+            versionActions: '@thdk/nx-claude/version-actions',
           },
         },
       },
@@ -130,7 +130,7 @@ function marketplaceProject(
   }
 
   const catalogTarget: TargetConfiguration = {
-    executor: 'nx-claude:catalog',
+    executor: '@thdk/nx-claude:catalog',
     cache: true,
     // Scope inputs to the metadata the catalog is built from — NOT the whole repo (which is what
     // a root project's default {projectRoot}/**/* would be).
