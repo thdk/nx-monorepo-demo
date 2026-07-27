@@ -101,7 +101,16 @@
     {
       "plugin": "@thdk/nx-pnpm-deploy/plugin",
       "options": {
+        "include": ["tag:deployable:docker", "tag:deployable:zip", "node-tsc"],
         "exclude": ["node-nest-webpack", "node-fastify-tsc"]
+      }
+    },
+    {
+      "plugin": "@thdk/nx-zip/plugin",
+      "options": {
+        "include": ["tag:deployable:zip"],
+        "srcDir": "out",
+        "outputDir": "tmp"
       }
     },
     {
@@ -182,6 +191,10 @@
       "dependsOn": ["build", "prune"]
     },
     {
+      "target": "zip",
+      "dependsOn": ["build", "prune"]
+    },
+    {
       "target": "prune-lockfile",
       "dependsOn": ["build"],
       "cache": true,
@@ -249,6 +262,13 @@
       }
     },
     "groups": {
+      "lambda": {
+        "projects": ["tag:deployable:zip"],
+        "releaseTag": {
+          "pattern": "{projectName}@{version}"
+        },
+        "changelog": false
+      },
       "apps": {
         "projects": ["tag:deployable:docker"],
         "projectsRelationship": "independent",
