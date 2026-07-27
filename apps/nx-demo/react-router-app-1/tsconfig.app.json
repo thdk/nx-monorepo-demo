@@ -11,7 +11,8 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "app",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "ignoreDeprecations": "6.0"
   },
   "include": [
     "app/**/*.ts",

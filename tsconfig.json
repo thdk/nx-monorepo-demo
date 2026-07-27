@@ -60,5 +60,8 @@
     {
       "path": "./packages/nx-plugins/nx-claude"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0"
+  }
 }
