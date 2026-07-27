@@ -72,8 +72,11 @@ export default async function catalogAppGenerator(
 
   patchAppTsconfig(tree, directory);
   patchViteBase(tree, directory, base);
-  scopeVitePlugin(tree);
-  wireDataTargets(tree, directory, name, dataProject, dataTarget);
+  const viteOptions = scopeVitePlugin(tree);
+  wireDataTargets(tree, directory, name, dataProject, dataTarget, [
+    viteOptions.buildTargetName ?? 'build',
+    viteOptions.serveTargetName ?? 'serve',
+  ]);
   addDependenciesToPackageJson(tree, { marked: MARKED_VERSION }, {});
 
   return () => installPackagesTask(tree);
@@ -114,17 +117,17 @@ function patchViteBase(tree: Tree, dir: string, base: string): void {
   }
 }
 
+type VitePluginOptions = {
+  buildTargetName?: string;
+  serveTargetName?: string;
+  [key: string]: unknown;
+};
+
 // @nx/react registers an unscoped @nx/vite/plugin; scope it to apps/** so it never tries to
 // load stray vite configs shipped as skill starter templates under plugins/.
-function scopeVitePlugin(tree: Tree): void {
-  const nx = readNxJson(tree);
-  if (!nx?.plugins) return;
-  const nameOf = (pl: unknown): string | undefined =>
-    typeof pl === 'string' ? pl : (pl as { plugin?: string })?.plugin;
-  const existing = nx.plugins.find((pl) => nameOf(pl) === VITE_PLUGIN);
-  const options = (existing &&
-    typeof existing !== 'string' &&
-    (existing as { options?: unknown }).options) || {
+// Returns the resolved plugin options so callers can wire dependsOn to the real target names.
+function scopeVitePlugin(tree: Tree): VitePluginOptions {
+  const defaults: VitePluginOptions = {
     buildTargetName: 'build',
     serveTargetName: 'serve',
     previewTargetName: 'preview',
@@ -132,11 +135,22 @@ function scopeVitePlugin(tree: Tree): void {
     serveStaticTargetName: 'serve-static',
     typecheckTargetName: 'typecheck',
   };
+  const nx = readNxJson(tree);
+  if (!nx?.plugins) return defaults;
+  const nameOf = (pl: unknown): string | undefined =>
+    typeof pl === 'string' ? pl : (pl as { plugin?: string })?.plugin;
+  const existing = nx.plugins.find((pl) => nameOf(pl) === VITE_PLUGIN);
+  const options: VitePluginOptions =
+    (existing &&
+      typeof existing !== 'string' &&
+      (existing as { options?: VitePluginOptions }).options) ||
+    defaults;
   nx.plugins = [
     ...nx.plugins.filter((pl) => nameOf(pl) !== VITE_PLUGIN),
     { plugin: VITE_PLUGIN, include: ['apps/**'], options },
   ];
   updateNxJson(tree, nx);
+  return options;
 }
 
 // Wire data: sync-data copies the produced catalog JSON into public/; build + serve depend on it.
@@ -147,6 +161,7 @@ function wireDataTargets(
   name: string,
   dataProject: string,
   dataTarget: string,
+  consumerTargets: readonly string[],
 ): void {
   const cfg = readProjectConfiguration(tree, name);
   cfg.targets ??= {};
@@ -165,7 +180,7 @@ function wireDataTargets(
     options: { command },
     dependsOn: [`${dataProject}:${dataTarget}`],
   };
-  for (const t of ['build', 'serve'] as const) {
+  for (const t of consumerTargets) {
     const prev = cfg.targets[t] ?? {};
     cfg.targets[t] = {
       ...prev,
