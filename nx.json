@@ -351,5 +351,8 @@
       "automaticFromRef": true
     }
   },
-  "analytics": true
+  "analytics": true,
+  "migrate": {
+    "agentic": true
+  }
 }
