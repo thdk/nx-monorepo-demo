@@ -20,11 +20,6 @@
       "description": "Vite base path for static hosting (e.g. '/repo/' for GitHub Pages). Default: './' (works under any subpath).",
       "default": "./"
     },
-    "dataProject": {
-      "type": "string",
-      "description": "Nx project that owns the catalog data target.",
-      "default": "inthepocket"
-    },
     "dataTarget": {
       "type": "string",
       "description": "Catalog data target name to depend on.",

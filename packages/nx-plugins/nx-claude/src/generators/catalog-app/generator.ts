@@ -4,6 +4,7 @@ import {
   addDependenciesToPackageJson,
   ensurePackage,
   generateFiles,
+  getProjects,
   installPackagesTask,
   joinPathFragments,
   readNxJson,
@@ -28,8 +29,18 @@ export default async function catalogAppGenerator(
     '',
   );
   const base = options.base ?? './';
-  const dataProject = options.dataProject ?? 'inthepocket';
   const dataTarget = options.dataTarget ?? 'catalog';
+
+  // The catalog data target lives on the root workspace project; resolve its Nx name from the
+  // graph (the truth for dependsOn — not necessarily the npm package name if nx.name overrides it).
+  const dataProject = [...getProjects(tree)].find(
+    ([, cfg]) => cfg.root === '.',
+  )?.[0];
+  if (!dataProject) {
+    throw new Error(
+      'Could not resolve the root workspace project that owns the catalog data target.',
+    );
+  }
 
   if (tree.exists(directory)) {
     throw new Error(
