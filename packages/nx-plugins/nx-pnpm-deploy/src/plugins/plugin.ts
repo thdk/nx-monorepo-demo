@@ -1,8 +1,8 @@
 import {
-  CreateNodesContextV2,
+  CreateNodesContext,
   createNodesFromFiles,
   CreateNodesResult,
-  CreateNodesV2,
+  CreateNodes,
   readJsonFile,
   type ProjectGraphProjectNode,
 } from '@nx/devkit';
@@ -37,7 +37,7 @@ export interface NxPnpmDeployPluginOptions {
   exclude?: string[];
 }
 
-export const createNodesV2: CreateNodesV2<NxPnpmDeployPluginOptions> = [
+export const createNodesV2: CreateNodes<NxPnpmDeployPluginOptions> = [
   '**/Dockerfile',
   async (configFiles, options, context) => {
     if (!existsSync(join(context.workspaceRoot, 'pnpm-lock.yaml'))) {
@@ -47,7 +47,7 @@ export const createNodesV2: CreateNodesV2<NxPnpmDeployPluginOptions> = [
       (configFile, opts, ctx) => createNodesInternal(configFile, opts, ctx),
       configFiles,
       options,
-      context
+      context,
     );
   },
 ];
@@ -55,7 +55,7 @@ export const createNodesV2: CreateNodesV2<NxPnpmDeployPluginOptions> = [
 async function createNodesInternal(
   configFilePath: string,
   options: NxPnpmDeployPluginOptions | undefined = {},
-  _context: CreateNodesContextV2
+  _context: CreateNodesContext,
 ): Promise<CreateNodesResult> {
   const projectRoot = dirname(configFilePath);
   const projectJsonPath = join(projectRoot, 'project.json');

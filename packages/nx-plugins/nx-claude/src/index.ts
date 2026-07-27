@@ -1,7 +1,7 @@
 import {
-  type CreateNodesContextV2,
+  type CreateNodesContext,
   type CreateNodesResult,
-  type CreateNodesV2,
+  type CreateNodes,
   type TargetConfiguration,
   createNodesFromFiles,
 } from '@nx/devkit';
@@ -21,7 +21,7 @@ export interface NxClaudePluginOptions {
 // Nx globs match files, not folders, so we match both manifest names and branch on basename.
 const MANIFEST_GLOB = '**/.claude-plugin/{plugin,marketplace}.json';
 
-export const createNodesV2: CreateNodesV2<NxClaudePluginOptions> = [
+export const createNodesV2: CreateNodes<NxClaudePluginOptions> = [
   MANIFEST_GLOB,
   async (configFiles, options, context) => {
     return await createNodesFromFiles(
@@ -37,7 +37,7 @@ export const createNodesV2: CreateNodesV2<NxClaudePluginOptions> = [
 function createNodesInternal(
   manifestPath: string,
   options: NxClaudePluginOptions,
-  context: CreateNodesContextV2,
+  context: CreateNodesContext,
 ): CreateNodesResult {
   const base = basename(manifestPath);
   if (base === 'plugin.json')
@@ -52,7 +52,7 @@ function createNodesInternal(
 function pluginProject(
   manifestPath: string,
   options: NxClaudePluginOptions,
-  context: CreateNodesContextV2,
+  context: CreateNodesContext,
 ): CreateNodesResult {
   const projectRoot = dirname(dirname(manifestPath)); // plugins/<name>
   if (projectRoot !== 'plugins' && !projectRoot.startsWith('plugins/'))
@@ -113,7 +113,7 @@ function pluginProject(
 function marketplaceProject(
   manifestPath: string,
   options: NxClaudePluginOptions,
-  context: CreateNodesContextV2,
+  context: CreateNodesContext,
 ): CreateNodesResult {
   const projectRoot = dirname(dirname(manifestPath)); // "." for the repo-root marketplace
   if (projectRoot !== '.') return {};
