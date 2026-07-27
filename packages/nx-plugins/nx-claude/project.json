@@ -1,0 +1,12 @@
+{
+  "targets": {
+    "nx-release-publish": {
+      "options": {
+        "registry": "https://registry.npmjs.org/",
+        "access": "public"
+      }
+    }
+  },
+  "tags": ["npm:public", "scope:nx-claude"],
+  "name": "nx-claude"
+}
