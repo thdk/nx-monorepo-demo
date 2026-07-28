@@ -156,33 +156,27 @@
       }
     }
   ],
-  "targetDefaults": [
-    {
-      "target": "lint",
+  "targetDefaults": {
+    "lint": {
       "dependsOn": ["build"]
     },
-    {
-      "executor": "@nx/esbuild:esbuild",
+    "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    {
-      "target": "test",
+    "test": {
       "dependsOn": ["^build"]
     },
-    {
-      "executor": "@nx/js:tsc",
+    "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    {
-      "target": "docker:build",
+    "docker:build": {
       "dependsOn": ["build", "prune"]
     },
-    {
-      "target": "prune-lockfile",
+    "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
@@ -194,8 +188,7 @@
         "buildTarget": "build"
       }
     },
-    {
-      "target": "copy-workspace-modules",
+    "copy-workspace-modules": {
       "dependsOn": ["build"],
       "cache": true,
       "outputs": ["{projectRoot}/dist/workspace_modules"],
@@ -204,7 +197,7 @@
         "buildTarget": "build"
       }
     }
-  ],
+  },
   "generators": {
     "@nx/react": {
       "application": {
