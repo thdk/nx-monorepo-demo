@@ -74,6 +74,7 @@ export default async function catalogAppGenerator(
   wireDataTargets(tree, directory, dataProject, dataTarget, [
     viteOptions.buildTargetName ?? 'build',
     viteOptions.serveTargetName ?? 'serve',
+    viteOptions.devTargetName ?? 'dev',
   ]);
   addDependenciesToPackageJson(tree, { marked: MARKED_VERSION }, {});
 
@@ -118,6 +119,7 @@ function patchViteBase(tree: Tree, dir: string, base: string): void {
 type VitePluginOptions = {
   buildTargetName?: string;
   serveTargetName?: string;
+  devTargetName?: string;
   [key: string]: unknown;
 };
 
@@ -128,6 +130,7 @@ function scopeVitePlugin(tree: Tree): VitePluginOptions {
   const defaults: VitePluginOptions = {
     buildTargetName: 'build',
     serveTargetName: 'serve',
+    devTargetName: 'dev',
     previewTargetName: 'preview',
     testTargetName: 'test',
     serveStaticTargetName: 'serve-static',
@@ -187,8 +190,6 @@ function wireDataTargets(
       const prev = json.targets[t] ?? {};
       json.targets[t] = {
         ...prev,
-        // '...' is Nx's spread token: at graph time it expands to the inferred target's own
-        // dependsOn, so we AUGMENT inference (append sync-data) instead of replacing it.
         dependsOn: [...(prev.dependsOn ?? ['...']), 'sync-data'],
       };
     }
