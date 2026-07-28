@@ -1,10 +1,5 @@
 {
   "implicitDependencies": ["react-router-app-1"],
   "tags": ["scope:nx-demo"],
-  "name": "react-router-app-1-e2e",
-  "targets": {
-    "docker:build": {
-      "dependsOn": ["...", "prune"]
-    }
-  }
+  "name": "react-router-app-1-e2e"
 }

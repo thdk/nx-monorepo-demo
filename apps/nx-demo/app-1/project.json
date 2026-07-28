@@ -2,9 +2,6 @@
   "name": "app-1",
   "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
-    "docker:build": {
-      "dependsOn": ["...", "prune"]
-    },
     "build": {
       "executor": "@nx/esbuild:esbuild",
       "outputs": ["{options.outputPath}"],

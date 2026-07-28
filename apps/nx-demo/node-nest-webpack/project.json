@@ -2,9 +2,6 @@
   "name": "node-nest-webpack",
   "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
-    "docker:build": {
-      "dependsOn": ["...", "prune"]
-    },
     "build": {
       "executor": "nx:run-commands",
       "options": {
