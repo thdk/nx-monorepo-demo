@@ -8,10 +8,8 @@ import {
   installPackagesTask,
   joinPathFragments,
   readNxJson,
-  readProjectConfiguration,
   updateJson,
   updateNxJson,
-  updateProjectConfiguration,
 } from '@nx/devkit';
 import type { CatalogAppGeneratorSchema } from './schema';
 
@@ -73,7 +71,7 @@ export default async function catalogAppGenerator(
   patchAppTsconfig(tree, directory);
   patchViteBase(tree, directory, base);
   const viteOptions = scopeVitePlugin(tree);
-  wireDataTargets(tree, directory, name, dataProject, dataTarget, [
+  wireDataTargets(tree, directory, dataProject, dataTarget, [
     viteOptions.buildTargetName ?? 'build',
     viteOptions.serveTargetName ?? 'serve',
   ]);
@@ -155,16 +153,19 @@ function scopeVitePlugin(tree: Tree): VitePluginOptions {
 
 // Wire data: sync-data copies the produced catalog JSON into public/; build + serve depend on it.
 // The catalog target itself stays app-agnostic (decoupled) — this app owns the sync.
+//
+// Edit project.json DIRECTLY (updateJson), not readProjectConfiguration/updateProjectConfiguration:
+// under Crystal, reads return the merged view (project.json + inferred targets) and writes are
+// literal, so a round-trip would freeze @nx/vite/plugin's inferred build/serve/preview/serve-static
+// into project.json. We only want to persist our own delta and let inference own the rest — so the
+// build/serve overrides carry ONLY dependsOn, which Nx merges on top of the inferred target.
 function wireDataTargets(
   tree: Tree,
   dir: string,
-  name: string,
   dataProject: string,
   dataTarget: string,
   consumerTargets: readonly string[],
 ): void {
-  const cfg = readProjectConfiguration(tree, name);
-  cfg.targets ??= {};
   const dest = `${dir}/public/plugins-catalog.json`;
   const command =
     `node -e "const fs=require('fs');const s='${CATALOG_OUTPUT}';` +
@@ -172,20 +173,25 @@ function wireDataTargets(
     `if(fs.existsSync(s)){fs.copyFileSync(s,'${dest}')}` +
     `else{console.warn('catalog data missing at '+s+' — run nx run ${dataProject}:${dataTarget}')}"`;
 
-  cfg.targets['sync-data'] = {
-    executor: 'nx:run-commands',
-    cache: true,
-    inputs: [`{workspaceRoot}/${CATALOG_OUTPUT}`],
-    outputs: [`{projectRoot}/public/plugins-catalog.json`],
-    options: { command },
-    dependsOn: [`${dataProject}:${dataTarget}`],
-  };
-  for (const t of consumerTargets) {
-    const prev = cfg.targets[t] ?? {};
-    cfg.targets[t] = {
-      ...prev,
-      dependsOn: [...(prev.dependsOn ?? []), 'sync-data'],
+  updateJson(tree, `${dir}/project.json`, (json) => {
+    json.targets ??= {};
+    json.targets['sync-data'] = {
+      executor: 'nx:run-commands',
+      cache: true,
+      inputs: [`{workspaceRoot}/${CATALOG_OUTPUT}`],
+      outputs: [`{projectRoot}/public/plugins-catalog.json`],
+      options: { command },
+      dependsOn: [`${dataProject}:${dataTarget}`],
     };
-  }
-  updateProjectConfiguration(tree, name, cfg);
+    for (const t of consumerTargets) {
+      const prev = json.targets[t] ?? {};
+      json.targets[t] = {
+        ...prev,
+        // '...' is Nx's spread token: at graph time it expands to the inferred target's own
+        // dependsOn, so we AUGMENT inference (append sync-data) instead of replacing it.
+        dependsOn: [...(prev.dependsOn ?? ['...']), 'sync-data'],
+      };
+    }
+    return json;
+  });
 }
