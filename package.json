@@ -48,7 +48,7 @@
         "executor": "nx:run-commands",
         "options": {
           "commands": [
-            "pnpm exec syncpack fix-mismatches",
+            "pnpm exec syncpack fix",
             "pnpm exec syncpack format",
             "pnpm install"
           ],
@@ -76,6 +76,7 @@
     "rxjs": "7.8.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@eslint/js": "9.8.0",
     "@nestjs/schematics": "11.0.0",
     "@nestjs/testing": "11.0.0",
@@ -132,8 +133,9 @@
     "jsonc-eslint-parser": "2.1.0",
     "nx": "23.1.0",
     "prettier": "3.8.1",
+    "publint": "0.3.22",
     "swc-loader": "0.2.7",
-    "syncpack": "13.0.3",
+    "syncpack": "15.3.2",
     "ts-jest": "29.4.1",
     "ts-node": "10.9.1",
     "tslib": "2.8.1",
@@ -148,11 +150,5 @@
     "yargs": "17.7.2",
     "zx": "8.4.1"
   },
-  "packageManager": "pnpm@11.5.0",
-  "workspaces": [
-    "packages/*",
-    "apps/*",
-    "scripts",
-    "tools/*"
-  ]
+  "packageManager": "pnpm@11.5.0"
 }
