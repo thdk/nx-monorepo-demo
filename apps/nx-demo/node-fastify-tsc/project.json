@@ -2,6 +2,9 @@
   "name": "node-fastify-tsc",
   "tags": ["deployable:docker", "scope:nx-demo"],
   "targets": {
+    "docker:build": {
+      "dependsOn": ["...", "prune"]
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
