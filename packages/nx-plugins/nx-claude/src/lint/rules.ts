@@ -6,6 +6,12 @@ import matter from 'gray-matter';
 import pluginSchema from '../schemas/plugin.schema.json';
 import marketplaceSchema from '../schemas/marketplace.schema.json';
 import { sourceFor } from '../marketplace';
+import {
+  RELEASE_GROUP_PROJECTS_MATCHER,
+  RELEASE_TAG_PATTERN,
+  findClaudePluginsReleaseGroup,
+  type ReleaseGroupLike,
+} from '../release-group';
 
 export type Severity = 'error' | 'warning';
 
@@ -64,6 +70,10 @@ const SEVERITY: Record<string, Severity> = {
   F009: 'warning',
   F010: 'warning',
   F011: 'warning',
+  R000: 'error',
+  R001: 'error',
+  R002: 'error',
+  R003: 'warning',
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -157,6 +167,9 @@ export function lintPlugin(params: LintParams): LintResult {
     }
   }
 
+  // ── nx.json release group (tags must be `<plugin-name>--v<version>`) ─────────
+  lintReleaseGroup(workspaceRoot, add);
+
   // ── SKILL.md files ────────────────────────────────────────────────────────────
   const skillsRoot = join(projectRoot, 'skills');
   for (const skillDir of discoverSkillDirs(skillsRoot)) {
@@ -166,6 +179,56 @@ export function lintPlugin(params: LintParams): LintResult {
   const hasError = issues.some((i) => i.severity === 'error');
   const ok = params.warningsAsErrors ? issues.length === 0 : !hasError;
   return { ok, issues };
+}
+
+// Release tag pattern is group-level-only nx.json config, so it cannot be enforced by
+// project inference — the marketplace generator scaffolds it and this rule guards drift.
+function lintReleaseGroup(
+  workspaceRoot: string,
+  add: (
+    scope: string,
+    ruleId: string,
+    message: string,
+    severity?: Severity,
+  ) => void,
+): void {
+  const nxJsonPath = join(workspaceRoot, 'nx.json');
+  let nxJson: {
+    release?: { groups?: Record<string, ReleaseGroupLike> };
+  };
+  try {
+    nxJson = readJson(nxJsonPath) as typeof nxJson;
+  } catch (e) {
+    add('nx.json', 'R000', `could not read nx.json: ${(e as Error).message}`);
+    return;
+  }
+
+  const match = findClaudePluginsReleaseGroup(nxJson.release?.groups);
+  if (!match) {
+    add(
+      'nx.json',
+      'R001',
+      `no release group matches "${RELEASE_GROUP_PROJECTS_MATCHER}"; add one with releaseTag.pattern "${RELEASE_TAG_PATTERN}" (the marketplace generator scaffolds it)`,
+    );
+    return;
+  }
+
+  const pattern = match.group.releaseTag?.pattern;
+  if (pattern !== RELEASE_TAG_PATTERN) {
+    add(
+      'nx.json',
+      'R002',
+      `release group "${match.name}" has releaseTag.pattern ${pattern ? `"${pattern}"` : '(unset)'}; Claude plugin tags must use "${RELEASE_TAG_PATTERN}"`,
+    );
+  }
+
+  if (match.group.projectsRelationship !== 'independent') {
+    add(
+      'nx.json',
+      'R003',
+      `release group "${match.name}" should set projectsRelationship "independent" so plugins version separately`,
+    );
+  }
 }
 
 export function discoverSkillDirs(skillsRoot: string): string[] {

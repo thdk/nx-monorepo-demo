@@ -7,6 +7,7 @@ import {
 } from '@nx/devkit';
 import { existsSync, readFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
+import { CLAUDE_PLUGIN_TAG } from './release-group';
 
 export interface NxClaudePluginOptions {
   /** Name of the inferred lint target on plugin projects. Default: "lint". */
@@ -76,6 +77,8 @@ function pluginProject(
       '{projectRoot}/**/*',
       // The single repo-root marketplace holds this plugin's entry — re-lint on changes.
       '{workspaceRoot}/.claude-plugin/marketplace.json',
+      // Lint validates the claude-plugins release group config — re-lint on changes.
+      '{workspaceRoot}/nx.json',
     ],
     options: {},
     metadata: {
@@ -90,6 +93,9 @@ function pluginProject(
         name: projectName,
         root: projectRoot,
         projectType: 'library',
+        // The claude-plugins release group in nx.json matches on this tag, so every
+        // inferred plugin joins the group without manual configuration.
+        tags: [CLAUDE_PLUGIN_TAG],
         targets: {
           [options.lintTargetName ?? 'lint']: lintTarget,
         },

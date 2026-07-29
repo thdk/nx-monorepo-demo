@@ -64,9 +64,10 @@ if the repo-root marketplace is missing) — create one first with the `marketpl
 ## How detection works
 
 The plugin's `createNodesV2` globs for `plugins/**/.claude-plugin/plugin.json`. Each match
-becomes a project keyed by its folder, named from the manifest's `name`, and given the `lint`
-target and release configuration. There are **no `project.json` files** — delete the plugin
-from `nx.json` and `nx show projects` drops them all.
+becomes a project keyed by its folder, named from the manifest's `name`, tagged
+`claude-plugin` (so the release group matches it), and given the `lint` target and release
+configuration. There are **no `project.json` files** — delete the plugin from `nx.json` and
+`nx show projects` drops them all.
 
 ```bash
 nx show projects                 # every detected plugin
@@ -97,6 +98,8 @@ Executor: `nx-claude:lint`. It runs three groups of checks and fails on any **er
 | SKILL.md    | `F001`–`F003` | error   | `name` present, valid, matches skill dir                                   |
 | SKILL.md    | `F004`–`F007` | error   | `description` present, ≤1024 chars, third-person, not vague                |
 | SKILL.md    | `F008`–`F011` | warning | body ≤500 lines, no backslash paths, listed in README, contains "Use when" |
+| nx.json     | `R000`–`R002` | error   | a release group matches `tag:claude-plugin` with releaseTag pattern `{projectName}--v{version}` |
+| nx.json     | `R003`        | warning | that release group versions plugins independently                          |
 
 Schemas are bundled in `src/schemas/` and are the plugin's validation contract. The
 `SKILL.md` rules follow Anthropic's skill best-practices.
@@ -108,17 +111,23 @@ Option: `--warningsAsErrors` (fail on warnings too).
 Each project gets a release config using a custom `VersionActions` that reads/writes the
 `version` field in `.claude-plugin/plugin.json` — **no `package.json` needed**. Current
 version resolves from the project's git release tag, falling back to the manifest on first
-release.
+release. Release tags follow `<plugin-name>--v<version>` (e.g. `my-plugin--v1.2.0`).
 
-Configure independent, conventional-commit versioning in `nx.json`:
+The `marketplace` generator scaffolds the matching release group into `nx.json` (the tag
+pattern is group-level config that project inference cannot set), and `lint` guards it
+against drift:
 
 ```jsonc
 {
   "release": {
-    "projects": ["plugins/**"],
-    "projectsRelationship": "independent",
-    "version": { "conventionalCommits": true },
-    "changelog": { "projectChangelogs": true },
+    "groups": {
+      "claude-plugins": {
+        "projects": ["tag:claude-plugin"],
+        "projectsRelationship": "independent",
+        "version": { "specifierSource": "conventional-commits" },
+        "releaseTag": { "pattern": "{projectName}--v{version}" },
+      },
+    },
   },
 }
 ```
@@ -160,9 +169,11 @@ nx g nx-claude:marketplace <path> [--name=<name>] [--owner="<owner>"]
 ```
 
 Creates an empty, schema-valid `marketplace.json` (`{ name, owner, plugins: [] }`) at the given
-workspace-relative path. `name` defaults to the file-name stem; `owner` defaults to the `owner`
-plugin option (or a placeholder). Fails if the file already exists. Create the marketplace
-**before** generating plugins into it — for GitHub distribution it must live at the repo root.
+workspace-relative path, and adds the `claude-plugins` release group to `nx.json` if no group
+matches `tag:claude-plugin` yet. `name` defaults to the file-name stem; `owner` defaults to the
+`owner` plugin option (or a placeholder). Fails if the file already exists. Create the
+marketplace **before** generating plugins into it — for GitHub distribution it must live at the
+repo root.
 
 ```bash
 nx g nx-claude:marketplace .claude-plugin/marketplace.json
