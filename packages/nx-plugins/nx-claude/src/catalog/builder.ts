@@ -1,8 +1,25 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
+import { satisfies } from 'semver';
 import { readSkills, type SkillMeta } from '../lint/rules';
 import { MARKETPLACE_PATH } from '../marketplace';
+import {
+  parsePluginDependencies,
+  type PluginDependencyRef,
+} from '../plugin-manifest';
 import type { Person } from '../generators/shared';
+
+export interface CatalogPluginDependency {
+  name: string;
+  /** Declared semver range; absent for bare-name entries (any version). */
+  range?: string;
+  /** True when the name resolves to a plugin in this marketplace. */
+  local: boolean;
+  /** Current version of the local plugin the name resolves to. */
+  resolvedVersion?: string;
+  /** Whether resolvedVersion satisfies range; only present when both exist. */
+  satisfied?: boolean;
+}
 
 export interface CatalogPlugin {
   name: string;
@@ -19,6 +36,8 @@ export interface CatalogPlugin {
   author?: Person;
   repository?: string;
   license?: string;
+  /** Declared plugin dependencies, resolved against this marketplace; omitted when none. */
+  dependencies?: CatalogPluginDependency[];
   skills: SkillMeta[];
 }
 
@@ -130,6 +149,8 @@ export function buildCatalog(params: BuildCatalogParams): CatalogDocument {
   const seenNames = new Set<string>();
   const seenSources = new Set<string>();
   const plugins: CatalogPlugin[] = [];
+  // A dependency may point at a plugin cataloged later, so resolve after the loop.
+  const rawDepsByPlugin = new Map<string, PluginDependencyRef[]>();
 
   for (const entry of entries) {
     const source = typeof entry?.source === 'string' ? entry.source : undefined;
@@ -197,6 +218,9 @@ export function buildCatalog(params: BuildCatalogParams): CatalogDocument {
     // Hierarchy = the segments that distinguish this plugin (common container prefix removed).
     const path = toSegments(rootRel).slice(prefixLen);
 
+    const rawDeps = parsePluginDependencies(manifest);
+    if (rawDeps.length > 0) rawDepsByPlugin.set(name, rawDeps);
+
     const author = normPerson(manifest.author) ?? orgAuthorNorm;
     plugins.push({
       name,
@@ -222,6 +246,26 @@ export function buildCatalog(params: BuildCatalogParams): CatalogDocument {
         ? { license: manifest.license }
         : {}),
       skills: readSkills(join(workspaceRoot, rootRel, 'skills')),
+    });
+  }
+
+  // Resolve dependencies now that every local plugin's version is known. `satisfied`
+  // is computed here (not in the app) so the SPA bundle stays free of semver.
+  const versionByName = new Map(plugins.map((p) => [p.name, p.version]));
+  for (const plugin of plugins) {
+    const rawDeps = rawDepsByPlugin.get(plugin.name);
+    if (!rawDeps) continue;
+    plugin.dependencies = rawDeps.map((dep) => {
+      const resolvedVersion = versionByName.get(dep.name);
+      return {
+        name: dep.name,
+        ...(dep.versionSpec ? { range: dep.versionSpec } : {}),
+        local: resolvedVersion !== undefined,
+        ...(resolvedVersion !== undefined ? { resolvedVersion } : {}),
+        ...(resolvedVersion !== undefined && dep.versionSpec
+          ? { satisfied: satisfies(resolvedVersion, dep.versionSpec) }
+          : {}),
+      };
     });
   }
 

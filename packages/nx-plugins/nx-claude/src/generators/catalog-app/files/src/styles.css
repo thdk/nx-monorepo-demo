@@ -365,6 +365,55 @@ code {
   font-size: 0.83rem;
 }
 
+/* Dependencies / dependents on plugin detail */
+.deps {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.deps li {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.dep-name {
+  font-weight: 600;
+}
+a.dep-name:hover {
+  color: var(--accent);
+}
+.dep-range {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.dep-resolved {
+  color: var(--muted);
+  font-size: 0.83rem;
+}
+.dep-warn {
+  margin-left: 0.4rem;
+  color: #f0b25e;
+  border: 1px solid #f0b25e;
+  border-radius: 4px;
+  padding: 0 0.35rem;
+  font-size: 0.7rem;
+}
+.hint {
+  color: var(--muted);
+  font-size: 0.83rem;
+  margin: 0.25rem 0 0;
+}
+
 /* Rendered SKILL.md */
 .skill-body {
   margin-top: 1.5rem;

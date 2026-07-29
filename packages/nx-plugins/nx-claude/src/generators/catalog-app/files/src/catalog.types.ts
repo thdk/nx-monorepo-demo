@@ -15,6 +15,18 @@ export interface CatalogSkill {
   body: string;
 }
 
+export interface CatalogPluginDependency {
+  name: string;
+  /** Declared semver range; absent for bare-name entries (any version). */
+  range?: string;
+  /** True when the name resolves to a plugin in this marketplace. */
+  local: boolean;
+  /** Current version of the local plugin the name resolves to. */
+  resolvedVersion?: string;
+  /** Whether resolvedVersion satisfies range; only present when both exist. */
+  satisfied?: boolean;
+}
+
 export interface CatalogPlugin {
   name: string;
   version: string;
@@ -27,6 +39,8 @@ export interface CatalogPlugin {
   author?: Person;
   repository?: string;
   license?: string;
+  /** Declared plugin dependencies, resolved against this marketplace; omitted when none. */
+  dependencies?: CatalogPluginDependency[];
   skills: CatalogSkill[];
 }
 

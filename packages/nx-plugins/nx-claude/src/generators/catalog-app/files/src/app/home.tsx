@@ -24,6 +24,15 @@ export function Home({
     return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [catalog]);
 
+  // How many marketplace plugins depend on each plugin — the "blast radius" signal.
+  const usedBy = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of catalog.plugins)
+      for (const d of p.dependencies ?? [])
+        if (d.local) counts.set(d.name, (counts.get(d.name) ?? 0) + 1);
+    return counts;
+  }, [catalog]);
+
   const q = query.trim().toLowerCase();
 
   const plugins = useMemo(
@@ -124,6 +133,8 @@ export function Home({
               {p.description && <p className="desc">{p.description}</p>}
               <p className="counts">
                 {p.skills.length} skill{p.skills.length === 1 ? '' : 's'}
+                {(usedBy.get(p.name) ?? 0) > 0 &&
+                  ` · used by ${usedBy.get(p.name)}`}
               </p>
             </a>
           ))}

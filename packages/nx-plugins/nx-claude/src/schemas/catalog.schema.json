@@ -34,6 +34,21 @@
           "author": { "$ref": "#/definitions/person" },
           "repository": { "type": "string" },
           "license": { "type": "string" },
+          "dependencies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "local"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string" },
+                "range": { "type": "string" },
+                "local": { "type": "boolean" },
+                "resolvedVersion": { "type": "string" },
+                "satisfied": { "type": "boolean" }
+              }
+            }
+          },
           "skills": {
             "type": "array",
             "items": {

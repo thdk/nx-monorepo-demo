@@ -162,6 +162,11 @@ dependent gets a **patch** bump with reason `DEPENDENCY_WAS_BUMPED` — transiti
 `fix:` commit to `secrets-vault` releases `secrets-vault@2.1.1` and automatically bumps
 `deploy-kit` to `3.1.1` with its manifest pointing at `~2.1.1`.
 
+The catalog surfaces all of this: `plugins-catalog.json` carries each plugin's resolved
+dependencies (declared range, current local version, whether the range is satisfied), and
+the catalog app renders "Depends on" / "Used by" sections per plugin plus a "used by N"
+count on the overview cards.
+
 ## Generators
 
 ### `plugin` — scaffold a plugin

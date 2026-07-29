@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Catalog } from '../catalog.types';
 import { href } from '../lib/useHashRoute';
 import { Breadcrumb } from './breadcrumb';
@@ -12,6 +12,17 @@ export function PluginDetail({
 }) {
   const [copied, setCopied] = useState(false);
   const plugin = catalog.plugins.find((p) => p.name === name);
+
+  // Reverse index: plugins in this marketplace that depend on this one. Derived
+  // here rather than emitted by the catalog builder so the document stays normalized.
+  const dependents = useMemo(
+    () =>
+      catalog.plugins.flatMap((p) => {
+        const dep = p.dependencies?.find((d) => d.local && d.name === name);
+        return dep ? [{ plugin: p, range: dep.range }] : [];
+      }),
+    [catalog, name],
+  );
 
   if (!plugin) {
     return (
@@ -81,6 +92,64 @@ export function PluginDetail({
               <span>Keywords</span> {plugin.keywords.join(', ')}
             </div>
           )}
+        </section>
+      )}
+
+      {plugin.dependencies && plugin.dependencies.length > 0 && (
+        <section>
+          <h3>Depends on</h3>
+          <ul className="deps">
+            {plugin.dependencies.map((d) => (
+              <li key={d.name}>
+                {d.local ? (
+                  <a href={href.plugin(d.name)} className="dep-name">
+                    {d.name}
+                  </a>
+                ) : (
+                  <span className="dep-name">
+                    {d.name}
+                    <span className="badge" title="not in this marketplace">
+                      external
+                    </span>
+                  </span>
+                )}
+                <code className="dep-range">{d.range ?? 'any version'}</code>
+                {d.local && d.resolvedVersion && (
+                  <span className="dep-resolved">
+                    currently v{d.resolvedVersion}
+                    {d.satisfied === false && (
+                      <span
+                        className="dep-warn"
+                        title="the current version does not satisfy the declared range"
+                      >
+                        out of range
+                      </span>
+                    )}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {dependents.length > 0 && (
+        <section>
+          <h3>Used by</h3>
+          <p className="hint">
+            These plugins receive a patch release whenever {plugin.name} is
+            released.
+          </p>
+          <ul className="deps">
+            {dependents.map(({ plugin: p, range }) => (
+              <li key={p.name}>
+                <a href={href.plugin(p.name)} className="dep-name">
+                  {p.name}
+                </a>
+                <code className="dep-range">{range ?? 'any version'}</code>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
