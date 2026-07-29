@@ -49,7 +49,9 @@ export default async function catalogAppGenerator(
   // Lazily install + load @nx/react so catalog-only / lint-only workspaces never pull the web
   // stack. Pinned to the workspace's own Nx version (the @nx/* plugins must match it).
   const nxVersion = require('nx/package.json').version as string;
-  const { applicationGenerator } = ensurePackage<any>('@nx/react', nxVersion);
+  const { applicationGenerator: applicationGenerator } = ensurePackage<{
+    applicationGenerator: typeof import('@nx/react').applicationGenerator;
+  }>('@nx/react', nxVersion);
 
   await applicationGenerator(tree, {
     directory,
@@ -63,6 +65,15 @@ export default async function catalogAppGenerator(
     minimal: true,
     useProjectJson: true,
     skipFormat: true,
+    // Force the inference path: without this, workspaces with useInferencePlugins: false or
+    // NX_ADD_PLUGINS=false get legacy executor targets (@nx/vite:build with
+    // outputPath dist/apps/...) written into project.json, defeating wireDataTargets'
+    // dependsOn-only overrides. addPlugin: true makes @nx/vite's init register the plugin
+    // before its configuration generator's hasPlugin check, so no executor targets are
+    // scaffolded. (It may add a second, unscoped registration next to an existing scoped
+    // one — devkit ignores include-scoped entries — but scopeVitePlugin below collapses
+    // duplicates into a single scoped entry.)
+    addPlugin: true,
   });
 
   // Overlay the catalog UI + contract over @nx/react's placeholder app.
@@ -100,17 +111,21 @@ function patchAppTsconfig(tree: Tree, dir: string): void {
 
 // Add a relative Vite base so the static build works under any hosting subpath.
 function patchViteBase(tree: Tree, dir: string, base: string): void {
-  const p = `${dir}/vite.config.ts`;
-  if (!tree.exists(p)) return;
+  // @nx/react emits vite.config.mts on current versions; older ones used vite.config.ts.
+  const p = ['vite.config.mts', 'vite.config.ts']
+    .map((f) => `${dir}/${f}`)
+    .find((f) => tree.exists(f));
+  if (!p) return;
   const src = tree.read(p, 'utf-8') ?? '';
   if (/\n\s*base\s*:/.test(src)) return;
-  const anchor = 'root: __dirname,';
-  if (src.includes(anchor)) {
+  // @nx/react emits `root: import.meta.dirname,` (ESM config) or `root: __dirname,` (older/CJS).
+  const anchor = /root: (?:import\.meta\.dirname|__dirname),/;
+  if (anchor.test(src)) {
     tree.write(
       p,
       src.replace(
         anchor,
-        `root: __dirname,\n  // Relative base so the built site works under any static-hosting subpath.\n  base: '${base}',`,
+        `$&\n  // Relative base so the built site works under any static-hosting subpath.\n  base: '${base}',`,
       ),
     );
   }
