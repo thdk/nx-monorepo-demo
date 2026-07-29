@@ -100,6 +100,8 @@ Executor: `nx-claude:lint`. It runs three groups of checks and fails on any **er
 | SKILL.md    | `F008`–`F011` | warning | body ≤500 lines, no backslash paths, listed in README, contains "Use when" |
 | nx.json     | `R000`–`R002` | error   | a release group matches `tag:claude-plugin` with releaseTag pattern `{projectName}--v{version}` |
 | nx.json     | `R003`        | warning | that release group versions plugins independently                          |
+| plugin.json | `D001`, `D003`| error   | no self-dependency; `version` ranges are valid semver                      |
+| plugin.json | `D002`, `D004`| warning | dependency resolves to a marketplace plugin; no duplicates                 |
 
 Schemas are bundled in `src/schemas/` and are the plugin's validation contract. The
 `SKILL.md` rules follow Anthropic's skill best-practices.
@@ -136,6 +138,29 @@ against drift:
 nx release version --dry-run              # preview per-plugin bumps
 nx release --dry-run                      # version + changelog
 ```
+
+## Plugin dependencies
+
+A manifest may declare dependencies on other plugins, as a bare name or with a semver range:
+
+```jsonc
+{
+  "name": "deploy-kit",
+  "version": "3.1.0",
+  "dependencies": ["audit-logger", { "name": "secrets-vault", "version": "~2.1.0" }],
+}
+```
+
+`createDependencies` turns entries that resolve to a workspace plugin into **static edges**
+in the Nx project graph — they show up in `nx graph` and drive `nx affected`. Names that
+don't match a marketplace plugin are treated as external (lint flags them with `D002`).
+
+Because nx release reads dependencies from the project graph, releasing a plugin also
+handles its dependents (nx release `updateDependents`, on by default): version ranges are
+rewritten preserving the `~`/`^`/`=` prefix (bare names stay unversioned), and each
+dependent gets a **patch** bump with reason `DEPENDENCY_WAS_BUMPED` — transitively. So a
+`fix:` commit to `secrets-vault` releases `secrets-vault@2.1.1` and automatically bumps
+`deploy-kit` to `3.1.1` with its manifest pointing at `~2.1.1`.
 
 ## Generators
 

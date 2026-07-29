@@ -1,13 +1,18 @@
 import {
+  type CreateDependencies,
   type CreateNodesContext,
   type CreateNodesResult,
   type CreateNodes,
+  type RawProjectGraphDependency,
   type TargetConfiguration,
   createNodesFromFiles,
+  validateDependency,
+  DependencyType,
 } from '@nx/devkit';
 import { existsSync, readFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
 import { CLAUDE_PLUGIN_TAG } from './release-group';
+import { parsePluginDependencies } from './plugin-manifest';
 
 export interface NxClaudePluginOptions {
   /** Name of the inferred lint target on plugin projects. Default: "lint". */
@@ -34,6 +39,51 @@ export const createNodesV2: CreateNodes<NxClaudePluginOptions> = [
     );
   },
 ];
+
+// Turn each manifest's `dependencies` array into static graph edges between plugin
+// projects. Project names equal plugin.json names (see pluginProject), so a dependency's
+// `name` maps straight onto a graph node. Entries that don't resolve to a workspace
+// plugin (external marketplace plugins) get no edge — lint reports them instead.
+// The handful of plugin manifests is cheap to re-read, so no filesToProcess filtering.
+export const createDependencies: CreateDependencies<NxClaudePluginOptions> = (
+  _options,
+  context,
+) => {
+  const manifestByProject = new Map<string, string>(); // project name → ws-relative manifest path
+  for (const [projectName, config] of Object.entries(context.projects)) {
+    const root = config.root;
+    if (root !== 'plugins' && !root.startsWith('plugins/')) continue;
+    const manifestPath = `${root}/.claude-plugin/plugin.json`;
+    if (existsSync(join(context.workspaceRoot, manifestPath))) {
+      manifestByProject.set(projectName, manifestPath);
+    }
+  }
+
+  const edges: RawProjectGraphDependency[] = [];
+  for (const [projectName, manifestPath] of manifestByProject) {
+    let manifest: unknown;
+    try {
+      manifest = JSON.parse(
+        readFileSync(join(context.workspaceRoot, manifestPath), 'utf8'),
+      );
+    } catch {
+      continue; // malformed manifests are lint's job, not the graph's
+    }
+    for (const dep of parsePluginDependencies(manifest)) {
+      if (dep.name === projectName || !manifestByProject.has(dep.name))
+        continue;
+      const edge: RawProjectGraphDependency = {
+        source: projectName,
+        target: dep.name,
+        type: DependencyType.static,
+        sourceFile: manifestPath,
+      };
+      validateDependency(edge, context);
+      edges.push(edge);
+    }
+  }
+  return edges;
+};
 
 function createNodesInternal(
   manifestPath: string,

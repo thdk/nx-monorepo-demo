@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { basename, join } from 'path';
 import Ajv, { type ErrorObject } from 'ajv';
 import matter from 'gray-matter';
+import { validRange } from 'semver';
 
 import pluginSchema from '../schemas/plugin.schema.json';
 import marketplaceSchema from '../schemas/marketplace.schema.json';
@@ -12,6 +13,7 @@ import {
   findClaudePluginsReleaseGroup,
   type ReleaseGroupLike,
 } from '../release-group';
+import { parsePluginDependencies } from '../plugin-manifest';
 
 export type Severity = 'error' | 'warning';
 
@@ -74,6 +76,10 @@ const SEVERITY: Record<string, Severity> = {
   R001: 'error',
   R002: 'error',
   R003: 'warning',
+  D001: 'error',
+  D002: 'warning',
+  D003: 'error',
+  D004: 'warning',
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -109,11 +115,11 @@ export function lintPlugin(params: LintParams): LintResult {
 
   // ── plugin.json ────────────────────────────────────────────────────────────
   const pluginJsonPath = join(projectRoot, '.claude-plugin', 'plugin.json');
+  let pluginJson: any;
 
   if (!existsSync(pluginJsonPath)) {
     add('plugin.json', 'P000', '.claude-plugin/plugin.json is missing');
   } else {
-    let pluginJson: any;
     try {
       pluginJson = readJson(pluginJsonPath);
     } catch (e) {
@@ -129,6 +135,7 @@ export function lintPlugin(params: LintParams): LintResult {
   }
 
   // ── marketplace.json entry (repo-root; a repo has exactly one marketplace) ────
+  const marketplacePluginNames = new Set<string>();
   const marketplacePath = join(workspaceRoot, marketplacePathRel);
   if (!existsSync(marketplacePath)) {
     add(
@@ -153,6 +160,9 @@ export function lintPlugin(params: LintParams): LintResult {
       const entries: any[] = Array.isArray(marketplace.plugins)
         ? marketplace.plugins
         : [];
+      for (const p of entries) {
+        if (typeof p?.name === 'string') marketplacePluginNames.add(p.name);
+      }
       const referenced = entries.some((p) => {
         const src = typeof p?.source === 'string' ? p.source : undefined;
         return src === expected || src === expected.replace(/^\.\//, '');
@@ -167,6 +177,9 @@ export function lintPlugin(params: LintParams): LintResult {
     }
   }
 
+  // ── dependencies on other plugins ────────────────────────────────────────────
+  if (pluginJson) lintDependencies(pluginJson, marketplacePluginNames, add);
+
   // ── nx.json release group (tags must be `<plugin-name>--v<version>`) ─────────
   lintReleaseGroup(workspaceRoot, add);
 
@@ -179,6 +192,46 @@ export function lintPlugin(params: LintParams): LintResult {
   const hasError = issues.some((i) => i.severity === 'error');
   const ok = params.warningsAsErrors ? issues.length === 0 : !hasError;
   return { ok, issues };
+}
+
+// Dependency shape is validated by the schema (P001); these rules check what a schema
+// can't: self-references, duplicates, unresolvable names, and unparsable semver ranges.
+function lintDependencies(
+  pluginJson: unknown,
+  marketplacePluginNames: Set<string>,
+  add: (
+    scope: string,
+    ruleId: string,
+    message: string,
+    severity?: Severity,
+  ) => void,
+): void {
+  const ownName = (pluginJson as { name?: unknown })?.name;
+  const seen = new Set<string>();
+  for (const dep of parsePluginDependencies(pluginJson)) {
+    if (dep.name === ownName) {
+      add('plugin.json', 'D001', `plugin depends on itself ("${dep.name}")`);
+      continue;
+    }
+    if (seen.has(dep.name)) {
+      add('plugin.json', 'D004', `duplicate dependency "${dep.name}"`);
+    }
+    seen.add(dep.name);
+    if (dep.versionSpec && validRange(dep.versionSpec) === null) {
+      add(
+        'plugin.json',
+        'D003',
+        `dependency "${dep.name}" has invalid semver range "${dep.versionSpec}"`,
+      );
+    }
+    if (!marketplacePluginNames.has(dep.name)) {
+      add(
+        'plugin.json',
+        'D002',
+        `dependency "${dep.name}" is not in the workspace marketplace; assuming an external plugin (no graph edge, no auto-bump)`,
+      );
+    }
+  }
 }
 
 // Release tag pattern is group-level-only nx.json config, so it cannot be enforced by
