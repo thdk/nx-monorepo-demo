@@ -23,7 +23,9 @@ export default async function moveSkillGenerator(
     throw new Error(`No plugin found for --to="${options.to}".`);
   }
   if (fromFolder === toFolder) {
-    throw new Error(`--from and --to resolve to the same plugin (${fromFolder}).`);
+    throw new Error(
+      `--from and --to resolve to the same plugin (${fromFolder}).`,
+    );
   }
 
   const skillName = names(options.name).fileName;

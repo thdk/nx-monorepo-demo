@@ -24,7 +24,12 @@
       "description": "Other Claude plugins this plugin depends on: a plugin name, or { name, version } with a semver range.",
       "items": {
         "oneOf": [
-          { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z0-9-]+$" },
+          {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9-]+$"
+          },
           {
             "type": "object",
             "required": ["name"],

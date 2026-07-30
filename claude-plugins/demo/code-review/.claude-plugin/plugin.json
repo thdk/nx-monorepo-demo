@@ -5,10 +5,6 @@
   "author": {
     "name": "Thomas Dekiere"
   },
-  "keywords": [
-    "skills"
-  ],
-  "dependencies": [
-    "demo-git-workflows"
-  ]
+  "keywords": ["skills"],
+  "dependencies": ["demo-git-workflows"]
 }

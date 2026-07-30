@@ -18,17 +18,17 @@ file changes.
 
 ## Pick the generator by intent
 
-| You want to… | Generator |
-| --- | --- |
-| Create a new plugin folder + register it in the marketplace | `plugin` |
-| Add a lint-clean starter skill to an existing plugin | `skill` |
-| Move a skill between plugins (rewrites both READMEs + references) | `move-skill` |
-| Move/rename a plugin folder (updates marketplace + dependents) | `move-plugin` |
-| Delete a skill from a plugin | `remove-skill` |
-| Delete a plugin folder + its marketplace entries | `remove-plugin` |
-| Add plugin.json dependencies implied by plugin:skill references | `sync-deps` |
-| Create a new, empty marketplace.json | `marketplace` |
-| Scaffold the static catalog SPA that renders the plugin catalog | `catalog-app` |
+| You want to…                                                      | Generator       |
+| ----------------------------------------------------------------- | --------------- |
+| Create a new plugin folder + register it in the marketplace       | `plugin`        |
+| Add a lint-clean starter skill to an existing plugin              | `skill`         |
+| Move a skill between plugins (rewrites both READMEs + references) | `move-skill`    |
+| Move/rename a plugin folder (updates marketplace + dependents)    | `move-plugin`   |
+| Delete a skill from a plugin                                      | `remove-skill`  |
+| Delete a plugin folder + its marketplace entries                  | `remove-plugin` |
+| Add plugin.json dependencies implied by plugin:skill references   | `sync-deps`     |
+| Create a new, empty marketplace.json                              | `marketplace`   |
+| Scaffold the static catalog SPA that renders the plugin catalog   | `catalog-app`   |
 
 Discover the exact flags with `pnpm nx g @thdk/nx-claude:<generator> --help`.
 

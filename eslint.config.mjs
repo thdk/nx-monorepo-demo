@@ -5,16 +5,16 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-      "ignores": [
-        "**/dist",
-        "**/out-tsc",
-        "**/out",
-        "**/vite.config.*.timestamp*",
-        "**/vitest.config.*.timestamp*",
-        "**/build",
-        "**/.react-router",
-        "**/test-output"
-      ]
+    ignores: [
+      '**/dist',
+      '**/out-tsc',
+      '**/out',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+      '**/build',
+      '**/.react-router',
+      '**/test-output',
+    ],
   },
   {
     files: ['**/*.json'],

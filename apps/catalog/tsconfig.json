@@ -10,10 +10,6 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "bundler",
-    "lib": [
-      "es2022",
-      "dom",
-      "dom.iterable"
-    ]
+    "lib": ["es2022", "dom", "dom.iterable"]
   }
 }

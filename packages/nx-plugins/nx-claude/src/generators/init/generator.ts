@@ -53,7 +53,9 @@ function logStatus(status: string, dest: string): void {
       console.log(`Updated the nx-claude usage skill at ${dest}.`);
       break;
     case 'unchanged':
-      console.log(`The nx-claude usage skill at ${dest} is already up to date.`);
+      console.log(
+        `The nx-claude usage skill at ${dest} is already up to date.`,
+      );
       break;
     case 'skipped-modified':
       console.warn(
@@ -97,6 +99,8 @@ function linkSkill(tree: Tree, skillDir: string): void {
   symlinkSync(target, linkPath, 'junction');
   console.log(
     `Linked ${joinPathFragments(skillDir, SKILL_SUBDIR)} → ${target}.` +
-      (existsSync(join(linkPath, 'SKILL.md')) ? '' : ' (target has no SKILL.md?)'),
+      (existsSync(join(linkPath, 'SKILL.md'))
+        ? ''
+        : ' (target has no SKILL.md?)'),
   );
 }

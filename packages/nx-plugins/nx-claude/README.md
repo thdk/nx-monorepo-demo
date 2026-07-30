@@ -54,13 +54,13 @@ configure the **generators** only:
 
 ### Options
 
-| Option           | Type                               | Default                 | Description                                                                               |
-| ---------------- | ---------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------- |
-| `lintTargetName` | `string`                           | `"lint"`                | Name of the inferred lint target.                                                         |
+| Option           | Type                               | Default                 | Description                                                                                                                                                                                                                                   |
+| ---------------- | ---------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lintTargetName` | `string`                           | `"lint"`                | Name of the inferred lint target.                                                                                                                                                                                                             |
 | `pluginsRoot`    | `string`                           | `"plugins"`             | Workspace-relative folder plugins live under (any depth), e.g. `"claude-plugins"` or `"packages/claude-plugins"`. `"."` means plugin folders sit directly in the repo root (the repo root itself stays reserved for the marketplace project). |
-| `namePrefix`     | `string`                           | `""`                    | Prefix for **generated** plugin names, e.g. `"acme-"`. Org-specific; the default is none. |
-| `author`         | `string \| { name, email?, url? }` | —                       | Author written into **generated** `plugin.json`. Omitted by default.                      |
-| `owner`          | `{ name, email?, url? }`           | `{ "name": "Unknown" }` | Default owner for the `marketplace` generator.                                            |
+| `namePrefix`     | `string`                           | `""`                    | Prefix for **generated** plugin names, e.g. `"acme-"`. Org-specific; the default is none.                                                                                                                                                     |
+| `author`         | `string \| { name, email?, url? }` | —                       | Author written into **generated** `plugin.json`. Omitted by default.                                                                                                                                                                          |
+| `owner`          | `{ name, email?, url? }`           | `{ "name": "Unknown" }` | Default owner for the `marketplace` generator.                                                                                                                                                                                                |
 
 The plugin ships no organization-specific defaults — set `namePrefix`/`author`/`owner` to your
 org's values in `nx.json`. The `plugin` generator will **not** create a marketplace (it fails
@@ -92,21 +92,21 @@ its `name` matching `plugin.json` (or omit it). For cross-project defaults, use
 
 Executor: `nx-claude:lint`. It runs three groups of checks and fails on any **error**:
 
-| Group       | Rule          | Sev     | Check                                                                      |
-| ----------- | ------------- | ------- | -------------------------------------------------------------------------- |
-| plugin.json | `P000`        | error   | manifest missing / invalid JSON                                            |
-| plugin.json | `P001`        | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver)    |
-| marketplace | `M000`        | error   | repo-root marketplace file missing / invalid JSON                          |
-| marketplace | `M001`        | error   | fails `marketplace.schema.json`                                            |
-| marketplace | `M002`        | error   | no entry whose `source` points at this plugin                              |
-| SKILL.md    | `F000`        | error   | frontmatter parse failure / `SKILL.md` missing                             |
-| SKILL.md    | `F001`–`F003` | error   | `name` present, valid, matches skill dir                                   |
-| SKILL.md    | `F004`–`F007` | error   | `description` present, ≤1024 chars, third-person, not vague                |
-| SKILL.md    | `F008`–`F011` | warning | body ≤500 lines, no backslash paths, listed in README, contains "Use when" |
-| nx.json     | `R000`–`R002` | error   | a release group matches `tag:claude-plugin` with releaseTag pattern `{projectName}--v{version}` |
-| nx.json     | `R003`        | warning | that release group versions plugins independently                          |
-| plugin.json | `D001`, `D003`| error   | no self-dependency; `version` ranges are valid semver                      |
-| plugin.json | `D002`, `D004`| warning | dependency resolves to a marketplace plugin; no duplicates                 |
+| Group       | Rule           | Sev     | Check                                                                                           |
+| ----------- | -------------- | ------- | ----------------------------------------------------------------------------------------------- |
+| plugin.json | `P000`         | error   | manifest missing / invalid JSON                                                                 |
+| plugin.json | `P001`         | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver)                         |
+| marketplace | `M000`         | error   | repo-root marketplace file missing / invalid JSON                                               |
+| marketplace | `M001`         | error   | fails `marketplace.schema.json`                                                                 |
+| marketplace | `M002`         | error   | no entry whose `source` points at this plugin                                                   |
+| SKILL.md    | `F000`         | error   | frontmatter parse failure / `SKILL.md` missing                                                  |
+| SKILL.md    | `F001`–`F003`  | error   | `name` present, valid, matches skill dir                                                        |
+| SKILL.md    | `F004`–`F007`  | error   | `description` present, ≤1024 chars, third-person, not vague                                     |
+| SKILL.md    | `F008`–`F011`  | warning | body ≤500 lines, no backslash paths, listed in README, contains "Use when"                      |
+| nx.json     | `R000`–`R002`  | error   | a release group matches `tag:claude-plugin` with releaseTag pattern `{projectName}--v{version}` |
+| nx.json     | `R003`         | warning | that release group versions plugins independently                                               |
+| plugin.json | `D001`, `D003` | error   | no self-dependency; `version` ranges are valid semver                                           |
+| plugin.json | `D002`, `D004` | warning | dependency resolves to a marketplace plugin; no duplicates                                      |
 
 Schemas are bundled in `src/schemas/` and are the plugin's validation contract. The
 `SKILL.md` rules follow Anthropic's skill best-practices.
@@ -152,7 +152,10 @@ A manifest may declare dependencies on other plugins, as a bare name or with a s
 {
   "name": "deploy-kit",
   "version": "3.1.0",
-  "dependencies": ["audit-logger", { "name": "secrets-vault", "version": "~2.1.0" }],
+  "dependencies": [
+    "audit-logger",
+    { "name": "secrets-vault", "version": "~2.1.0" },
+  ],
 }
 ```
 
@@ -257,7 +260,7 @@ nx g nx-claude:move-plugin <plugin> <destination> [--newName=<name>]
 ```
 
 Moves the plugin folder to a new location **under the configured `pluginsRoot`** and repoints the marketplace
-entry's `source`. Dependents reference plugins by *name*, so a pure move needs nothing more.
+entry's `source`. Dependents reference plugins by _name_, so a pure move needs nothing more.
 With `--newName` it also renames the plugin: `plugin.json` `name`, the marketplace entry,
 every dependent's `dependencies` entry (bare string or `{ name, version }` — ranges are
 preserved), and `old-name:<skill>` references in skill markdown. Note that release tags

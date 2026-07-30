@@ -43,7 +43,8 @@ export default class ClaudePluginVersionActions extends VersionActions {
     dependencyProjectName: string,
   ) {
     const raw = tree.read(this.manifestPath, 'utf8');
-    if (raw === null) return { currentVersion: null, dependencyCollection: null };
+    if (raw === null)
+      return { currentVersion: null, dependencyCollection: null };
     const dep = parsePluginDependencies(JSON.parse(raw)).find(
       (d) => d.name === dependencyProjectName,
     );

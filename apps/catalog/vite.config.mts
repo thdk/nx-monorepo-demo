@@ -7,11 +7,11 @@ export default defineConfig(() => ({
   // Relative base so the built site works under any static-hosting subpath.
   base: './',
   cacheDir: '../../node_modules/.vite/apps/catalog',
-  server:{
+  server: {
     port: 4200,
     host: 'localhost',
   },
-  preview:{
+  preview: {
     port: 4300,
     host: 'localhost',
   },
@@ -29,6 +29,6 @@ export default defineConfig(() => ({
     },
   },
   define: {
-    'import.meta.vitest': undefined
+    'import.meta.vitest': undefined,
   },
 }));

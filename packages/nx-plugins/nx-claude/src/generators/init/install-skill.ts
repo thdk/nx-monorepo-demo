@@ -39,7 +39,11 @@ function pluginVersion(): string {
 }
 
 /** Render the shipped skill with its provenance marker injected into the frontmatter. */
-function renderShippedSkill(): { rendered: string; hash: string; version: string } {
+function renderShippedSkill(): {
+  rendered: string;
+  hash: string;
+  version: string;
+} {
   const raw = readFileSync(
     join(__dirname, 'files', SKILL_SUBDIR, 'SKILL.md'),
     'utf-8',
@@ -93,7 +97,10 @@ export function installSkill(
   if (current.data['x-managed-hash'] !== bodyHash(current.content)) {
     return { status: 'skipped-modified', dest };
   }
-  if (current.data['x-managed-version'] === version && bodyHash(current.content) === hash) {
+  if (
+    current.data['x-managed-version'] === version &&
+    bodyHash(current.content) === hash
+  ) {
     return { status: 'unchanged', dest };
   }
   tree.write(dest, rendered);

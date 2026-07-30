@@ -5,9 +5,7 @@
   "author": {
     "name": "Thomas Dekiere"
   },
-  "keywords": [
-    "skills"
-  ],
+  "keywords": ["skills"],
   "dependencies": [
     "demo-code-review",
     {

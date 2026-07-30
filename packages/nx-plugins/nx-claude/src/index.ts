@@ -114,7 +114,9 @@ function pluginProject(
   context: CreateNodesContext,
 ): CreateNodesResult {
   const projectRoot = dirname(dirname(manifestPath)); // <pluginsRoot>/<name>
-  if (!isUnderPluginsRoot(projectRoot, normalizePluginsRoot(options.pluginsRoot)))
+  if (
+    !isUnderPluginsRoot(projectRoot, normalizePluginsRoot(options.pluginsRoot))
+  )
     return {};
 
   const absManifest = join(context.workspaceRoot, manifestPath);

@@ -42,7 +42,9 @@ export default async function movePluginGenerator(
     throw new Error(`"${folder}" is already at that location.`);
   }
   if (tree.exists(destination)) {
-    throw new Error(`${destination} already exists — pick a different destination.`);
+    throw new Error(
+      `${destination} already exists — pick a different destination.`,
+    );
   }
 
   const manifestPath = `${destination}/.claude-plugin/plugin.json`;

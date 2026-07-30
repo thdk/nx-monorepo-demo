@@ -14,33 +14,20 @@
           "dependentTasksOutputFiles": "dist/catalog/plugins-catalog.json"
         }
       ],
-      "outputs": [
-        "{projectRoot}/public/plugins-catalog.json"
-      ],
+      "outputs": ["{projectRoot}/public/plugins-catalog.json"],
       "options": {
         "command": "node -e \"const fs=require('fs');const s='dist/catalog/plugins-catalog.json';fs.mkdirSync('apps/catalog/public',{recursive:true});if(fs.existsSync(s)){fs.copyFileSync(s,'apps/catalog/public/plugins-catalog.json')}else{console.warn('catalog data missing at '+s+' — run nx run @thdk/source:catalog')}\""
       },
-      "dependsOn": [
-        "@thdk/source:catalog"
-      ]
+      "dependsOn": ["@thdk/source:catalog"]
     },
     "build": {
-      "dependsOn": [
-        "...",
-        "sync-data"
-      ]
+      "dependsOn": ["...", "sync-data"]
     },
     "serve": {
-      "dependsOn": [
-        "...",
-        "sync-data"
-      ]
+      "dependsOn": ["...", "sync-data"]
     },
     "dev": {
-      "dependsOn": [
-        "...",
-        "sync-data"
-      ]
+      "dependsOn": ["...", "sync-data"]
     }
   }
 }
