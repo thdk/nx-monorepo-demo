@@ -4,6 +4,7 @@ import { MARKETPLACE_PATH, sourceFor } from '../../marketplace';
 import { isUnderPluginsRoot } from '../../plugins-root';
 import {
   configuredPluginsRoot,
+  defaultPluginNameForFolder,
   normalizeAuthor,
   optionsForRoot,
 } from '../shared';
@@ -51,13 +52,8 @@ export default async function pluginGenerator(
   const config = optionsForRoot(tree);
 
   // Marketplace/plugin name: "<namePrefix><path minus the plugins root>", ^[a-z0-9-]+$.
-  const rootSegs = pluginsRoot === '.' ? [] : pluginsRoot.split('/');
-  const nameSource = rootSegs.every((seg, i) => parentSegs[i] === seg)
-    ? parentSegs.slice(rootSegs.length)
-    : parentSegs;
   const pluginName =
-    options.pluginName ??
-    `${config.namePrefix ?? ''}${[...nameSource, leaf].map((s) => names(s).fileName).join('-')}`;
+    options.pluginName ?? defaultPluginNameForFolder(tree, root);
   const description = options.description ?? `${pluginName} skills`;
 
   // The repo-root marketplace must already exist — this generator does not create one

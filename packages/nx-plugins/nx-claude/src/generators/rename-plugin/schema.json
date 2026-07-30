@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeRenamePlugin",
+  "title": "Rename a Claude plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin to rename: a folder path (e.g. plugins/team-a/payments) or a plugin/marketplace name.",
+      "x-prompt": "Which plugin (folder path or plugin name)?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "newName": {
+      "type": "string",
+      "description": "New plugin name (^[a-z0-9-]+$). Defaults to the directory-derived name a fresh scaffold at that folder would use (namePrefix + folder path under the plugins root).",
+      "$default": { "$source": "argv", "index": 1 }
+    }
+  },
+  "required": ["name"]
+}

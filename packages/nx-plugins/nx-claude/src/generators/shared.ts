@@ -1,4 +1,4 @@
-import { type Tree, readJson, readNxJson } from '@nx/devkit';
+import { type Tree, names, readJson, readNxJson } from '@nx/devkit';
 import { MARKETPLACE_PATH } from '../marketplace';
 import { normalizePluginsRoot } from '../plugins-root';
 
@@ -95,6 +95,23 @@ export function normalizeAuthor(
 /** Strip a leading "./" and surrounding slashes from a plugin folder/source path. */
 export function normalizePluginPath(path: string): string {
   return path.replace(/^\.\//, '').replace(/^\/+|\/+$/g, '');
+}
+
+/**
+ * The plugin name a fresh scaffold at `folder` would get: the org `namePrefix`
+ * followed by the folder path relative to the plugins root, kebab-cased per
+ * segment and joined with "-". Used by the `plugin` generator (default name)
+ * and `rename-plugin` (rename a moved plugin to match its directory).
+ */
+export function defaultPluginNameForFolder(tree: Tree, folder: string): string {
+  const pluginsRoot = configuredPluginsRoot(tree);
+  const segs = normalizePluginPath(folder).split('/').filter(Boolean);
+  const rootSegs = pluginsRoot === '.' ? [] : pluginsRoot.split('/');
+  const rel = rootSegs.every((seg, i) => segs[i] === seg)
+    ? segs.slice(rootSegs.length)
+    : segs;
+  const prefix = optionsForRoot(tree).namePrefix ?? '';
+  return `${prefix}${rel.map((s) => names(s).fileName).join('-')}`;
 }
 
 /**

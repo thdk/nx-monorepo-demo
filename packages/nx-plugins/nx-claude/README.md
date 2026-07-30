@@ -271,6 +271,27 @@ version from `plugin.json` (disk fallback) instead of the old git tags.
 nx g nx-claude:move-plugin payments plugins/team-a/payments --newName=acme-team-a-payments
 ```
 
+### `rename-plugin` — rename a plugin in place
+
+```bash
+nx g nx-claude:rename-plugin <plugin> [newName]
+```
+
+Renames the plugin without moving it, applying the exact same name-chasing as
+`move-plugin --newName`: `plugin.json` `name`, the marketplace entry, every
+dependent's `dependencies` entry, and `old-name:<skill>` references in skill
+markdown. This is the companion to a **pure** `move-plugin` (which keeps the old
+name): move the folder first, then run `rename-plugin` to bring the name in line
+with its new directory. Omit `newName` and it defaults to the directory-derived
+name a fresh scaffold at that folder would use (`namePrefix` + the folder path
+under the plugins root), so the common "match the name to the directory" case
+needs no argument. The same release-tag caveat as `move-plugin` applies.
+
+```bash
+# after: nx g nx-claude:move-plugin payments plugins/team-a/payments
+nx g nx-claude:rename-plugin plugins/team-a/payments   # -> acme-team-a-payments
+```
+
 ### `sync-deps` — keep `dependencies` in sync (sync generator)
 
 Skills invoke other plugins' skills as `plugin-name:skill-name` (e.g.
@@ -343,7 +364,8 @@ tools/nx-claude/
   src/generators/plugin/           # scaffold generator
   src/generators/skill/            # add-a-skill generator
   src/generators/move-skill/       # move a skill between plugins
-  src/generators/move-plugin/      # move/rename a plugin
+  src/generators/move-plugin/      # move (and optionally rename) a plugin
+  src/generators/rename-plugin/    # rename a plugin in place
   src/generators/sync-deps/        # sync generator: deps from plugin:skill references
   src/generators/remove-plugin/    # remove-plugin generator (alias: remove)
   src/generators/remove-skill/     # remove-skill generator

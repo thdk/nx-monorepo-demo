@@ -82,7 +82,7 @@ interface ParserOutcome {
 function consumeStreamLine(
   state: ReturnType<typeof createParserState>,
   line: string,
-  triggerId: string
+  triggerId: string,
 ): ParserOutcome | null {
   if (!line) return null;
   let event: ParsedEvent;
@@ -97,7 +97,7 @@ function consumeStreamLine(
 }
 
 export async function runQuery(
-  options: RunQueryOptions
+  options: RunQueryOptions,
 ): Promise<RunQueryResult> {
   const {
     query,
@@ -213,7 +213,7 @@ export async function runQuery(
                 Object.assign(new Error(`claude exited with code ${code}`), {
                   code: 'CLAUDE_NONZERO_EXIT',
                   exitCode: code,
-                })
+                }),
               );
               return;
             }
@@ -221,7 +221,7 @@ export async function runQuery(
             // tool_use that matched, treat as a miss.
             resolve({ outcome: 'miss' });
           });
-        }
+        },
       );
     } finally {
       clearTimeout(timer);

@@ -150,7 +150,7 @@ describe('runQuery', () => {
       tempDir: base,
     });
     const leftovers = readdirSync(base).filter((n) =>
-      n.startsWith('skill-eval-')
+      n.startsWith('skill-eval-'),
     );
     expect(leftovers).toEqual([]);
   });

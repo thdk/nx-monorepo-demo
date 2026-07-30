@@ -26,6 +26,11 @@
       "schema": "./dist/generators/move-plugin/schema.json",
       "description": "Move (and optionally rename) a plugin folder, updating marketplace sources, dependents, and skill references."
     },
+    "rename-plugin": {
+      "factory": "./dist/generators/rename-plugin/generator",
+      "schema": "./dist/generators/rename-plugin/schema.json",
+      "description": "Rename a plugin in place (defaults to its directory-derived name), updating plugin.json, the marketplace entry, dependents, and plugin:skill references."
+    },
     "remove-skill": {
       "factory": "./dist/generators/remove-skill/generator",
       "schema": "./dist/generators/remove-skill/schema.json",

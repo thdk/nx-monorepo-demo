@@ -1,4 +1,4 @@
-import { type Tree, readJson } from '@nx/devkit';
+import { type Tree, readJson, writeJson } from '@nx/devkit';
 import { MARKETPLACE_PATH } from '../marketplace';
 import { normalizePluginPath } from './shared';
 
@@ -105,6 +105,114 @@ export function rewriteSkillReferences(
     }
   }
   return changed;
+}
+
+export interface RenamePluginNameResult {
+  /** Other plugins whose `dependencies` arrays were updated. */
+  dependents: string[];
+  /** Skill markdown files whose `oldName:<skill>` references were rewritten. */
+  rewrittenSkillFiles: string[];
+}
+
+/**
+ * Rename a plugin that already lives at `folder` (this does NOT move it): its
+ * `plugin.json` name, the matching marketplace entry name, every dependent's
+ * `dependencies` entry, and `oldName:<skill>` references in skill markdown.
+ * The marketplace entry is matched by name — repointing its `source` on a move
+ * is the caller's concern. Shared by the `move-plugin` and `rename-plugin`
+ * generators so their rename semantics cannot drift.
+ */
+export function renamePluginName(
+  tree: Tree,
+  folder: string,
+  oldName: string,
+  newName: string,
+): RenamePluginNameResult {
+  const manifestPath = `${folder}/.claude-plugin/plugin.json`;
+  const manifest = readJson<{ name?: string }>(tree, manifestPath);
+  manifest.name = newName;
+  writeJson(tree, manifestPath, manifest);
+
+  if (tree.exists(MARKETPLACE_PATH)) {
+    const doc = readJson<{ plugins?: { name?: string }[] }>(
+      tree,
+      MARKETPLACE_PATH,
+    );
+    for (const entry of doc.plugins ?? []) {
+      if (entry.name === oldName) entry.name = newName;
+    }
+    writeJson(tree, MARKETPLACE_PATH, doc);
+  }
+
+  const plugins = readWorkspacePlugins(tree);
+  return {
+    dependents: renameInDependents(tree, plugins, oldName, newName),
+    rewrittenSkillFiles: rewriteSkillReferences(
+      tree,
+      plugins,
+      { plugin: oldName },
+      newName,
+    ),
+  };
+}
+
+/** Human-readable notes describing a rename's ripple effects, for generator output. */
+export function renamePluginNotes(
+  result: RenamePluginNameResult,
+  oldName: string,
+  newName: string,
+): string[] {
+  const notes: string[] = [];
+  if (result.dependents.length) {
+    notes.push(`Updated dependencies in: ${result.dependents.join(', ')}.`);
+  }
+  if (result.rewrittenSkillFiles.length) {
+    notes.push(
+      `Rewrote ${oldName}:<skill> references in:\n- ${result.rewrittenSkillFiles.join('\n- ')}`,
+    );
+  }
+  notes.push(
+    `Release tags follow {projectName}--v{version}: existing "${oldName}--v*" tags no longer match, so the next release of "${newName}" resolves its current version from plugin.json (disk fallback).`,
+  );
+  return notes;
+}
+
+/** Replace `oldName` with `newName` in every other plugin's dependencies array,
+ * preserving entry shape (bare string vs { name, version }). Returns dependents. */
+function renameInDependents(
+  tree: Tree,
+  plugins: WorkspacePlugin[],
+  oldName: string,
+  newName: string,
+): string[] {
+  const dependents: string[] = [];
+  for (const plugin of plugins) {
+    if (plugin.name === newName) continue; // the renamed plugin itself
+    const manifestPath = `${plugin.folder}/.claude-plugin/plugin.json`;
+    const manifest = readJson<{ dependencies?: unknown[] }>(tree, manifestPath);
+    if (!Array.isArray(manifest.dependencies)) continue;
+    let changed = false;
+    manifest.dependencies = manifest.dependencies.map((entry) => {
+      if (entry === oldName) {
+        changed = true;
+        return newName;
+      }
+      if (
+        entry &&
+        typeof entry === 'object' &&
+        (entry as { name?: unknown }).name === oldName
+      ) {
+        changed = true;
+        return { ...(entry as object), name: newName };
+      }
+      return entry;
+    });
+    if (changed) {
+      writeJson(tree, manifestPath, manifest);
+      dependents.push(plugin.name);
+    }
+  }
+  return dependents;
 }
 
 /** Move a directory (recursively) within the tree. */

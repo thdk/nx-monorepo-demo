@@ -30,7 +30,8 @@ file changes.
 | Create a new plugin folder + register it in the marketplace       | `plugin`        |
 | Add a lint-clean starter skill to an existing plugin              | `skill`         |
 | Move a skill between plugins (rewrites both READMEs + references) | `move-skill`    |
-| Move/rename a plugin folder (updates marketplace + dependents)    | `move-plugin`   |
+| Move (and optionally rename) a plugin folder                      | `move-plugin`   |
+| Rename a plugin in place (defaults to its directory name)         | `rename-plugin` |
 | Delete a skill from a plugin                                      | `remove-skill`  |
 | Delete a plugin folder + its marketplace entries                  | `remove-plugin` |
 | Add plugin.json dependencies implied by plugin:skill references   | `sync-deps`     |
@@ -45,8 +46,9 @@ Discover the exact flags with `pnpm nx g @thdk/nx-claude:<generator> --help`.
   generator fails if the marketplace is missing; create one first with
   `marketplace`.
 - **The Nx project name equals the `name` in `plugin.json`** (and the git release
-  tag is `{plugin-name}--v{version}`). Renaming a plugin means `move-plugin`, not
-  a manual edit.
+  tag is `{plugin-name}--v{version}`). Renaming a plugin means `rename-plugin` (or
+  `move-plugin --newName`), not a manual edit — both chase the name through the
+  marketplace, dependents, and `plugin:skill` references.
 - **Skill frontmatter needs a third-person `description` with "Use when …"**
   trigger conditions. The `skill` generator scaffolds a lint-clean starter.
 - **`plugin:skill` references imply a plugin dependency.** Run `sync-deps` (or let
