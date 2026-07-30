@@ -9,7 +9,7 @@ packages:
   - 'apps/**'
   - 'packages/**'
   - 'tools/**'
-  - 'scripts/*'
+  - 'scripts'
   - '!apps/**/out'
   - '!apps/**/dist/**'
 
