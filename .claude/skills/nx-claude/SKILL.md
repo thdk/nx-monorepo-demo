@@ -34,7 +34,7 @@ file changes.
 | Rename a plugin in place (defaults to its directory name)         | `rename-plugin` |
 | Delete a skill from a plugin                                      | `remove-skill`  |
 | Delete a plugin folder + its marketplace entries                  | `remove-plugin` |
-| Add plugin.json dependencies implied by plugin:skill references   | `sync-deps`     |
+| Sync plugin.json deps to plugin:skill references (add + prune)    | `sync-deps`     |
 | Create a new, empty marketplace.json                              | `marketplace`   |
 | Scaffold the static catalog SPA that renders the plugin catalog   | `catalog-app`   |
 

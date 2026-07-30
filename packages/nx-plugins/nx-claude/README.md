@@ -297,15 +297,23 @@ nx g nx-claude:rename-plugin plugins/team-a/payments   # -> acme-team-a-payments
 Skills invoke other plugins' skills as `plugin-name:skill-name` (e.g.
 `/payments:review-terraform`). The `sync-deps` [sync generator](https://nx.dev/concepts/sync-generators)
 scans every plugin's skill markdown for references to other **workspace** plugins' skills and
-adds any missing entries to that plugin's `plugin.json` `dependencies` — which is what feeds
-the project graph, `nx affected`, and the nx release dependency cascade.
+reconciles that plugin's `plugin.json` `dependencies` — which is what feeds the project graph,
+`nx affected`, and the nx release dependency cascade. It **adds** any missing workspace-plugin
+dependency and **prunes** any workspace-plugin dependency no skill still references.
 
 It is attached to every inferred `lint` target via `syncGenerators`, so `nx lint <plugin>`
 prompts to sync when out of date; `nx sync` applies it directly and `nx sync:check` guards CI.
-Two deliberate limits: added entries are **bare names** (a version range can't be inferred —
-tighten to `{ "name": "…", "version": "~1.2.0" }` by hand where it matters), and it never
-**removes** entries, since a dependency may exist for reasons markdown doesn't show (hooks,
-MCP servers, agents).
+Boundaries to keep in mind:
+
+- Added entries are **bare names** (a version range can't be inferred — tighten to
+  `{ "name": "…", "version": "~1.2.0" }` by hand where it matters); the version on an existing
+  object-form entry is preserved.
+- Pruning is scoped to **workspace** plugins. A dependency whose name isn't a workspace plugin
+  points outside this repo (another marketplace) and is never touched.
+- Because prune treats skill markdown as the source of truth, a workspace dependency kept for a
+  reason markdown doesn't show (hooks, MCP servers, agents) **will be removed** — keep a
+  referencing skill, or re-add it after the fact. Plugins with no skill markdown at all are
+  skipped entirely, so a fresh scaffold keeps its declared deps.
 
 ### `marketplace` — create a marketplace
 
