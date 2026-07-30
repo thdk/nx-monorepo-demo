@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
-  NX_VERBOSE_LOGGING: true
+  NX_VERBOSE_LOGGING: false
 
 jobs:
   build:

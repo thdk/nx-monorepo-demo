@@ -137,20 +137,21 @@ describe('runQuery', () => {
   });
 
   it('cleans up its tempdir after the run', async () => {
-    const { readdirSync } = await import('node:fs');
-    const before = readdirSync(tmpdir()).filter((n) =>
-      n.startsWith('skill-eval-')
-    );
+    const { mkdtempSync, readdirSync } = await import('node:fs');
+    // Point runQuery's workdir at a base dir unique to this test so the
+    // assertion is isolated from concurrent runs sharing the global tmpdir.
+    const base = mkdtempSync(join(tmp, 'base-'));
     const bin = writeFakeClaude(tmp, 'claude', MISS_SCRIPT);
     await runQuery({
       query: 'anything',
       skillName: 'fake-skill',
       skillDescription: 'desc',
       claudeBin: bin,
+      tempDir: base,
     });
-    const after = readdirSync(tmpdir()).filter((n) =>
+    const leftovers = readdirSync(base).filter((n) =>
       n.startsWith('skill-eval-')
     );
-    expect(after.length).toBeLessThanOrEqual(before.length);
+    expect(leftovers).toEqual([]);
   });
 });

@@ -24,6 +24,13 @@ export interface RunQueryOptions {
    * never see each other's temp slash-commands in available_skills.
    */
   projectRoot?: string;
+  /**
+   * Base directory under which the isolated workdir is created when
+   * `projectRoot` is omitted. Defaults to the OS tempdir. Primarily a
+   * testability seam so a test can point runs at its own unique directory
+   * instead of the shared global tempdir.
+   */
+  tempDir?: string;
   model?: string | null;
   timeoutMs?: number;
   claudeBin?: string;
@@ -97,6 +104,7 @@ export async function runQuery(
     skillName,
     skillDescription,
     projectRoot,
+    tempDir = tmpdir(),
     model,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     claudeBin = 'claude',
@@ -108,7 +116,7 @@ export async function runQuery(
   // the same project never share a `.claude/commands/` directory.
   const ownTempRoot = projectRoot == null;
   const workdir = ownTempRoot
-    ? mkdtempSync(join(tmpdir(), 'skill-eval-'))
+    ? mkdtempSync(join(tempDir, 'skill-eval-'))
     : projectRoot;
   const commandsDir = join(workdir, '.claude', 'commands');
   const commandFile = join(commandsDir, `${triggerId}.md`);
