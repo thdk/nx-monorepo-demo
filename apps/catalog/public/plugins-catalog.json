@@ -11,14 +11,10 @@
       "name": "demo-git-workflows",
       "version": "0.1.0",
       "source": "./claude-plugins/demo/git-workflows",
-      "path": [
-        "git-workflows"
-      ],
+      "path": ["git-workflows"],
       "strict": true,
       "description": "Demo plugin showcasing nx-claude: git and release workflow skills.",
-      "keywords": [
-        "skills"
-      ],
+      "keywords": ["skills"],
       "author": {
         "name": "Thomas Dekiere"
       },
@@ -41,14 +37,10 @@
       "name": "demo-code-review",
       "version": "0.1.0",
       "source": "./claude-plugins/demo/code-review",
-      "path": [
-        "code-review"
-      ],
+      "path": ["code-review"],
       "strict": true,
       "description": "Demo plugin showcasing nx-claude: code review skills.",
-      "keywords": [
-        "skills"
-      ],
+      "keywords": ["skills"],
       "author": {
         "name": "Thomas Dekiere"
       },
@@ -72,14 +64,10 @@
       "name": "demo-onboarding",
       "version": "0.1.0",
       "source": "./claude-plugins/demo/onboarding",
-      "path": [
-        "onboarding"
-      ],
+      "path": ["onboarding"],
       "strict": true,
       "description": "Demo plugin showcasing nx-claude: cross-plugin skill references and dependency sync.",
-      "keywords": [
-        "skills"
-      ],
+      "keywords": ["skills"],
       "author": {
         "name": "Thomas Dekiere"
       },
