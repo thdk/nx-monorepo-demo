@@ -1,0 +1,46 @@
+{
+  "name": "catalog",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/catalog/src",
+  "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project catalog --web",
+  "targets": {
+    "sync-data": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        {
+          "dependentTasksOutputFiles": "dist/catalog/plugins-catalog.json"
+        }
+      ],
+      "outputs": [
+        "{projectRoot}/public/plugins-catalog.json"
+      ],
+      "options": {
+        "command": "node -e \"const fs=require('fs');const s='dist/catalog/plugins-catalog.json';fs.mkdirSync('apps/catalog/public',{recursive:true});if(fs.existsSync(s)){fs.copyFileSync(s,'apps/catalog/public/plugins-catalog.json')}else{console.warn('catalog data missing at '+s+' — run nx run @thdk/source:catalog')}\""
+      },
+      "dependsOn": [
+        "@thdk/source:catalog"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "...",
+        "sync-data"
+      ]
+    },
+    "serve": {
+      "dependsOn": [
+        "...",
+        "sync-data"
+      ]
+    },
+    "dev": {
+      "dependsOn": [
+        "...",
+        "sync-data"
+      ]
+    }
+  }
+}

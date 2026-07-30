@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeSyncDeps",
+  "title": "Sync plugin.json dependencies from cross-plugin skill references",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

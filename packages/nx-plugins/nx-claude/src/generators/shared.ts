@@ -1,4 +1,6 @@
-import { type Tree, readNxJson } from '@nx/devkit';
+import { type Tree, readJson, readNxJson } from '@nx/devkit';
+import { MARKETPLACE_PATH } from '../marketplace';
+import { normalizePluginsRoot } from '../plugins-root';
 
 export interface Person {
   name: string;
@@ -15,6 +17,12 @@ export interface Registration {
   author?: string | Person;
   /** Default owner for the `marketplace` generator. Default: a placeholder. */
   owner?: Person;
+  /**
+   * Workspace-relative folder plugins live under ("." for the repo root).
+   * Must match what project inference uses — it reads the same registration.
+   * Default: "plugins".
+   */
+  pluginsRoot?: string;
 }
 
 /** Minimal shape of nx.json needed to read registrations (Tree-free, so executors can use it). */
@@ -65,4 +73,58 @@ export function configuredOwner(tree: Tree): Person | undefined {
   return getRegistrations(tree)
     .map((r) => r.owner)
     .find(Boolean);
+}
+
+/** The normalized plugins root from the registration ("." = repo root; default "plugins"). */
+export function configuredPluginsRoot(tree: Tree): string {
+  return normalizePluginsRoot(
+    getRegistrations(tree)
+      .map((r) => r.pluginsRoot)
+      .find(Boolean),
+  );
+}
+
+/** Claude Code rejects string authors in plugin.json — normalize to { name }. */
+export function normalizeAuthor(
+  author: string | Person | undefined,
+): Person | undefined {
+  if (author === undefined) return undefined;
+  return typeof author === 'string' ? { name: author } : author;
+}
+
+/** Strip a leading "./" and surrounding slashes from a plugin folder/source path. */
+export function normalizePluginPath(path: string): string {
+  return path.replace(/^\.\//, '').replace(/^\/+|\/+$/g, '');
+}
+
+/**
+ * Resolve an existing plugin folder from user input: a workspace-relative path
+ * (`plugins/team-a/payments`), a bare folder name under the plugins root, or a
+ * plugin/marketplace name (which equals the inferred Nx project name).
+ * Returns the workspace-relative folder, or undefined when nothing matches.
+ */
+export function resolvePluginFolder(
+  tree: Tree,
+  input: string,
+): string | undefined {
+  const cleaned = normalizePluginPath(input);
+  const pluginsRoot = configuredPluginsRoot(tree);
+  const candidates =
+    pluginsRoot === '.' ? [cleaned] : [cleaned, `${pluginsRoot}/${cleaned}`];
+  for (const candidate of candidates) {
+    if (tree.exists(`${candidate}/.claude-plugin/plugin.json`)) {
+      return candidate;
+    }
+  }
+  if (tree.exists(MARKETPLACE_PATH)) {
+    const doc = readJson<{ plugins?: { name?: string; source?: string }[] }>(
+      tree,
+      MARKETPLACE_PATH,
+    );
+    const hit = (doc.plugins ?? []).find((p) => p.name === cleaned);
+    if (hit && typeof hit.source === 'string') {
+      return normalizePluginPath(hit.source);
+    }
+  }
+  return undefined;
 }

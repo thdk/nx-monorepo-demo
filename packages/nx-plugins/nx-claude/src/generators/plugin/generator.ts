@@ -1,7 +1,12 @@
 import { type Tree, names, readJson, writeJson } from '@nx/devkit';
 import type { PluginGeneratorSchema } from './schema';
 import { MARKETPLACE_PATH, sourceFor } from '../../marketplace';
-import { optionsForRoot } from '../shared';
+import { isUnderPluginsRoot } from '../../plugins-root';
+import {
+  configuredPluginsRoot,
+  normalizeAuthor,
+  optionsForRoot,
+} from '../shared';
 
 interface MarketplaceEntry {
   name: string;
@@ -13,19 +18,30 @@ export default async function pluginGenerator(
   tree: Tree,
   options: PluginGeneratorSchema,
 ): Promise<void> {
-  // Parent directory is workspace-relative (default base `plugins`); slashes in `name`
-  // extend it. Pass --directory to nest a plugin, e.g. --directory=plugins/team-a.
+  // Parent directory is workspace-relative (default: the configured plugins root);
+  // slashes in `name` extend it. Pass --directory to nest, e.g. --directory=plugins/team-a.
+  const pluginsRoot = configuredPluginsRoot(tree);
   const nameSegs = options.name
     .replace(/^\/+|\/+$/g, '')
     .split('/')
     .filter(Boolean);
   const leaf = names(nameSegs.pop() ?? '').fileName; // kebab-case leaf
-  const baseDir = (options.directory ?? 'plugins').replace(/^\.?\/+|\/+$/g, '');
+  const baseDir = (
+    options.directory ?? (pluginsRoot === '.' ? '' : pluginsRoot)
+  ).replace(/^\.?\/+|\/+$/g, '');
   const parentSegs = [
     ...(baseDir ? baseDir.split('/') : []),
     ...nameSegs,
   ].filter(Boolean);
   const root = [...parentSegs, leaf].join('/');
+
+  // Project inference only picks up plugins under the configured root — refuse to
+  // scaffold one it would never see.
+  if (!isUnderPluginsRoot(root, pluginsRoot)) {
+    throw new Error(
+      `Plugins must live under ${pluginsRoot}/ (got "${root}") — plugins elsewhere are not inferred as Nx projects. Set "pluginsRoot" on the nx-claude registration in nx.json to change the root.`,
+    );
+  }
 
   if (tree.exists(root)) {
     throw new Error(`${root} already exists — pick a different name.`);
@@ -34,9 +50,11 @@ export default async function pluginGenerator(
   // Org-specific config comes from the nx-claude registration in nx.json (name prefix, author).
   const config = optionsForRoot(tree);
 
-  // Marketplace/plugin name: "<namePrefix><path minus a leading 'plugins'>", ^[a-z0-9-]+$.
-  const nameSource =
-    parentSegs[0] === 'plugins' ? parentSegs.slice(1) : parentSegs;
+  // Marketplace/plugin name: "<namePrefix><path minus the plugins root>", ^[a-z0-9-]+$.
+  const rootSegs = pluginsRoot === '.' ? [] : pluginsRoot.split('/');
+  const nameSource = rootSegs.every((seg, i) => parentSegs[i] === seg)
+    ? parentSegs.slice(rootSegs.length)
+    : parentSegs;
   const pluginName =
     options.pluginName ??
     `${config.namePrefix ?? ''}${[...nameSource, leaf].map((s) => names(s).fileName).join('-')}`;
@@ -50,12 +68,14 @@ export default async function pluginGenerator(
     );
   }
 
-  // plugin.json (author only when configured)
+  // plugin.json (author only when configured; always object form — Claude Code
+  // rejects string authors)
+  const author = normalizeAuthor(config.author);
   writeJson(tree, `${root}/.claude-plugin/plugin.json`, {
     name: pluginName,
     description,
     version: '0.1.0',
-    ...(config.author ? { author: config.author } : {}),
+    ...(author ? { author } : {}),
     keywords: ['skills'],
   });
 

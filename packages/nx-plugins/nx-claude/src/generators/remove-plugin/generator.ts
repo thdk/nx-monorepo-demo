@@ -1,6 +1,7 @@
 import { type Tree, readJson, writeJson } from '@nx/devkit';
-import type { RemoveGeneratorSchema } from './schema';
+import type { RemovePluginGeneratorSchema } from './schema';
 import { MARKETPLACE_PATH, sourceFor } from '../../marketplace';
+import { normalizePluginPath, resolvePluginFolder } from '../shared';
 
 interface MarketplaceEntry {
   name: string;
@@ -8,31 +9,12 @@ interface MarketplaceEntry {
   strict?: boolean;
 }
 
-const norm = (s: string): string =>
-  s.replace(/^\.\//, '').replace(/^\/+|\/+$/g, '');
-
-export default async function removeGenerator(
+export default async function removePluginGenerator(
   tree: Tree,
-  options: RemoveGeneratorSchema,
+  options: RemovePluginGeneratorSchema,
 ): Promise<void> {
-  const input = norm(options.name);
-
   // 1. Resolve the plugin folder — from a path, or by looking up a marketplace entry name.
-  let folder: string | undefined;
-  for (const candidate of [input, `plugins/${input}`]) {
-    if (tree.exists(`${candidate}/.claude-plugin/plugin.json`)) {
-      folder = candidate;
-      break;
-    }
-  }
-  if (!folder && tree.exists(MARKETPLACE_PATH)) {
-    const doc = readJson<{ plugins?: MarketplaceEntry[] }>(
-      tree,
-      MARKETPLACE_PATH,
-    );
-    const hit = (doc.plugins ?? []).find((p) => p.name === input);
-    if (hit) folder = norm(hit.source);
-  }
+  const folder = resolvePluginFolder(tree, options.name);
   if (!folder) {
     throw new Error(
       `No plugin found for "${options.name}" (looked for a folder or a marketplace entry).`,
@@ -46,9 +28,9 @@ export default async function removeGenerator(
       tree,
       MARKETPLACE_PATH,
     );
-    const expected = norm(sourceFor(folder));
+    const expected = normalizePluginPath(sourceFor(folder));
     doc.plugins = (doc.plugins ?? []).filter((p) => {
-      const match = norm(p.source) === expected;
+      const match = normalizePluginPath(p.source) === expected;
       if (match) removed.push(p.name);
       return !match;
     });

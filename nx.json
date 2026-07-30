@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -15,9 +18,21 @@
       "!{projectRoot}/webpack.config.[jt]s",
       "!{projectRoot}/vite.config.mts"
     ],
-    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+    "sharedGlobals": [
+      "{workspaceRoot}/.github/workflows/ci.yml"
+    ]
   },
   "plugins": [
+    {
+      "plugin": "./packages/nx-plugins/nx-claude/src/index.ts",
+      "options": {
+        "pluginsRoot": "claude-plugins",
+        "author": "Thomas Dekiere",
+        "owner": {
+          "name": "Thomas Dekiere"
+        }
+      }
+    },
     {
       "plugin": "@nx/js/typescript",
       "options": {
@@ -76,20 +91,6 @@
       }
     },
     {
-      "plugin": "@nx/vite/plugin",
-      "options": {
-        "compiler": "tsgo",
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "devTargetName": "dev",
-        "previewTargetName": "preview",
-        "serveStaticTargetName": "serve-static",
-        "typecheckTargetName": "typecheck",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
-      }
-    },
-    {
       "plugin": "@nx/playwright/plugin",
       "options": {
         "targetName": "e2e"
@@ -101,7 +102,10 @@
     {
       "plugin": "@thdk/nx-pnpm-deploy/plugin",
       "options": {
-        "exclude": ["node-nest-webpack", "node-fastify-tsc"]
+        "exclude": [
+          "node-nest-webpack",
+          "node-fastify-tsc"
+        ]
       }
     },
     {
@@ -154,30 +158,66 @@
         "watchDepsTargetName": "watch-deps",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "include": [
+        "apps/**"
+      ],
+      "options": {
+        "compiler": "tsgo",
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
   ],
   "targetDefaults": {
     "lint": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     },
     "@nx/esbuild:esbuild": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "@nx/js:tsc": {
       "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
     },
     "docker:build": {
-      "dependsOn": ["build", "prune"]
+      "dependsOn": [
+        "build",
+        "prune"
+      ]
     },
     "prune-lockfile": {
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
       "outputs": [
@@ -189,9 +229,13 @@
       }
     },
     "copy-workspace-modules": {
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "cache": true,
-      "outputs": ["{projectRoot}/dist/workspace_modules"],
+      "outputs": [
+        "{projectRoot}/dist/workspace_modules"
+      ],
       "executor": "@nx/js:copy-workspace-modules",
       "options": {
         "buildTarget": "build"
@@ -222,7 +266,10 @@
         "google": true,
         "awsProviderVersion": "5.0",
         "googleProviderVersion": "6.0",
-        "configurations": ["development", "production"],
+        "configurations": [
+          "development",
+          "production"
+        ],
         "backend": "gcs",
         "terraformStateBucketName": "edissa-tf-state"
       },
@@ -243,14 +290,18 @@
     },
     "groups": {
       "apps": {
-        "projects": ["tag:deployable:docker"],
+        "projects": [
+          "tag:deployable:docker"
+        ],
         "projectsRelationship": "independent",
         "version": {
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
           "preserveLocalDependencyProtocols": false,
-          "manifestRootsToUpdate": ["{projectRoot}"]
+          "manifestRootsToUpdate": [
+            "{projectRoot}"
+          ]
         },
         "changelog": {
           "projectChangelogs": false,
@@ -266,14 +317,18 @@
         }
       },
       "packages": {
-        "projects": ["tag:npm:public"],
+        "projects": [
+          "tag:npm:public"
+        ],
         "projectsRelationship": "independent",
         "version": {
           "specifierSource": "conventional-commits",
           "currentVersionResolver": "git-tag",
           "fallbackCurrentVersionResolver": "disk",
           "preserveLocalDependencyProtocols": false,
-          "manifestRootsToUpdate": ["{projectRoot}"]
+          "manifestRootsToUpdate": [
+            "{projectRoot}"
+          ]
         },
         "changelog": {
           "projectChangelogs": true,
@@ -287,12 +342,28 @@
       "releases": {
         "version": {
           "preserveLocalDependencyProtocols": false,
-          "manifestRootsToUpdate": ["{projectRoot}"]
+          "manifestRootsToUpdate": [
+            "{projectRoot}"
+          ]
         },
-        "projects": ["tag:release"],
+        "projects": [
+          "tag:release"
+        ],
         "projectsRelationship": "independent",
         "releaseTag": {
           "pattern": "release/{projectName}@{version}"
+        }
+      },
+      "claude-plugins": {
+        "projects": [
+          "tag:claude-plugin"
+        ],
+        "projectsRelationship": "independent",
+        "version": {
+          "specifierSource": "conventional-commits"
+        },
+        "releaseTag": {
+          "pattern": "{projectName}--v{version}"
         }
       }
     },

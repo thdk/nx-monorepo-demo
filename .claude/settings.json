@@ -7,15 +7,21 @@
       "mcp__octocode__githubSearchCode"
     ]
   },
+  "enabledPlugins": {
+    "nx@nx-claude-plugins": true
+  },
   "extraKnownMarketplaces": {
     "nx-claude-plugins": {
       "source": {
         "source": "github",
         "repo": "nrwl/nx-ai-agents-config"
       }
+    },
+    "thdk": {
+      "source": {
+        "source": "directory",
+        "path": "./"
+      }
     }
-  },
-  "enabledPlugins": {
-    "nx@nx-claude-plugins": true
   }
 }

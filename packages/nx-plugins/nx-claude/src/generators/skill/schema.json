@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeSkill",
+  "title": "Add a skill to an existing Claude plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Skill name (kebab-case, e.g. review-terraform). Becomes the skill directory and the frontmatter name.",
+      "x-prompt": "Skill name?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "project": {
+      "type": "string",
+      "description": "Plugin to add the skill to: a folder path (e.g. plugins/payments) or a plugin/marketplace name (equals the Nx project name).",
+      "x-prompt": "Which plugin (folder path or plugin name)?",
+      "$default": { "$source": "projectName" }
+    },
+    "description": {
+      "type": "string",
+      "description": "Frontmatter description. Keep it third-person and include \"Use when …\" trigger conditions — lint enforces this."
+    },
+    "userInvocable": {
+      "type": "boolean",
+      "description": "Mark the skill user-invocable (writes `user-invocable: true` to the frontmatter)."
+    }
+  },
+  "required": ["name", "project"]
+}

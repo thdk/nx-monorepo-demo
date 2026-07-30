@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "marketplace": {
+    "name": "nx-monorepo-demo",
+    "owner": {
+      "name": "Thomas Dekiere"
+    }
+  },
+  "plugins": [
+    {
+      "name": "demo-git-workflows",
+      "version": "0.1.0",
+      "source": "./claude-plugins/demo/git-workflows",
+      "path": [
+        "git-workflows"
+      ],
+      "strict": true,
+      "description": "Demo plugin showcasing nx-claude: git and release workflow skills.",
+      "keywords": [
+        "skills"
+      ],
+      "author": {
+        "name": "Thomas Dekiere"
+      },
+      "skills": [
+        {
+          "name": "conventional-commits",
+          "description": "Use when writing commit messages or naming branches in this workspace; enforces conventional commit types and scopes.",
+          "userInvocable": false,
+          "body": "# Conventional Commits\n\nFormat every commit as `<type>(<scope>): <subject>`:\n\n- **type** — one of `feat`, `fix`, `docs`, `build`, `chore`, `refactor`, `test`.\n  `feat` and `build` bump minor, `fix` and `docs` bump patch (see `release.conventionalCommits`\n  in `nx.json`).\n- **scope** — the Nx project name the change belongs to (e.g. `nx-claude`,\n  `demo-onboarding`). Omit only for workspace-wide changes.\n- **subject** — imperative mood, lower case, no trailing period.\n\nBranch names follow `<type>/<short-kebab-description>`, e.g. `feat/nx-claude-plugins-root`.\n\nBreaking changes get a `!` after the scope and a `BREAKING CHANGE:` footer — these drive\nmajor bumps in the release groups, so never use them casually in demo projects."
+        },
+        {
+          "name": "release-flow",
+          "description": "Use when cutting a release of a workspace package or plugin; walks through nx release version, changelog, and tagging.",
+          "userInvocable": false,
+          "body": "# Release Flow\n\nReleases are driven by `nx release` groups configured in `nx.json`:\n\n1. Make sure the working tree is clean and commits follow\n   demo-git-workflows:conventional-commits — versions are derived from them\n   (`specifierSource: conventional-commits`).\n2. Preview with `pnpm nx release version --dry-run` before touching anything.\n3. Claude plugins version in the `claude-plugins` group: the bump lands in\n   `.claude-plugin/plugin.json` (not `package.json`) and tags follow\n   `{projectName}--v{version}`, e.g. `demo-onboarding--v0.2.0`.\n4. Dependent plugins get automatic patch cascades — releasing a plugin that others\n   depend on bumps the dependents too.\n\nNever hand-edit versions or create tags manually; the group configuration owns both."
+        }
+      ]
+    },
+    {
+      "name": "demo-code-review",
+      "version": "0.1.0",
+      "source": "./claude-plugins/demo/code-review",
+      "path": [
+        "code-review"
+      ],
+      "strict": true,
+      "description": "Demo plugin showcasing nx-claude: code review skills.",
+      "keywords": [
+        "skills"
+      ],
+      "author": {
+        "name": "Thomas Dekiere"
+      },
+      "skills": [
+        {
+          "name": "review-checklist",
+          "description": "Use when reviewing a merge request or local diff in this workspace; provides a correctness, tests, and security checklist.",
+          "userInvocable": false,
+          "body": "# Review Checklist\n\nWork through the diff in this order and report findings grouped by severity:\n\n1. **Correctness** — trace each changed code path; flag behavior changes the description\n   doesn't mention.\n2. **Tests** — every bug fix needs a regression test; every new feature needs coverage\n   run via `pnpm nx affected -t test`.\n3. **Boundaries** — imports must respect `scope:<domain>` tags\n   (`@nx/enforce-module-boundaries`); new projects must land in the right scope folder.\n4. **Security** — no secrets in code or fixtures; infrastructure changes go through the\n   Terraform projects, never ad-hoc CLI calls.\n5. **History** — commits must follow demo-git-workflows:conventional-commits so release\n   automation derives the right version bumps.\n\nApprove only when every category is clean or explicitly waived by the author."
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "demo-git-workflows",
+          "local": true,
+          "resolvedVersion": "0.1.0"
+        }
+      ]
+    },
+    {
+      "name": "demo-onboarding",
+      "version": "0.1.0",
+      "source": "./claude-plugins/demo/onboarding",
+      "path": [
+        "onboarding"
+      ],
+      "strict": true,
+      "description": "Demo plugin showcasing nx-claude: cross-plugin skill references and dependency sync.",
+      "keywords": [
+        "skills"
+      ],
+      "author": {
+        "name": "Thomas Dekiere"
+      },
+      "skills": [
+        {
+          "name": "workspace-tour",
+          "description": "Use when onboarding a new contributor to this workspace; tours the folder layout and points to the git and review skills.",
+          "userInvocable": false,
+          "body": "# Workspace Tour\n\nWalk a new contributor through this workspace in this order:\n\n1. **Folder layout** — summarize the scope folders from the root `CLAUDE.md`\n   (`apps/nx-demo`, `packages/nx-demo`, `packages/nx-plugins`, `terraform/nx-demo`,\n   `claude-plugins`, `tools`) and the `scope:<domain>` tagging convention.\n2. **Everyday commands** — show `pnpm nx affected -t lint test build` and\n   `pnpm nx show projects` before pointing at any project-specific tooling.\n3. **Committing** — hand off to demo-git-workflows:conventional-commits for commit\n   message and branch naming rules.\n4. **Getting reviewed** — hand off to demo-code-review:review-checklist so their first\n   merge request passes review in one round.\n\nKeep the tour to one message; link deeper docs instead of inlining them.\n\n> This plugin is part of the `demo` namespace showcasing `@thdk/nx-claude`: the two\n> hand-offs above are `plugin:skill` references, and `nx sync` turns them into\n> `dependencies` entries in this plugin's `plugin.json` automatically."
+        }
+      ],
+      "dependencies": [
+        {
+          "name": "demo-code-review",
+          "local": true,
+          "resolvedVersion": "0.1.0"
+        },
+        {
+          "name": "demo-git-workflows",
+          "range": "~0.1.0",
+          "local": true,
+          "resolvedVersion": "0.1.0",
+          "satisfied": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeInit",
+  "title": "Initialize @thdk/nx-claude in a workspace",
+  "description": "Runs on `nx add @thdk/nx-claude`. Optionally installs the bundled nx-claude usage skill into the workspace.",
+  "type": "object",
+  "properties": {
+    "skill": {
+      "type": "boolean",
+      "default": false,
+      "description": "Install the bundled nx-claude usage skill (teaches the generators + conventions) into the workspace.",
+      "x-prompt": "Install the nx-claude usage skill into .claude/skills?"
+    },
+    "skillDir": {
+      "type": "string",
+      "default": ".claude/skills",
+      "description": "Directory to install the skill into. The skill lands in <skillDir>/nx-claude/SKILL.md."
+    },
+    "link": {
+      "type": "boolean",
+      "default": false,
+      "description": "Symlink the shipped skill from node_modules instead of copying it. Version-matches automatically but is not portable (Windows/Docker/fresh clones before install) — copy is recommended."
+    }
+  },
+  "required": []
+}

@@ -13,16 +13,23 @@ import { existsSync, readFileSync } from 'fs';
 import { basename, dirname, join } from 'path';
 import { CLAUDE_PLUGIN_TAG } from './release-group';
 import { parsePluginDependencies } from './plugin-manifest';
+import { isUnderPluginsRoot, normalizePluginsRoot } from './plugins-root';
 
 export interface NxClaudePluginOptions {
   /** Name of the inferred lint target on plugin projects. Default: "lint". */
   lintTargetName?: string;
   /** Name of the inferred catalog target on the marketplace project. Default: "catalog". */
   catalogTargetName?: string;
+  /**
+   * Workspace-relative folder plugins are inferred under (any depth), e.g.
+   * "claude-plugins" or "packages/claude-plugins". "." means plugin folders sit
+   * directly in the repo root. Default: "plugins".
+   */
+  pluginsRoot?: string;
 }
 
 // Infer two kinds of project from the manifests inside a `.claude-plugin/` folder:
-//   plugins/**/.claude-plugin/plugin.json        → one plugin project (lint + release)
+//   <pluginsRoot>/**/.claude-plugin/plugin.json  → one plugin project (lint + release)
 //   .claude-plugin/marketplace.json (repo root)  → the marketplace project (catalog)
 // Nx globs match files, not folders, so we match both manifest names and branch on basename.
 const MANIFEST_GLOB = '**/.claude-plugin/{plugin,marketplace}.json';
@@ -46,13 +53,14 @@ export const createNodesV2: CreateNodes<NxClaudePluginOptions> = [
 // plugin (external marketplace plugins) get no edge — lint reports them instead.
 // The handful of plugin manifests is cheap to re-read, so no filesToProcess filtering.
 export const createDependencies: CreateDependencies<NxClaudePluginOptions> = (
-  _options,
+  options,
   context,
 ) => {
+  const pluginsRoot = normalizePluginsRoot(options?.pluginsRoot);
   const manifestByProject = new Map<string, string>(); // project name → ws-relative manifest path
   for (const [projectName, config] of Object.entries(context.projects)) {
     const root = config.root;
-    if (root !== 'plugins' && !root.startsWith('plugins/')) continue;
+    if (!isUnderPluginsRoot(root, pluginsRoot)) continue;
     const manifestPath = `${root}/.claude-plugin/plugin.json`;
     if (existsSync(join(context.workspaceRoot, manifestPath))) {
       manifestByProject.set(projectName, manifestPath);
@@ -98,15 +106,15 @@ function createNodesInternal(
   return {};
 }
 
-// plugins/<name>/.claude-plugin/plugin.json → a plugin project. Scoped to `plugins/` so a
-// stray manifest elsewhere isn't inferred.
+// <pluginsRoot>/<name>/.claude-plugin/plugin.json → a plugin project. Scoped to the
+// configured plugins root so a stray manifest elsewhere isn't inferred.
 function pluginProject(
   manifestPath: string,
   options: NxClaudePluginOptions,
   context: CreateNodesContext,
 ): CreateNodesResult {
-  const projectRoot = dirname(dirname(manifestPath)); // plugins/<name>
-  if (projectRoot !== 'plugins' && !projectRoot.startsWith('plugins/'))
+  const projectRoot = dirname(dirname(manifestPath)); // <pluginsRoot>/<name>
+  if (!isUnderPluginsRoot(projectRoot, normalizePluginsRoot(options.pluginsRoot)))
     return {};
 
   const absManifest = join(context.workspaceRoot, manifestPath);
@@ -123,6 +131,8 @@ function pluginProject(
   const lintTarget: TargetConfiguration = {
     executor: '@thdk/nx-claude:lint',
     cache: true,
+    // Keep plugin.json dependencies in sync with plugin:skill references before linting.
+    syncGenerators: ['@thdk/nx-claude:sync-deps'],
     inputs: [
       '{projectRoot}/**/*',
       // The single repo-root marketplace holds this plugin's entry — re-lint on changes.
@@ -185,6 +195,8 @@ function marketplaceProject(
     // Malformed marketplace.json still yields a project so the catalog target can report it.
   }
 
+  const pluginsRoot = normalizePluginsRoot(options.pluginsRoot);
+  const pluginsGlob = pluginsRoot === '.' ? '**' : `${pluginsRoot}/**`;
   const catalogTarget: TargetConfiguration = {
     executor: '@thdk/nx-claude:catalog',
     cache: true,
@@ -192,8 +204,8 @@ function marketplaceProject(
     // a root project's default {projectRoot}/**/* would be).
     inputs: [
       '{workspaceRoot}/.claude-plugin/marketplace.json',
-      '{workspaceRoot}/plugins/**/.claude-plugin/plugin.json',
-      '{workspaceRoot}/plugins/**/skills/*/SKILL.md',
+      `{workspaceRoot}/${pluginsGlob}/.claude-plugin/plugin.json`,
+      `{workspaceRoot}/${pluginsGlob}/skills/*/SKILL.md`,
       '{workspaceRoot}/nx.json',
     ],
     outputs: ['{options.outputPath}'],

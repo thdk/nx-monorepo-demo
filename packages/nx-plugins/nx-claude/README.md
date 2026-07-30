@@ -1,12 +1,14 @@
 # nx-claude
 
-An Nx plugin that turns any folder under `plugins/` containing a `.claude-plugin/plugin.json`
-into an Nx project — no `project.json` required — and gives it:
+An Nx plugin that turns any folder under a configurable plugins root (default `plugins/`)
+containing a `.claude-plugin/plugin.json` into an Nx project — no `project.json` required —
+and gives it:
 
 - a **`lint`** target (JSON-schema validation of `plugin.json` + its marketplace entry, plus
   `SKILL.md` frontmatter rules),
 - **versioning** via `nx release` that bumps `.claude-plugin/plugin.json` (no `package.json`),
-- **generators** to scaffold and remove plugins, keeping the marketplace manifest in sync.
+- **generators** to scaffold plugins and skills and remove plugins, keeping the marketplace
+  manifest in sync.
 
 A repository has exactly **one** marketplace — Claude only discovers it at the repo root
 (`.claude-plugin/marketplace.json`) — so every plugin registers there.
@@ -30,7 +32,8 @@ package name can trip Nx's plugin resolver under the daemon):
 }
 ```
 
-With options (object form) — all options configure the **generators**; detection needs none:
+With options (object form) — `pluginsRoot` configures **detection and generators**; the rest
+configure the **generators** only:
 
 ```jsonc
 {
@@ -39,6 +42,7 @@ With options (object form) — all options configure the **generators**; detecti
       "plugin": "./tools/nx-claude/src/index.ts",
       "options": {
         "lintTargetName": "lint",
+        "pluginsRoot": "claude-plugins",
         "namePrefix": "acme-",
         "author": { "name": "Acme" },
         "owner": { "name": "Acme" },
@@ -53,6 +57,7 @@ With options (object form) — all options configure the **generators**; detecti
 | Option           | Type                               | Default                 | Description                                                                               |
 | ---------------- | ---------------------------------- | ----------------------- | ----------------------------------------------------------------------------------------- |
 | `lintTargetName` | `string`                           | `"lint"`                | Name of the inferred lint target.                                                         |
+| `pluginsRoot`    | `string`                           | `"plugins"`             | Workspace-relative folder plugins live under (any depth), e.g. `"claude-plugins"` or `"packages/claude-plugins"`. `"."` means plugin folders sit directly in the repo root (the repo root itself stays reserved for the marketplace project). |
 | `namePrefix`     | `string`                           | `""`                    | Prefix for **generated** plugin names, e.g. `"acme-"`. Org-specific; the default is none. |
 | `author`         | `string \| { name, email?, url? }` | —                       | Author written into **generated** `plugin.json`. Omitted by default.                      |
 | `owner`          | `{ name, email?, url? }`           | `{ "name": "Unknown" }` | Default owner for the `marketplace` generator.                                            |
@@ -63,7 +68,7 @@ if the repo-root marketplace is missing) — create one first with the `marketpl
 
 ## How detection works
 
-The plugin's `createNodesV2` globs for `plugins/**/.claude-plugin/plugin.json`. Each match
+The plugin's `createNodesV2` globs for `<pluginsRoot>/**/.claude-plugin/plugin.json`. Each match
 becomes a project keyed by its folder, named from the manifest's `name`, tagged
 `claude-plugin` (so the release group matches it), and given the `lint` target and release
 configuration. There are **no `project.json` files** — delete the plugin from `nx.json` and
@@ -169,6 +174,26 @@ count on the overview cards.
 
 ## Generators
 
+### `init` — initialize the plugin (run by `nx add`)
+
+```bash
+nx g nx-claude:init [--skill] [--skillDir=.claude/skills] [--link]
+```
+
+`nx add @thdk/nx-claude` runs this automatically. On its own it does nothing beyond a hint —
+pass `--skill` (or answer the prompt) to install the bundled **nx-claude usage skill** (which
+teaches these generators and the marketplace conventions) into `<skillDir>/nx-claude/SKILL.md`.
+
+- **Opt-in.** The default is `--skill=false`, so a non-interactive `nx add` (CI) installs
+  nothing; interactive runs get a yes/no prompt. Opt out later by deleting the skill folder.
+- **Copy, not link, by default.** The skill is copied so it is present on a fresh clone
+  (before `install`), portable to Windows/Docker/CI, and reliably discovered. `--link` symlinks
+  it from `node_modules` instead (auto version-matches, but not portable) — only for
+  single-repo, POSIX-only setups.
+- **Safe to re-run.** A copy carries an `x-managed-*` marker; re-running refreshes an untouched
+  copy but never overwrites one you have edited (it warns and leaves it). `nx migrate` refreshes
+  it on version bumps via the same guard.
+
 ### `plugin` — scaffold a plugin
 
 ```bash
@@ -179,11 +204,14 @@ nx g nx-claude:plugin <name> [--directory=<namespace>] \
 Creates `<directory>/<name>/` with a valid `plugin.json`, a README, and a lint-clean example
 skill, then registers it in the repo-root marketplace.
 
-- `--directory` is **workspace-relative**; default base is `plugins`. Use it to nest a plugin:
+- `--directory` is **workspace-relative**; default base is the configured `pluginsRoot`
+  (`plugins` unless overridden). Use it to nest a plugin:
   - `--directory=plugins/team-a` ⇒ `plugins/team-a/<name>`
 - `name` may carry a sub-namespace under the base: `team-a/payments` (default base) ⇒
   `plugins/team-a/payments`.
-- Default plugin/marketplace name is `<namePrefix><path minus a leading "plugins">`; override
+- The resulting folder must lie under `pluginsRoot` — the generator refuses locations project
+  inference would never pick up.
+- Default plugin/marketplace name is `<namePrefix><path minus the plugins root>`; override
   with `--pluginName`.
 
 ```bash
@@ -191,6 +219,69 @@ skill, then registers it in the repo-root marketplace.
 nx g nx-claude:plugin payments --directory=plugins/team-a
 # → plugins/team-a/payments, name "acme-team-a-payments"
 ```
+
+### `skill` — add a skill to a plugin
+
+```bash
+nx g nx-claude:skill <name> --project=<plugin> [--description="…"] [--userInvocable]
+```
+
+Creates `<plugin>/skills/<name>/SKILL.md` with lint-clean frontmatter and lists the skill in
+the plugin's README (`F010`). `--project` accepts a folder path (`plugins/team-a/payments`)
+or a plugin/marketplace name (`acme-team-a-payments` — the same as the inferred Nx project
+name). The skill name is kebab-cased and validated against the `F002` name rules up front;
+provide a `--description` containing "Use when …" trigger conditions or replace the
+placeholder before shipping.
+
+```bash
+nx g nx-claude:skill review-terraform --project=acme-team-a-payments \
+     --description="Use when reviewing terraform plans before apply."
+```
+
+### `move-skill` — move a skill between plugins
+
+```bash
+nx g nx-claude:move-skill <name> --from=<plugin> --to=<plugin>
+```
+
+Moves `skills/<name>/` (all its files) from one plugin to another, updates the `## Skills`
+list in **both** READMEs, and rewrites `from-plugin:<name>` skill references to
+`to-plugin:<name>` in every workspace plugin's skill markdown so dependents keep working.
+`--from`/`--to` accept a folder path or a plugin/marketplace name. Run `nx sync` afterwards
+to pull the implied `plugin.json` dependency changes (see `sync-deps`).
+
+### `move-plugin` — move / rename a plugin
+
+```bash
+nx g nx-claude:move-plugin <plugin> <destination> [--newName=<name>]
+```
+
+Moves the plugin folder to a new location **under the configured `pluginsRoot`** and repoints the marketplace
+entry's `source`. Dependents reference plugins by *name*, so a pure move needs nothing more.
+With `--newName` it also renames the plugin: `plugin.json` `name`, the marketplace entry,
+every dependent's `dependencies` entry (bare string or `{ name, version }` — ranges are
+preserved), and `old-name:<skill>` references in skill markdown. Note that release tags
+follow `{projectName}--v{version}`, so after a rename the next release resolves its current
+version from `plugin.json` (disk fallback) instead of the old git tags.
+
+```bash
+nx g nx-claude:move-plugin payments plugins/team-a/payments --newName=acme-team-a-payments
+```
+
+### `sync-deps` — keep `dependencies` in sync (sync generator)
+
+Skills invoke other plugins' skills as `plugin-name:skill-name` (e.g.
+`/payments:review-terraform`). The `sync-deps` [sync generator](https://nx.dev/concepts/sync-generators)
+scans every plugin's skill markdown for references to other **workspace** plugins' skills and
+adds any missing entries to that plugin's `plugin.json` `dependencies` — which is what feeds
+the project graph, `nx affected`, and the nx release dependency cascade.
+
+It is attached to every inferred `lint` target via `syncGenerators`, so `nx lint <plugin>`
+prompts to sync when out of date; `nx sync` applies it directly and `nx sync:check` guards CI.
+Two deliberate limits: added entries are **bare names** (a version range can't be inferred —
+tighten to `{ "name": "…", "version": "~1.2.0" }` by hand where it matters), and it never
+**removes** entries, since a dependency may exist for reasons markdown doesn't show (hooks,
+MCP servers, agents).
 
 ### `marketplace` — create a marketplace
 
@@ -209,15 +300,25 @@ repo root.
 nx g nx-claude:marketplace .claude-plugin/marketplace.json
 ```
 
-### `remove` — delete a plugin
+### `remove-plugin` — delete a plugin
 
 ```bash
-nx g nx-claude:remove <folder-path-or-marketplace-name>
+nx g nx-claude:remove-plugin <folder-path-or-marketplace-name>
 ```
 
 Deletes the folder and removes **all** marketplace entries pointing at it (including legacy
 aliases that share the folder). Accepts a path (`plugins/team-a/payments`) or a marketplace
-name (`acme-team-a-payments`). Use `--dry-run` to preview.
+name (`acme-team-a-payments`). Use `--dry-run` to preview. (`remove` remains as an alias.)
+
+### `remove-skill` — delete a skill
+
+```bash
+nx g nx-claude:remove-skill <name> --project=<plugin>
+```
+
+Deletes `skills/<name>/` and its README bullet. Dangling `plugin:skill` references in other
+plugins cannot be auto-fixed (there is no new target), so the generator lists them as a
+warning — use `move-skill` instead when the skill should live elsewhere.
 
 ## The marketplace
 
@@ -237,7 +338,12 @@ tools/nx-claude/
   src/lint/                        # lint executor + ported SKILL.md rules
   src/schemas/                     # plugin.schema.json + marketplace.schema.json
   src/generators/plugin/           # scaffold generator
-  src/generators/remove/           # remove generator
+  src/generators/skill/            # add-a-skill generator
+  src/generators/move-skill/       # move a skill between plugins
+  src/generators/move-plugin/      # move/rename a plugin
+  src/generators/sync-deps/        # sync generator: deps from plugin:skill references
+  src/generators/remove-plugin/    # remove-plugin generator (alias: remove)
+  src/generators/remove-skill/     # remove-skill generator
   src/generators/marketplace/      # marketplace scaffold generator
   src/generators/shared.ts         # nx.json org config (namePrefix/author/owner)
   executors.json  generators.json  package.json

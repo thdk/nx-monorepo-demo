@@ -46,9 +46,11 @@
     "dist",
     "!**/*.tsbuildinfo",
     "executors.json",
-    "generators.json"
+    "generators.json",
+    "migrations.json"
   ],
   "generators": "./generators.json",
+  "nx-migrations": "./migrations.json",
   "keywords": [
     "claude",
     "executors",

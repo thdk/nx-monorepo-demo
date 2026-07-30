@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeMoveSkill",
+  "title": "Move a skill from one Claude plugin to another",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the skill to move (its directory under skills/).",
+      "x-prompt": "Which skill?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "from": {
+      "type": "string",
+      "description": "Source plugin: a folder path (e.g. plugins/payments) or a plugin/marketplace name.",
+      "x-prompt": "Move from which plugin (folder path or plugin name)?"
+    },
+    "to": {
+      "type": "string",
+      "description": "Destination plugin: a folder path (e.g. plugins/team-a/audit) or a plugin/marketplace name.",
+      "x-prompt": "Move to which plugin (folder path or plugin name)?"
+    }
+  },
+  "required": ["name", "from", "to"]
+}

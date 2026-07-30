@@ -1,11 +1,16 @@
 import type { ExecutorContext } from '@nx/devkit';
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import Ajv from 'ajv';
 import { buildCatalog } from './builder';
-import catalogSchema from '../schemas/catalog.schema.json';
 import { orgAuthorFromNxJson } from '../generators/shared';
 import { MARKETPLACE_PATH } from '../marketplace';
+
+// Loaded via fs, not `import`: JSON imports break under Node's native type
+// stripping when Nx runs this executor straight from src/ (path-registered plugin).
+const catalogSchema = JSON.parse(
+  readFileSync(join(__dirname, '..', 'schemas', 'catalog.schema.json'), 'utf8'),
+) as object;
 
 export interface CatalogExecutorOptions {
   outputPath?: string;

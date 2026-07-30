@@ -1,11 +1,20 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { basename, join } from 'path';
 import Ajv, { type ErrorObject } from 'ajv';
-import matter from 'gray-matter';
+// import-equals: gray-matter is CJS without a `.default`, and this file must load
+// under both tsc output (dist) and Nx's src transpilers (path-registered plugin).
+import matter = require('gray-matter');
 import { validRange } from 'semver';
 
-import pluginSchema from '../schemas/plugin.schema.json';
-import marketplaceSchema from '../schemas/marketplace.schema.json';
+// Loaded via fs, not `import`: JSON imports break under Node's native type
+// stripping when Nx runs this executor straight from src/ (path-registered plugin).
+const schemasDir = join(__dirname, '..', 'schemas');
+const pluginSchema = JSON.parse(
+  readFileSync(join(schemasDir, 'plugin.schema.json'), 'utf8'),
+) as object;
+const marketplaceSchema = JSON.parse(
+  readFileSync(join(schemasDir, 'marketplace.schema.json'), 'utf8'),
+) as object;
 import { sourceFor } from '../marketplace';
 import {
   RELEASE_GROUP_PROJECTS_MATCHER,
@@ -14,6 +23,7 @@ import {
   type ReleaseGroupLike,
 } from '../release-group';
 import { parsePluginDependencies } from '../plugin-manifest';
+import { skillNameProblems } from '../skill-name';
 
 export type Severity = 'error' | 'warning';
 
@@ -38,9 +48,7 @@ export interface LintResult {
 }
 
 // ── Ported thresholds from gitlab-templates skill-quality/lint_rules.py ────────
-const NAME_MAX_LEN = 64;
-const NAME_PATTERN = /^[a-z0-9-]+$/;
-const RESERVED_NAME_FRAGMENTS = ['anthropic', 'claude'];
+// (name constraints live in ../skill-name.ts, shared with the `skill` generator)
 const DESCRIPTION_MAX_LEN = 1024;
 const FIRST_SECOND_PERSON_PATTERNS: RegExp[] = [
   /\b(I|I'm|I've|I'll)\b/,
@@ -370,25 +378,8 @@ function lintSkill(
   if (!name) {
     add(skillName, 'F001', 'frontmatter `name` is missing');
   } else {
-    if (name.length > NAME_MAX_LEN)
-      add(
-        skillName,
-        'F002',
-        `\`name\` exceeds ${NAME_MAX_LEN} chars (got ${name.length})`,
-      );
-    if (!NAME_PATTERN.test(name))
-      add(
-        skillName,
-        'F002',
-        `\`name\` must match ^[a-z0-9-]+$ (got "${name}")`,
-      );
-    for (const frag of RESERVED_NAME_FRAGMENTS) {
-      if (name.toLowerCase().includes(frag))
-        add(
-          skillName,
-          'F002',
-          `\`name\` must not contain reserved word "${frag}"`,
-        );
+    for (const problem of skillNameProblems(name)) {
+      add(skillName, 'F002', problem);
     }
     if (name !== skillName)
       add(

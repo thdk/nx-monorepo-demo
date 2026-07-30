@@ -1,15 +1,46 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
   "generators": {
+    "init": {
+      "factory": "./dist/generators/init/generator",
+      "schema": "./dist/generators/init/schema.json",
+      "description": "Initialize @thdk/nx-claude (run by `nx add`). Optionally installs the bundled nx-claude usage skill into the workspace."
+    },
     "plugin": {
       "factory": "./dist/generators/plugin/generator",
       "schema": "./dist/generators/plugin/schema.json",
       "description": "Scaffold a new Claude plugin folder and register it in marketplace.json."
     },
-    "remove": {
-      "factory": "./dist/generators/remove/generator",
-      "schema": "./dist/generators/remove/schema.json",
+    "skill": {
+      "factory": "./dist/generators/skill/generator",
+      "schema": "./dist/generators/skill/schema.json",
+      "description": "Add a lint-clean starter skill to an existing Claude plugin and list it in the plugin README."
+    },
+    "move-skill": {
+      "factory": "./dist/generators/move-skill/generator",
+      "schema": "./dist/generators/move-skill/schema.json",
+      "description": "Move a skill between plugins, updating both READMEs and rewriting plugin:skill references."
+    },
+    "move-plugin": {
+      "factory": "./dist/generators/move-plugin/generator",
+      "schema": "./dist/generators/move-plugin/schema.json",
+      "description": "Move (and optionally rename) a plugin folder, updating marketplace sources, dependents, and skill references."
+    },
+    "remove-skill": {
+      "factory": "./dist/generators/remove-skill/generator",
+      "schema": "./dist/generators/remove-skill/schema.json",
+      "description": "Delete a skill from a plugin, update the plugin README, and warn about dangling plugin:skill references."
+    },
+    "remove-plugin": {
+      "factory": "./dist/generators/remove-plugin/generator",
+      "schema": "./dist/generators/remove-plugin/schema.json",
+      "aliases": ["remove"],
       "description": "Delete a Claude plugin folder and remove its marketplace.json entries."
+    },
+    "sync-deps": {
+      "factory": "./dist/generators/sync-deps/generator",
+      "schema": "./dist/generators/sync-deps/schema.json",
+      "description": "Sync generator: add plugin.json dependencies implied by plugin:skill references in skill markdown."
     },
     "marketplace": {
       "factory": "./dist/generators/marketplace/generator",

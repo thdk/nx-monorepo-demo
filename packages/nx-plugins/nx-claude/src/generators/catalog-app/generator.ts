@@ -196,7 +196,9 @@ function wireDataTargets(
     json.targets['sync-data'] = {
       executor: 'nx:run-commands',
       cache: true,
-      inputs: [`{workspaceRoot}/${CATALOG_OUTPUT}`],
+      // The catalog JSON lives in dist/ (gitignored): a {workspaceRoot} fileset would
+      // hash to nothing and freeze the cache. Hash the dependent task's outputs instead.
+      inputs: [{ dependentTasksOutputFiles: CATALOG_OUTPUT }],
       outputs: [`{projectRoot}/public/plugins-catalog.json`],
       options: { command },
       dependsOn: [`${dataProject}:${dataTarget}`],

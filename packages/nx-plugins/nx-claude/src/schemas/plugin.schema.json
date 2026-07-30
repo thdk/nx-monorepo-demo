@@ -46,19 +46,15 @@
     "repository": { "type": "string", "minLength": 1 },
     "license": { "type": "string" },
     "author": {
-      "oneOf": [
-        { "type": "string" },
-        {
-          "type": "object",
-          "required": ["name"],
-          "additionalProperties": true,
-          "properties": {
-            "name": { "type": "string" },
-            "email": { "type": "string" },
-            "url": { "type": "string" }
-          }
-        }
-      ]
+      "description": "Claude Code rejects string authors — must be an object with at least `name`.",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "url": { "type": "string" }
+      }
     }
   }
 }
