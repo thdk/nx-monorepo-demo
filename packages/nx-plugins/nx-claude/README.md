@@ -90,28 +90,76 @@ its `name` matching `plugin.json` (or omit it). For cross-project defaults, use
 
 ## `lint` target
 
-Executor: `nx-claude:lint`. It runs three groups of checks and fails on any **error**:
+Executor: `nx-claude:lint`. It runs these checks and fails on any **error**. Each rule has a
+human-readable **slug** (the documented identifier) and a stable short **id** (a permanent
+alias); either can be used to configure it (see below).
 
-| Group       | Rule           | Sev     | Check                                                                                           |
-| ----------- | -------------- | ------- | ----------------------------------------------------------------------------------------------- |
-| plugin.json | `P000`         | error   | manifest missing / invalid JSON                                                                 |
-| plugin.json | `P001`         | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver)                         |
-| marketplace | `M000`         | error   | repo-root marketplace file missing / invalid JSON                                               |
-| marketplace | `M001`         | error   | fails `marketplace.schema.json`                                                                 |
-| marketplace | `M002`         | error   | no entry whose `source` points at this plugin                                                   |
-| SKILL.md    | `F000`         | error   | frontmatter parse failure / `SKILL.md` missing                                                  |
-| SKILL.md    | `F001`–`F003`  | error   | `name` present, valid, matches skill dir                                                        |
-| SKILL.md    | `F004`–`F007`  | error   | `description` present, ≤1024 chars, third-person, not vague                                     |
-| SKILL.md    | `F008`–`F011`  | warning | body ≤500 lines, no backslash paths, listed in README, contains "Use when"                      |
-| nx.json     | `R000`–`R002`  | error   | a release group matches `tag:claude-plugin` with releaseTag pattern `{projectName}--v{version}` |
-| nx.json     | `R003`         | warning | that release group versions plugins independently                                               |
-| plugin.json | `D001`, `D003` | error   | no self-dependency; `version` ranges are valid semver                                           |
-| plugin.json | `D002`, `D004` | warning | dependency resolves to a marketplace plugin; no duplicates                                      |
+| Group       | Slug                             | ID     | Sev     | Check                                                                    |
+| ----------- | -------------------------------- | ------ | ------- | ------------------------------------------------------------------------ |
+| plugin.json | `plugin-json-valid`              | `P000` | error   | manifest missing / invalid JSON                                          |
+| plugin.json | `plugin-json-schema`             | `P001` | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver)  |
+| marketplace | `marketplace-json-valid`         | `M000` | error   | repo-root marketplace file missing / invalid JSON                       |
+| marketplace | `marketplace-schema`             | `M001` | error   | fails `marketplace.schema.json`                                         |
+| marketplace | `marketplace-entry-present`      | `M002` | error   | no entry whose `source` points at this plugin                           |
+| SKILL.md    | `skill-frontmatter-parseable`    | `F000` | error   | frontmatter parse failure / `SKILL.md` missing                          |
+| SKILL.md    | `skill-name-present`             | `F001` | error   | frontmatter `name` present                                              |
+| SKILL.md    | `skill-name-format`              | `F002` | error   | `name` matches the skill-name rules                                     |
+| SKILL.md    | `skill-name-matches-dir`         | `F003` | error   | `name` equals the skill directory name                                  |
+| SKILL.md    | `skill-description-present`      | `F004` | error   | frontmatter `description` present                                       |
+| SKILL.md    | `skill-description-length`       | `F005` | error   | `description` ≤ 1024 chars                                              |
+| SKILL.md    | `skill-description-third-person` | `F006` | error   | `description` avoids first/second person                                |
+| SKILL.md    | `skill-description-not-vague`    | `F007` | error   | `description` avoids vague filler phrases                               |
+| SKILL.md    | `skill-body-length`              | `F008` | warning | body ≤ 500 lines                                                        |
+| SKILL.md    | `skill-no-backslash-paths`       | `F009` | warning | body uses forward slashes, not backslash paths                          |
+| SKILL.md    | `skill-listed-in-readme`         | `F010` | warning | skill is listed in the plugin README                                    |
+| SKILL.md    | `skill-description-use-when`     | `F011` | warning | `description` contains "Use when"                                       |
+| nx.json     | `nx-json-readable`               | `R000` | error   | `nx.json` is readable                                                   |
+| nx.json     | `release-group-present`          | `R001` | error   | a release group matches `tag:claude-plugin`                             |
+| nx.json     | `release-tag-pattern`            | `R002` | error   | its releaseTag pattern is `{projectName}--v{version}`                    |
+| nx.json     | `release-independent`            | `R003` | warning | that release group versions plugins independently                       |
+| plugin.json | `no-self-dependency`             | `D001` | error   | a plugin does not depend on itself                                      |
+| plugin.json | `dependency-semver-valid`        | `D003` | error   | dependency `version` ranges are valid semver                            |
+| plugin.json | `dependency-in-marketplace`      | `D002` | warning | dependency resolves to a marketplace plugin                             |
+| plugin.json | `no-duplicate-dependency`        | `D004` | warning | no duplicate dependency entries                                         |
 
 Schemas are bundled in `src/schemas/` and are the plugin's validation contract. The
 `SKILL.md` rules follow Anthropic's skill best-practices.
 
 Option: `--warningsAsErrors` (fail on warnings too).
+
+### Configuring rule levels
+
+The `Sev` column above lists each rule's **default** level. Override any of them with a
+`.nx-claude-lint.config.js` file, looked up at **both** the workspace root and the plugin's
+project root:
+
+```js
+// .nx-claude-lint.config.js
+module.exports = {
+  rules: {
+    'skill-body-length': 'off', // too noisy for this plugin
+    'skill-description-use-when': 'error', // require the "Use when" convention
+    D002: 'off', // ids work too: depends on external plugins on purpose
+  },
+};
+```
+
+- **Rule keys** are the slug _or_ the id from the table above — both resolve to the same
+  rule, so existing id-based configs keep working. Issue output shows `slug (id)`.
+- **Levels:** `'off'` (suppress entirely — never reported, never fails the target),
+  `'warning'`, or `'error'`.
+- **Precedence** (highest first): project-root config → workspace-root config → built-in
+  default. A project file overrides the workspace file per rule; unlisted rules keep the
+  level from the next source down.
+- **Interaction with `--warningsAsErrors`:** applies after overrides, so an `'off'` rule is
+  never escalated and a rule demoted to `'off'` can't fail the target.
+- **Bad config is reported, not ignored** (under a `lint config` scope): `config-level-valid`
+  / `C002` (error) for an invalid level, `config-known-rule` / `C003` (warning) for an
+  unknown rule, and `config-loadable` / `C000` or `config-shape` / `C001` (error) for an
+  unloadable or misshaped file. These config diagnostics can't be silenced by an override.
+
+The file is plain JS (`module.exports`), so CommonJS or — in an ESM workspace — an
+`export default { rules: { … } }` both work.
 
 ## Versioning (Nx Release)
 

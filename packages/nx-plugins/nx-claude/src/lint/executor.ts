@@ -1,6 +1,6 @@
 import type { ExecutorContext } from '@nx/devkit';
 import { join } from 'path';
-import { lintPlugin, type Issue } from './rules';
+import { lintPlugin, ruleLabel, type Issue } from './rules';
 import { MARKETPLACE_PATH } from '../marketplace';
 
 export interface LintExecutorOptions {
@@ -24,7 +24,7 @@ export default async function runExecutor(
     return { success: false };
   }
 
-  const { ok, issues } = lintPlugin({
+  const { ok, issues } = await lintPlugin({
     workspaceRoot: context.root,
     projectRoot: join(context.root, relRoot),
     projectRootRel: relRoot,
@@ -51,7 +51,7 @@ function printIssues(projectName: string, issues: Issue[]): void {
     console.log(`\n${scope}:`);
     for (const i of scopeIssues) {
       const tag = i.severity === 'error' ? 'ERROR' : 'WARN ';
-      console.log(`  [${tag}] ${i.ruleId}  ${i.message}`);
+      console.log(`  [${tag}] ${ruleLabel(i.ruleId)}  ${i.message}`);
     }
   }
   const errors = issues.filter((i) => i.severity === 'error').length;

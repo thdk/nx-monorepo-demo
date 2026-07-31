@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import { basename, join } from 'path';
+import { pathToFileURL } from 'url';
 import Ajv, { type ErrorObject } from 'ajv';
 // import-equals: gray-matter is CJS without a `.default`, and this file must load
 // under both tsc output (dist) and Nx's src transpilers (path-registered plugin).
@@ -26,6 +27,8 @@ import { parsePluginDependencies } from '../plugin-manifest';
 import { skillNameProblems } from '../skill-name';
 
 export type Severity = 'error' | 'warning';
+/** Configurable level for a rule. `off` suppresses it entirely (never becomes an Issue). */
+export type RuleLevel = Severity | 'off';
 
 export interface Issue {
   scope: string; // e.g. "plugin.json", "marketplace.json", or a skill name
@@ -67,28 +70,78 @@ const REQUIRED_DESCRIPTION_PHRASES = ['use when'];
 const BODY_MAX_LINES = 500;
 const BACKSLASH_PATH_PATTERN = /\b[A-Za-z]:\\[A-Za-z]/;
 
-const SEVERITY: Record<string, Severity> = {
-  F000: 'error',
-  F001: 'error',
-  F002: 'error',
-  F003: 'error',
-  F004: 'error',
-  F005: 'error',
-  F006: 'error',
-  F007: 'error',
-  F008: 'warning',
-  F009: 'warning',
-  F010: 'warning',
-  F011: 'warning',
-  R000: 'error',
-  R001: 'error',
-  R002: 'error',
-  R003: 'warning',
-  D001: 'error',
-  D002: 'warning',
-  D003: 'error',
-  D004: 'warning',
-};
+interface RuleDef {
+  /** Stable short id, e.g. "F011". Never changes — a permanent alias. */
+  id: string;
+  /** Human-readable slug, e.g. "skill-description-use-when". The documented identifier. */
+  slug: string;
+  /** Default level. */
+  level: Severity;
+  /**
+   * `false` for internal `lint config` diagnostics: they are reported but cannot be
+   * reconfigured (a config must not be able to silence the report of its own mistakes),
+   * so their id/slug are not accepted as config keys.
+   */
+  configurable?: boolean;
+}
+
+// Authoritative registry of every rule: its stable id, human-readable slug, and default
+// level. All lookup tables below are derived from it, so this is the single place to add
+// or retune a rule. Slug is the documented identifier; the id stays a permanent alias.
+const RULES: readonly RuleDef[] = [
+  { id: 'P000', slug: 'plugin-json-valid', level: 'error' },
+  { id: 'P001', slug: 'plugin-json-schema', level: 'error' },
+  { id: 'M000', slug: 'marketplace-json-valid', level: 'error' },
+  { id: 'M001', slug: 'marketplace-schema', level: 'error' },
+  { id: 'M002', slug: 'marketplace-entry-present', level: 'error' },
+  { id: 'F000', slug: 'skill-frontmatter-parseable', level: 'error' },
+  { id: 'F001', slug: 'skill-name-present', level: 'error' },
+  { id: 'F002', slug: 'skill-name-format', level: 'error' },
+  { id: 'F003', slug: 'skill-name-matches-dir', level: 'error' },
+  { id: 'F004', slug: 'skill-description-present', level: 'error' },
+  { id: 'F005', slug: 'skill-description-length', level: 'error' },
+  { id: 'F006', slug: 'skill-description-third-person', level: 'error' },
+  { id: 'F007', slug: 'skill-description-not-vague', level: 'error' },
+  { id: 'F008', slug: 'skill-body-length', level: 'warning' },
+  { id: 'F009', slug: 'skill-no-backslash-paths', level: 'warning' },
+  { id: 'F010', slug: 'skill-listed-in-readme', level: 'warning' },
+  { id: 'F011', slug: 'skill-description-use-when', level: 'warning' },
+  { id: 'R000', slug: 'nx-json-readable', level: 'error' },
+  { id: 'R001', slug: 'release-group-present', level: 'error' },
+  { id: 'R002', slug: 'release-tag-pattern', level: 'error' },
+  { id: 'R003', slug: 'release-independent', level: 'warning' },
+  { id: 'D001', slug: 'no-self-dependency', level: 'error' },
+  { id: 'D002', slug: 'dependency-in-marketplace', level: 'warning' },
+  { id: 'D003', slug: 'dependency-semver-valid', level: 'error' },
+  { id: 'D004', slug: 'no-duplicate-dependency', level: 'warning' },
+  // Internal `lint config` diagnostics — reported, never reconfigurable.
+  { id: 'C000', slug: 'config-loadable', level: 'error', configurable: false },
+  { id: 'C001', slug: 'config-shape', level: 'error', configurable: false },
+  { id: 'C002', slug: 'config-level-valid', level: 'error', configurable: false },
+  { id: 'C003', slug: 'config-known-rule', level: 'warning', configurable: false },
+];
+
+// id → default level (also the fallback used by add() and addConfigIssue).
+const SEVERITY: Record<string, Severity> = Object.fromEntries(
+  RULES.map((r) => [r.id, r.level]),
+);
+// id → slug, for display.
+const SLUG_BY_ID: Record<string, string> = Object.fromEntries(
+  RULES.map((r) => [r.id, r.slug]),
+);
+// Every accepted config key (both id and slug of each configurable rule) → canonical id.
+const ID_BY_CONFIG_KEY: Record<string, string> = Object.fromEntries(
+  RULES.filter((r) => r.configurable !== false).flatMap((r) => [
+    [r.id, r.id],
+    [r.slug, r.id],
+  ]),
+);
+
+/** Display label for a rule id: `slug (id)`, or just the id if it has no slug. */
+export function ruleLabel(ruleId: string): string {
+  const slug = SLUG_BY_ID[ruleId];
+  return slug ? `${slug} (${ruleId})` : ruleId;
+}
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validatePlugin = ajv.compile(pluginSchema as object);
@@ -104,22 +157,127 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, 'utf8'));
 }
 
-export function lintPlugin(params: LintParams): LintResult {
+/**
+ * Config file (looked up at both workspace root and project root) that overrides
+ * default rule levels. Project-root config wins over workspace-root config, which
+ * wins over the built-in {@link SEVERITY} defaults.
+ *
+ * ```js
+ * // .nx-claude-lint.config.js
+ * module.exports = { rules: { F008: 'off', F011: 'error' } };
+ * ```
+ */
+export const LINT_CONFIG_FILENAME = '.nx-claude-lint.config.js';
+
+const RULE_LEVELS: readonly RuleLevel[] = ['off', 'warning', 'error'];
+
+// Load a JS config module by absolute path. `require` covers CommonJS configs (the
+// common case); the dynamic-import fallback keeps it working when the consumer
+// workspace is ESM ("type":"module"), where require() throws ERR_REQUIRE_ESM.
+async function importConfigModule(path: string): Promise<unknown> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(path);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === 'ERR_REQUIRE_ESM') {
+      return await import(pathToFileURL(path).href);
+    }
+    throw e;
+  }
+}
+
+/**
+ * Build the rule-level override map from the workspace-root then project-root config
+ * files (project wins on conflict). Config problems are surfaced via `addConfigIssue`
+ * so they show up as lint issues under the `lint config` scope — never silently
+ * dropped, and (because they bypass the override-aware `add`) never silenceable.
+ */
+async function loadRuleOverrides(
+  workspaceRoot: string,
+  projectRoot: string,
+  addConfigIssue: (ruleId: string, message: string) => void,
+): Promise<Record<string, RuleLevel>> {
+  const overrides: Record<string, RuleLevel> = {};
+  // Workspace first (base), project second (wins). Dedupe when a plugin sits at the
+  // workspace root so the same file isn't loaded — and reported — twice.
+  const paths = [
+    ...new Set([
+      join(workspaceRoot, LINT_CONFIG_FILENAME),
+      join(projectRoot, LINT_CONFIG_FILENAME),
+    ]),
+  ];
+
+  for (const path of paths) {
+    if (!existsSync(path)) continue;
+
+    let mod: unknown;
+    try {
+      mod = await importConfigModule(path);
+    } catch (e) {
+      addConfigIssue('C000', `could not load ${path}: ${(e as Error).message}`);
+      continue;
+    }
+
+    const cfg = (mod as { default?: unknown })?.default ?? mod;
+    const rules = (cfg as { rules?: unknown })?.rules;
+    if (!rules || typeof rules !== 'object') {
+      addConfigIssue(
+        'C001',
+        `${path} must export { rules: { <rule>: "off" | "warning" | "error" } }`,
+      );
+      continue;
+    }
+
+    for (const [key, level] of Object.entries(rules as Record<string, unknown>)) {
+      if (!RULE_LEVELS.includes(level as RuleLevel)) {
+        addConfigIssue(
+          'C002',
+          `rule "${key}" has invalid level ${JSON.stringify(level)} (use "off", "warning", or "error")`,
+        );
+        continue;
+      }
+      // Accept either the slug or the stable id; resolve to the canonical id.
+      const canonicalId = ID_BY_CONFIG_KEY[key];
+      if (!canonicalId) {
+        addConfigIssue('C003', `unknown rule "${key}"`);
+        continue;
+      }
+      overrides[canonicalId] = level as RuleLevel;
+    }
+  }
+
+  return overrides;
+}
+
+export async function lintPlugin(params: LintParams): Promise<LintResult> {
   const { workspaceRoot, projectRoot, projectRootRel, marketplacePathRel } =
     params;
   const issues: Issue[] = [];
+
+  // Config issues bypass the override map (a config can't silence the report of its
+  // own mistakes) and are collected before any rule runs.
+  const overrides = await loadRuleOverrides(
+    workspaceRoot,
+    projectRoot,
+    (ruleId, message) =>
+      issues.push({
+        scope: 'lint config',
+        ruleId,
+        message,
+        severity: SEVERITY[ruleId] ?? 'error',
+      }),
+  );
+
   const add = (
     scope: string,
     ruleId: string,
     message: string,
     severity?: Severity,
-  ) =>
-    issues.push({
-      scope,
-      ruleId,
-      message,
-      severity: severity ?? SEVERITY[ruleId] ?? 'error',
-    });
+  ) => {
+    const level = overrides[ruleId] ?? severity ?? SEVERITY[ruleId] ?? 'error';
+    if (level === 'off') return;
+    issues.push({ scope, ruleId, message, severity: level });
+  };
 
   // ── plugin.json ────────────────────────────────────────────────────────────
   const pluginJsonPath = join(projectRoot, '.claude-plugin', 'plugin.json');
@@ -144,14 +302,8 @@ export function lintPlugin(params: LintParams): LintResult {
 
   // ── marketplace.json entry (repo-root; a repo has exactly one marketplace) ────
   const marketplacePluginNames = new Set<string>();
-  const marketplacePath = join(workspaceRoot, marketplacePathRel);
-  if (!existsSync(marketplacePath)) {
-    add(
-      'marketplace.json',
-      'M000',
-      `marketplace.json not found at "${marketplacePathRel}"`,
-    );
-  } else {
+  const marketplacePath = join(projectRoot, marketplacePathRel);
+  if (existsSync(marketplacePath)) {
     let marketplace: any;
     try {
       marketplace = readJson(marketplacePath);
