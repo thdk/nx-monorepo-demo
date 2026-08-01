@@ -1,3 +1,13 @@
+## 0.0.6 (2026-08-01)
+
+### New Features
+
+- add nx-claude nx plugin ([#36](https://github.com/thdk/nx-monorepo-demo/pull/36))
+
+### ❤️ Thank You
+
+- Thomas Dekiere @thdk
+
 ## 0.0.5 (2026-07-15)
 
 ### New Features

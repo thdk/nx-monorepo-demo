@@ -1,6 +1,6 @@
 {
   "name": "@thdk/react-components-css-vite",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
