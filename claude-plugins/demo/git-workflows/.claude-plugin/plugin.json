@@ -1,0 +1,9 @@
+{
+  "name": "demo-git-workflows",
+  "description": "Demo plugin showcasing nx-claude: git and release workflow skills.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thomas Dekiere"
+  },
+  "keywords": ["skills"]
+}

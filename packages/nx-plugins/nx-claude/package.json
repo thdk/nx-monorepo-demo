@@ -1,0 +1,74 @@
+{
+  "name": "@thdk/nx-claude",
+  "description": "Nx plugin: generators, executors, and version actions for managing Claude/agent configuration in an Nx workspace.",
+  "version": "0.0.1",
+  "private": false,
+  "author": "Thomas Dekiere",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "development": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./version-actions": {
+      "types": "./dist/version-actions.d.ts",
+      "development": "./src/version-actions.ts",
+      "default": "./dist/version-actions.js"
+    },
+    "./catalog.schema.json": {
+      "development": "./src/schemas/catalog.schema.json",
+      "default": "./dist/schemas/catalog.schema.json"
+    },
+    "./executors.json": "./executors.json",
+    "./generators.json": "./generators.json"
+  },
+  "dependencies": {
+    "@nx/devkit": "^23.1.0",
+    "ajv": "^8.17.1",
+    "gray-matter": "^4.0.3",
+    "semver": "^7.8.5",
+    "tslib": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.21",
+    "@types/semver": "7.7.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "executors": "./executors.json",
+  "files": [
+    "dist",
+    "!**/*.tsbuildinfo",
+    "executors.json",
+    "generators.json",
+    "migrations.json"
+  ],
+  "generators": "./generators.json",
+  "keywords": [
+    "claude",
+    "executors",
+    "generators",
+    "monorepo",
+    "nx",
+    "nx-plugin"
+  ],
+  "nx-migrations": "./migrations.json",
+  "peerDependencies": {
+    "nx": ">=23.1.0 <25.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thdk/nx-monorepo-demo.git",
+    "directory": "packages/nx-plugins/nx-claude"
+  },
+  "sideEffects": false
+}

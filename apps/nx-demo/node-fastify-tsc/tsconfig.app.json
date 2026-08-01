@@ -6,7 +6,8 @@
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "emitDeclarationOnly": false,
-    "declarationDir": "out-tsc"
+    "declarationDir": "out-tsc",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*.ts"],
   "exclude": [

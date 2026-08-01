@@ -19,6 +19,16 @@
   },
   "plugins": [
     {
+      "plugin": "./packages/nx-plugins/nx-claude/src/index.ts",
+      "options": {
+        "pluginsRoot": "claude-plugins",
+        "author": "Thomas Dekiere",
+        "owner": {
+          "name": "Thomas Dekiere"
+        }
+      }
+    },
+    {
       "plugin": "@nx/js/typescript",
       "options": {
         "compiler": "tsgo",
@@ -73,20 +83,6 @@
         "watchDepsTargetName": "watch-deps",
         "buildDepsTargetName": "build-deps",
         "typecheckTargetName": "typecheck"
-      }
-    },
-    {
-      "plugin": "@nx/vite/plugin",
-      "options": {
-        "compiler": "tsgo",
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "devTargetName": "dev",
-        "previewTargetName": "preview",
-        "serveStaticTargetName": "serve-static",
-        "typecheckTargetName": "typecheck",
-        "buildDepsTargetName": "build-deps",
-        "watchDepsTargetName": "watch-deps"
       }
     },
     {
@@ -154,35 +150,44 @@
         "watchDepsTargetName": "watch-deps",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "include": ["apps/**"],
+      "options": {
+        "compiler": "tsgo",
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
   ],
-  "targetDefaults": [
-    {
-      "target": "lint",
+  "targetDefaults": {
+    "lint": {
       "dependsOn": ["build"]
     },
-    {
-      "executor": "@nx/esbuild:esbuild",
+    "@nx/esbuild:esbuild": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    {
-      "target": "test",
+    "test": {
       "dependsOn": ["^build"]
     },
-    {
-      "executor": "@nx/js:tsc",
+    "@nx/js:tsc": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    {
-      "target": "docker:build",
+    "docker:build": {
       "dependsOn": ["build", "prune"]
     },
-    {
-      "target": "prune-lockfile",
+    "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
       "executor": "@nx/js:prune-lockfile",
@@ -194,8 +199,7 @@
         "buildTarget": "build"
       }
     },
-    {
-      "target": "copy-workspace-modules",
+    "copy-workspace-modules": {
       "dependsOn": ["build"],
       "cache": true,
       "outputs": ["{projectRoot}/dist/workspace_modules"],
@@ -204,7 +208,7 @@
         "buildTarget": "build"
       }
     }
-  ],
+  },
   "generators": {
     "@nx/react": {
       "application": {
@@ -301,6 +305,16 @@
         "releaseTag": {
           "pattern": "release/{projectName}@{version}"
         }
+      },
+      "claude-plugins": {
+        "projects": ["tag:claude-plugin"],
+        "projectsRelationship": "independent",
+        "version": {
+          "specifierSource": "conventional-commits"
+        },
+        "releaseTag": {
+          "pattern": "{projectName}--v{version}"
+        }
       }
     },
     "conventionalCommits": {
@@ -351,5 +365,8 @@
       "automaticFromRef": true
     }
   },
-  "analytics": true
+  "analytics": true,
+  "migrate": {
+    "agentic": true
+  }
 }

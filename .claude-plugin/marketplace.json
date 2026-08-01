@@ -1,0 +1,23 @@
+{
+  "name": "nx-monorepo-demo",
+  "owner": {
+    "name": "Thomas Dekiere"
+  },
+  "plugins": [
+    {
+      "name": "demo-git-workflows",
+      "source": "./claude-plugins/demo/git-workflows",
+      "strict": true
+    },
+    {
+      "name": "demo-code-review",
+      "source": "./claude-plugins/demo/code-review",
+      "strict": true
+    },
+    {
+      "name": "demo-onboarding",
+      "source": "./claude-plugins/demo/onboarding",
+      "strict": true
+    }
+  ]
+}

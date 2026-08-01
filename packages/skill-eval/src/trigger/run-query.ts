@@ -24,6 +24,13 @@ export interface RunQueryOptions {
    * never see each other's temp slash-commands in available_skills.
    */
   projectRoot?: string;
+  /**
+   * Base directory under which the isolated workdir is created when
+   * `projectRoot` is omitted. Defaults to the OS tempdir. Primarily a
+   * testability seam so a test can point runs at its own unique directory
+   * instead of the shared global tempdir.
+   */
+  tempDir?: string;
   model?: string | null;
   timeoutMs?: number;
   claudeBin?: string;
@@ -75,7 +82,7 @@ interface ParserOutcome {
 function consumeStreamLine(
   state: ReturnType<typeof createParserState>,
   line: string,
-  triggerId: string
+  triggerId: string,
 ): ParserOutcome | null {
   if (!line) return null;
   let event: ParsedEvent;
@@ -90,13 +97,14 @@ function consumeStreamLine(
 }
 
 export async function runQuery(
-  options: RunQueryOptions
+  options: RunQueryOptions,
 ): Promise<RunQueryResult> {
   const {
     query,
     skillName,
     skillDescription,
     projectRoot,
+    tempDir = tmpdir(),
     model,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     claudeBin = 'claude',
@@ -108,7 +116,7 @@ export async function runQuery(
   // the same project never share a `.claude/commands/` directory.
   const ownTempRoot = projectRoot == null;
   const workdir = ownTempRoot
-    ? mkdtempSync(join(tmpdir(), 'skill-eval-'))
+    ? mkdtempSync(join(tempDir, 'skill-eval-'))
     : projectRoot;
   const commandsDir = join(workdir, '.claude', 'commands');
   const commandFile = join(commandsDir, `${triggerId}.md`);
@@ -205,7 +213,7 @@ export async function runQuery(
                 Object.assign(new Error(`claude exited with code ${code}`), {
                   code: 'CLAUDE_NONZERO_EXIT',
                   exitCode: code,
-                })
+                }),
               );
               return;
             }
@@ -213,7 +221,7 @@ export async function runQuery(
             // tool_use that matched, treat as a miss.
             resolve({ outcome: 'miss' });
           });
-        }
+        },
       );
     } finally {
       clearTimeout(timer);

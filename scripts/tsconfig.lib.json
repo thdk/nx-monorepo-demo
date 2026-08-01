@@ -9,7 +9,8 @@
     "types": ["node"],
     "module": "NodeNext",
     "moduleResolution": "nodenext",
-    "target": "ES2022"
+    "target": "ES2022",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*.ts", "bin/**/*.ts"],
   "references": []

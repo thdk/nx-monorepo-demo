@@ -1,0 +1,10 @@
+{
+  "name": "demo-code-review",
+  "description": "Demo plugin showcasing nx-claude: code review skills.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thomas Dekiere"
+  },
+  "keywords": ["skills"],
+  "dependencies": ["demo-git-workflows"]
+}

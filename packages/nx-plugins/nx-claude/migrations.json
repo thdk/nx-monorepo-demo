@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "generators": {
+    "0.0.2-sync-usage-skill": {
+      "version": "0.0.2",
+      "description": "Refresh the installed nx-claude usage skill (if present and unmodified) to the version shipped with this release.",
+      "implementation": "./dist/migrations/sync-skill/migration"
+    }
+  }
+}

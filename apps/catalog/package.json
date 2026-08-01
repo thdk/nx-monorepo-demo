@@ -1,0 +1,11 @@
+{
+  "name": "@thdk/catalog",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "marked": "18.0.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "tslib": "2.8.1"
+  }
+}

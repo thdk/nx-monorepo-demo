@@ -1,0 +1,16 @@
+{
+  "name": "demo-onboarding",
+  "description": "Demo plugin showcasing nx-claude: cross-plugin skill references and dependency sync.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thomas Dekiere"
+  },
+  "keywords": ["skills"],
+  "dependencies": [
+    "demo-code-review",
+    {
+      "name": "demo-git-workflows",
+      "version": "~0.1.0"
+    }
+  ]
+}

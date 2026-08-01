@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nx-claude/claude-marketplace.schema.json",
+  "title": "Claude marketplace manifest (.claude-plugin/marketplace.json)",
+  "type": "object",
+  "required": ["name", "owner", "plugins"],
+  "additionalProperties": true,
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "owner": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "url": { "type": "string" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": { "description": { "type": "string" } }
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "source"],
+        "additionalProperties": true,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "source": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              { "type": "object" }
+            ]
+          },
+          "strict": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

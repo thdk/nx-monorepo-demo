@@ -1,8 +1,8 @@
 import {
-  CreateNodesContextV2,
+  CreateNodesContext,
   createNodesFromFiles,
   CreateNodesResult,
-  CreateNodesV2,
+  CreateNodes,
 } from '@nx/devkit';
 import { existsSync, readdirSync } from 'fs';
 import { readdir } from 'fs/promises';
@@ -30,7 +30,7 @@ export interface NxTerraformPluginOptions {
 // Evaluated when the project graph is computed on the running machine.
 const isCI = !!process.env.CI && process.env.CI !== 'false';
 
-export const createNodesV2: CreateNodesV2<NxTerraformPluginOptions> = [
+export const createNodesV2: CreateNodes<NxTerraformPluginOptions> = [
   '**/main.tf',
   async (configFiles, options, context) => {
     return await createNodesFromFiles(
@@ -69,7 +69,7 @@ interface TerraformLayout {
 async function createNodesInternal(
   configFilePath: string,
   options: NxTerraformPluginOptions | undefined = {},
-  context: CreateNodesContextV2,
+  context: CreateNodesContext,
 ) {
   const layout = await resolveLayout(configFilePath, options);
   if (layout === null) {

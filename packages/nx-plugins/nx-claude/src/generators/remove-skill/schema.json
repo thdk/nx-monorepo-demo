@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "NxClaudeRemoveSkill",
+  "title": "Remove a skill from a Claude plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the skill to remove (its directory under skills/).",
+      "x-prompt": "Which skill to remove?",
+      "$default": { "$source": "argv", "index": 0 }
+    },
+    "project": {
+      "type": "string",
+      "description": "Plugin holding the skill: a folder path (e.g. plugins/payments) or a plugin/marketplace name.",
+      "x-prompt": "From which plugin (folder path or plugin name)?",
+      "$default": { "$source": "projectName" }
+    }
+  },
+  "required": ["name", "project"]
+}

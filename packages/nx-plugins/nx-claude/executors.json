@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "executors": {
+    "lint": {
+      "implementation": "./dist/lint/executor",
+      "schema": "./dist/lint/schema.json",
+      "description": "Validate a Claude plugin's plugin.json + marketplace entry and lint its SKILL.md files."
+    },
+    "catalog": {
+      "implementation": "./dist/catalog/executor",
+      "schema": "./dist/catalog/schema.json",
+      "description": "Aggregate every marketplace-registered plugin's metadata + skills into one JSON catalog."
+    }
+  }
+}
