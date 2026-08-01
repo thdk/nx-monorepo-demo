@@ -54,7 +54,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
@@ -64,7 +64,7 @@ jobs:
           environment: ${{ inputs.environment }}
           dry-run: ${{ inputs.dry-run }}
           github-packages-token: ${{ secrets.GITHUB_TOKEN }}
-          affected-only: ${{ inputs.affected-only }}}
+          affected-only: ${{ inputs.affected-only }}
 
   apply:
     name: deploy-${{ inputs.environment }}
@@ -73,7 +73,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
           ref: ${{ inputs.ref }}
@@ -83,4 +83,4 @@ jobs:
           environment: ${{ inputs.environment }}
           dry-run: ${{ inputs.dry-run }}
           github-packages-token: ${{ secrets.GITHUB_TOKEN }}
-          affected-only: ${{ inputs.affected-only }}}
+          affected-only: ${{ inputs.affected-only }}

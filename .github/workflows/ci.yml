@@ -22,10 +22,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       version-commit-sha: ${{ steps.publish.outputs.version-commit-sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
@@ -97,20 +98,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Validate IaC
-        if: ${{ github.ref != 'refs/heads/main' }}
-        uses: ./.github/actions/nx-terraform
-        with:
-          dry-run: true
-          affected-only: true
-          configuration: development
   deploy:
     needs: [build]
     uses: ./.github/workflows/cd.yml
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.event_name == 'pull_request' || (github.ref == 'refs/heads/main' && github.event_name == 'push') }}
     with:
       environment: development
-      dry-run: false
+      dry-run: ${{ github.event_name == 'pull_request' }}
       affected-only: true
-      ref: ${{ needs.build.outputs.version-commit-sha }} # forward new ref so the next job can fetch it instead of using the ref that triggered the workflow!
+      ref: ${{ needs.build.outputs.version-commit-sha }} # main only: check out the freshly-tagged commit (empty on PRs → cd.yml uses the triggering ref)
     secrets: inherit
