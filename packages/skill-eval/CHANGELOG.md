@@ -1,3 +1,7 @@
+## 0.2.21 (2026-08-02)
+
+This was a version bump only for skill-eval to align it with other projects, there were no code changes.
+
 ## 0.2.20 (2026-08-01)
 
 ### New Features

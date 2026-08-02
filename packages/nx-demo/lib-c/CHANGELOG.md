@@ -1,3 +1,7 @@
+## 0.20.16 (2026-08-02)
+
+This was a version bump only for lib-c to align it with other projects, there were no code changes.
+
 ## 0.20.15 (2026-08-01)
 
 ### New Features
