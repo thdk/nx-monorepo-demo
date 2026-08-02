@@ -36,7 +36,7 @@ runs:
         TARGET: ${{ inputs.target }}
         FORCE_ALL: ${{ inputs.force-all }}
       run: |
-        ARGS=()
+        ARGS=(--json)
         if [ "$FORCE_ALL" != "true" ]; then
           ARGS+=(--affected)
         fi
@@ -47,8 +47,7 @@ runs:
           ARGS+=(--with-target="$TARGET")
         fi
 
-        # nx 23 prints a JSON array from `nx show projects`; jq-join into a CSV
-        # (empty string when nothing matches).
+        # jq-join the JSON array into a CSV (empty string when nothing matches).
         LIST=$(pnpm exec nx show projects "${ARGS[@]}" | jq -r 'join(",")')
 
         if [ -z "$LIST" ]; then

@@ -29,12 +29,10 @@ runs:
       env:
         AFFECTED_ONLY: ${{ inputs.affected-only }}
       run: |
-        ARGS=(--with-target terraform-plan)
+        ARGS=(--with-target terraform-plan --json)
         if [ "$AFFECTED_ONLY" = "true" ]; then
           ARGS+=(--affected)
         fi
-        # nx 23 prints a JSON array from `nx show projects`; jq-join into a CSV
-        # that `nx run-many --projects=` accepts (empty string when nothing matches).
         PROJECTS=$(pnpm exec nx show projects "${ARGS[@]}" | jq -r 'join(",")')
         echo "TERRAFORM_PROJECTS=$PROJECTS" >> "$GITHUB_ENV"
         if [ -z "$PROJECTS" ]; then
