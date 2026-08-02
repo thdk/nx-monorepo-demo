@@ -14,7 +14,7 @@ import {
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter()
+    new FastifyAdapter(),
   );
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
@@ -22,7 +22,7 @@ async function bootstrap() {
   const host = process.env.HOST || '0.0.0.0';
   await app.listen(port, host);
   Logger.log(
-    `🚀 Application is running on: http://${host}:${port}/${globalPrefix}`
+    `🚀 Application is running on: http://${host}:${port}/${globalPrefix}`,
   );
 }
 

@@ -21,7 +21,7 @@ export function calculateStats(values: number[]): {
 }
 
 export function aggregateRuns(
-  runs: OutputEvalRun[]
+  runs: OutputEvalRun[],
 ): Record<string, ConfigurationStats> {
   const grouped = new Map<string, OutputEvalRun[]>();
   for (const r of runs) {
@@ -46,7 +46,7 @@ export function aggregateRuns(
 }
 
 export function computeDelta(
-  stats: Record<string, ConfigurationStats>
+  stats: Record<string, ConfigurationStats>,
 ): { pass_rate: string; time_seconds: string; tokens: string } | undefined {
   const withSkill = stats['with_skill'];
   const withoutSkill = stats['without_skill'];

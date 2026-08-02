@@ -40,7 +40,7 @@ function errorBlock(result: QueryResult): string {
     .map((r, i) => `Run ${i + 1}: ${r.error ?? 'unknown error'}`)
     .join('\n\n');
   return `<error message="${escapeXml(
-    errored.length + ' run(s) errored'
+    errored.length + ' run(s) errored',
   )}">${escapeXml(messages)}</error>`;
 }
 

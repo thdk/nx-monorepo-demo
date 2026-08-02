@@ -31,7 +31,7 @@ export function createParserState(): StreamParserState {
 export function feedEvent(
   state: StreamParserState,
   event: ParsedEvent,
-  triggerId: string
+  triggerId: string,
 ): Verdict {
   const type = event['type'];
 

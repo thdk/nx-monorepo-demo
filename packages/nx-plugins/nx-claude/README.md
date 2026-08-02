@@ -94,10 +94,10 @@ Executor: `nx-claude:lint`. It runs these checks and fails on any **error**. Eac
 human-readable **slug** (the documented identifier) and a stable short **id** (a permanent
 alias); either can be used to configure it (see below).
 
-| Group       | Slug                             | ID     | Sev     | Check                                                                    |
-| ----------- | -------------------------------- | ------ | ------- | ------------------------------------------------------------------------ |
-| plugin.json | `plugin-json-valid`              | `P000` | error   | manifest missing / invalid JSON                                          |
-| plugin.json | `plugin-json-schema`             | `P001` | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver)  |
+| Group       | Slug                             | ID     | Sev     | Check                                                                   |
+| ----------- | -------------------------------- | ------ | ------- | ----------------------------------------------------------------------- |
+| plugin.json | `plugin-json-valid`              | `P000` | error   | manifest missing / invalid JSON                                         |
+| plugin.json | `plugin-json-schema`             | `P001` | error   | fails `plugin.schema.json` (e.g. `name` not `^[a-z0-9-]+$`, bad semver) |
 | marketplace | `marketplace-json-valid`         | `M000` | error   | repo-root marketplace file missing / invalid JSON                       |
 | marketplace | `marketplace-schema`             | `M001` | error   | fails `marketplace.schema.json`                                         |
 | marketplace | `marketplace-entry-present`      | `M002` | error   | no entry whose `source` points at this plugin                           |
@@ -115,7 +115,7 @@ alias); either can be used to configure it (see below).
 | SKILL.md    | `skill-description-use-when`     | `F011` | warning | `description` contains "Use when"                                       |
 | nx.json     | `nx-json-readable`               | `R000` | error   | `nx.json` is readable                                                   |
 | nx.json     | `release-group-present`          | `R001` | error   | a release group matches `tag:claude-plugin`                             |
-| nx.json     | `release-tag-pattern`            | `R002` | error   | its releaseTag pattern is `{projectName}--v{version}`                    |
+| nx.json     | `release-tag-pattern`            | `R002` | error   | its releaseTag pattern is `{projectName}--v{version}`                   |
 | nx.json     | `release-independent`            | `R003` | warning | that release group versions plugins independently                       |
 | plugin.json | `no-self-dependency`             | `D001` | error   | a plugin does not depend on itself                                      |
 | plugin.json | `dependency-semver-valid`        | `D003` | error   | dependency `version` ranges are valid semver                            |

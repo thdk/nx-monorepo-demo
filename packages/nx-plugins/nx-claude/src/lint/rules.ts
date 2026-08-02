@@ -117,8 +117,18 @@ const RULES: readonly RuleDef[] = [
   // Internal `lint config` diagnostics — reported, never reconfigurable.
   { id: 'C000', slug: 'config-loadable', level: 'error', configurable: false },
   { id: 'C001', slug: 'config-shape', level: 'error', configurable: false },
-  { id: 'C002', slug: 'config-level-valid', level: 'error', configurable: false },
-  { id: 'C003', slug: 'config-known-rule', level: 'warning', configurable: false },
+  {
+    id: 'C002',
+    slug: 'config-level-valid',
+    level: 'error',
+    configurable: false,
+  },
+  {
+    id: 'C003',
+    slug: 'config-known-rule',
+    level: 'warning',
+    configurable: false,
+  },
 ];
 
 // id → default level (also the fallback used by add() and addConfigIssue).
@@ -228,7 +238,9 @@ async function loadRuleOverrides(
       continue;
     }
 
-    for (const [key, level] of Object.entries(rules as Record<string, unknown>)) {
+    for (const [key, level] of Object.entries(
+      rules as Record<string, unknown>,
+    )) {
       if (!RULE_LEVELS.includes(level as RuleLevel)) {
         addConfigIssue(
           'C002',

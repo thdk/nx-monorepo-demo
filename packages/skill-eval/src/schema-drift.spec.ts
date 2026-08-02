@@ -148,7 +148,7 @@ function zodVerdict(input: unknown): boolean {
 
 describe('schema drift: Zod vs JSON Schema', () => {
   const jsonSchema = JSON.parse(
-    readFileSync(join(PACKAGE_ROOT, 'schema/eval-set.schema.json'), 'utf-8')
+    readFileSync(join(PACKAGE_ROOT, 'schema/eval-set.schema.json'), 'utf-8'),
   ) as object;
   const ajv = new Ajv({ allErrors: false, strict: false });
   const validateJsonSchema = ajv.compile(jsonSchema);
@@ -159,7 +159,7 @@ describe('schema drift: Zod vs JSON Schema', () => {
       const jsonOk = validateJsonSchema(fixture.input);
       expect(
         { zod: zodOk, jsonSchema: jsonOk, expected: fixture.expectValid },
-        `Validators disagree on fixture "${fixture.name}". Zod=${zodOk}, JSONSchema=${jsonOk}, expected=${fixture.expectValid}`
+        `Validators disagree on fixture "${fixture.name}". Zod=${zodOk}, JSONSchema=${jsonOk}, expected=${fixture.expectValid}`,
       ).toEqual({
         zod: fixture.expectValid,
         jsonSchema: fixture.expectValid,

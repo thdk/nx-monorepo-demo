@@ -25,7 +25,7 @@ export interface EvalSelection {
  */
 export function selectEvals(
   evalSet: EvalSet,
-  filters: readonly string[]
+  filters: readonly string[],
 ): EvalSelection {
   const tokens = filters
     .flatMap((f) => f.split(','))

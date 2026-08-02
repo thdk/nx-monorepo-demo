@@ -37,7 +37,7 @@ export interface OutputRunSetOptions {
   claudeBin?: string;
   /** DI seam — override the executor (for tests). */
   executor?: (
-    options: ExecutorOptions
+    options: ExecutorOptions,
   ) => Promise<import('../types.js').ExecutionResult>;
   /** DI seam — override the grader (for tests). */
   grader?: (options: GradeOptions) => Promise<GradingResult>;
@@ -63,12 +63,12 @@ export interface OutputProgressEvent {
 }
 
 function evalsWithExpectations(
-  evals: EvalItem[]
+  evals: EvalItem[],
 ): Array<{ index: number; item: EvalItem }> {
   return evals
     .map((item, index) => ({ index, item }))
     .filter(
-      ({ item }) => item.should_trigger && (item.expectations?.length ?? 0) > 0
+      ({ item }) => item.should_trigger && (item.expectations?.length ?? 0) > 0,
     );
 }
 
@@ -81,7 +81,7 @@ function idFor(item: EvalItem, index: number): number {
 }
 
 export async function runOutputSet(
-  options: OutputRunSetOptions
+  options: OutputRunSetOptions,
 ): Promise<OutputBenchmark> {
   const {
     evalSet,
@@ -213,7 +213,7 @@ export async function runOutputSet(
             if (runDir && grading) {
               writeFileSync(
                 join(runDir, 'grading.json'),
-                JSON.stringify(grading, null, 2)
+                JSON.stringify(grading, null, 2),
               );
             }
 
@@ -226,7 +226,7 @@ export async function runOutputSet(
               execution,
               grading,
             };
-          })
+          }),
         );
       }
     }
@@ -244,7 +244,7 @@ export async function runOutputSet(
       grader_model: graderModel,
       timestamp: new Date().toISOString(),
       evals_run: Array.from(new Set(runs.map((r) => r.eval_id))).sort(
-        (a, b) => a - b
+        (a, b) => a - b,
       ),
       runs_per_configuration: runsPerConfiguration,
     },

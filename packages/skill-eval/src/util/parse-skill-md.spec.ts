@@ -4,7 +4,11 @@ import { join } from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { findSkillFile, parseFrontmatter, parseSkillMd } from './parse-skill-md.js';
+import {
+  findSkillFile,
+  parseFrontmatter,
+  parseSkillMd,
+} from './parse-skill-md.js';
 
 describe('parseFrontmatter', () => {
   it('extracts simple key/value pairs', () => {
@@ -79,7 +83,7 @@ description: a fake test skill
 ---
 
 # body
-`
+`,
     );
     expect(parseSkillMd(tmp)).toEqual({
       name: 'fake-skill',
@@ -99,7 +103,7 @@ description: a fake test skill
 name: lowercase-skill
 description: case-insensitive lookup
 ---
-`
+`,
     );
     expect(parseSkillMd(tmp)).toEqual({
       name: 'lowercase-skill',

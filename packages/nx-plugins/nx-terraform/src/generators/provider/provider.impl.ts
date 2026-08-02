@@ -10,7 +10,7 @@ import { GeneratorOptions } from '../_common/generator-options';
 
 export async function providerGenerator(
   tree: Tree,
-  options: GeneratorOptions<ProviderGeneratorSchema>
+  options: GeneratorOptions<ProviderGeneratorSchema>,
 ) {
   const project = readProjectConfiguration(tree, options.project);
 
@@ -25,7 +25,7 @@ export async function providerGenerator(
 
   return () => {
     console.log(
-      `Provider ${options.provider} generated for project ${options.project}`
+      `Provider ${options.provider} generated for project ${options.project}`,
     );
   };
 }

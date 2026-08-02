@@ -43,7 +43,7 @@ interface RawGrading {
 
 function coerceGrading(
   raw: unknown,
-  expectations: string[]
+  expectations: string[],
 ): ExpectationGrade[] {
   const r = raw as RawGrading | null | undefined;
   const items = Array.isArray(r?.expectations) ? r.expectations : [];
@@ -142,7 +142,7 @@ async function gradeViaClaudeP(options: GradeOptions): Promise<GradingResult> {
 }
 
 export async function gradeExecution(
-  options: GradeOptions
+  options: GradeOptions,
 ): Promise<GradingResult> {
   if (options.expectations.length === 0) {
     return {

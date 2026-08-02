@@ -7,7 +7,7 @@ export type GeneratorOptions<T> = T & {
 export function getMergedGeneratorOptions<T>(
   generatorId: string,
   tree: Tree,
-  options: Partial<GeneratorOptions<T>> = {}
+  options: Partial<GeneratorOptions<T>> = {},
 ): GeneratorOptions<T> {
   const nxJson = readNxJson(tree);
   // Get defaults for your generator

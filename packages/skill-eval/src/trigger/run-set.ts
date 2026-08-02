@@ -84,7 +84,7 @@ function computeSummary(results: QueryResult[]): TriggerSummary {
 }
 
 export async function runSet(
-  options: RunSetOptions
+  options: RunSetOptions,
 ): Promise<TriggerRunOutput> {
   const {
     evalSet,
@@ -141,7 +141,7 @@ export async function runSet(
           durationMs: result.durationMs,
           error: record.error,
         });
-      })
+      }),
     );
   });
 
@@ -158,8 +158,8 @@ export async function runSet(
       denom === 0
         ? false
         : item.should_trigger
-        ? triggerRate >= triggerThreshold
-        : triggerRate < triggerThreshold;
+          ? triggerRate >= triggerThreshold
+          : triggerRate < triggerThreshold;
     return {
       query: item.query,
       should_trigger: item.should_trigger,

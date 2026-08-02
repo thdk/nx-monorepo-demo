@@ -22,7 +22,7 @@ export function renderMarkdown(output: TriggerRunOutput): string {
     `| ${summary.total} | ${summary.passed} | ${summary.failed} | ${
       summary.errored
     } | ${pct(summary.precision)} | ${pct(summary.recall)} | ${pct(
-      summary.accuracy
+      summary.accuracy,
     )} |`,
     '',
     '## Per-query results',
@@ -39,7 +39,7 @@ export function renderMarkdown(output: TriggerRunOutput): string {
       denom > 0 ? `${r.triggers}/${denom} (${pct(r.trigger_rate)})` : '—';
     const query = r.query.replace(/\|/g, '\\|').replace(/\n/g, ' ');
     lines.push(
-      `| ${status} | ${expected} | ${rate} | ${r.errors} | ${query} |`
+      `| ${status} | ${expected} | ${rate} | ${r.errors} | ${query} |`,
     );
   }
 
@@ -56,7 +56,7 @@ export function renderMarkdown(output: TriggerRunOutput): string {
           '```',
           rec.error ?? 'unknown error',
           '```',
-          ''
+          '',
         );
       });
     }
@@ -67,7 +67,7 @@ export function renderMarkdown(output: TriggerRunOutput): string {
 
 export function writeMarkdownReport(
   path: string,
-  output: TriggerRunOutput
+  output: TriggerRunOutput,
 ): void {
   writeFileSync(path, renderMarkdown(output));
 }

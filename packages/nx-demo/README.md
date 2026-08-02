@@ -4,12 +4,12 @@ Libraries that exist purely to demonstrate Nx behavior across bundlers, module f
 
 All libs carry `scope:nx-demo`. `lib-c` additionally carries `npm:public` because it's used to demonstrate the npm publishing flow via `nx release`.
 
-| Lib           | Bundler   | Module type | Published                  | Consumed by                                                             |
-| ------------- | --------- | ----------- | -------------------------- | ----------------------------------------------------------------------- |
-| `lib-a`       | tsc       | CJS         | no                         | `app-1`, `app-2`, `node-fastify-tsc`, `node-nest-webpack`               |
-| `lib-b`       | esbuild   | ESM         | no                         | all node apps + `react-app-1` (exercises ESM-in-CJS interop)            |
-| `lib-c`       | tsc       | CJS         | yes (`@thdk/lib-c`)        | `app-1`, `app-2`, `node-fastify-tsc`, `node-nest-webpack`               |
-| `nest-lib-a` | none      | TS source   | no                         | `node-nest-webpack` (imported as TypeScript, not built separately)      |
+| Lib          | Bundler | Module type | Published           | Consumed by                                                        |
+| ------------ | ------- | ----------- | ------------------- | ------------------------------------------------------------------ |
+| `lib-a`      | tsc     | CJS         | no                  | `app-1`, `app-2`, `node-fastify-tsc`, `node-nest-webpack`          |
+| `lib-b`      | esbuild | ESM         | no                  | all node apps + `react-app-1` (exercises ESM-in-CJS interop)       |
+| `lib-c`      | tsc     | CJS         | yes (`@thdk/lib-c`) | `app-1`, `app-2`, `node-fastify-tsc`, `node-nest-webpack`          |
+| `nest-lib-a` | none    | TS source   | no                  | `node-nest-webpack` (imported as TypeScript, not built separately) |
 
 ## What each lib is demonstrating
 

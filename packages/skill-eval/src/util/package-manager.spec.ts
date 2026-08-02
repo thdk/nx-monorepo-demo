@@ -46,16 +46,16 @@ describe('execPrefix', () => {
 describe('execHint', () => {
   it('prefixes the bin invocation when a manager is detected', () => {
     expect(execHint('skill-eval', 'trigger', envWith('pnpm/8.6.0'))).toBe(
-      'pnpm exec skill-eval trigger'
+      'pnpm exec skill-eval trigger',
     );
     expect(execHint('skill-eval', 'trigger', envWith('npm/10.2.0'))).toBe(
-      'npx skill-eval trigger'
+      'npx skill-eval trigger',
     );
   });
 
   it('falls back to the bare command when no manager is detected', () => {
     expect(execHint('skill-eval', 'trigger --foo', {})).toBe(
-      'skill-eval trigger --foo'
+      'skill-eval trigger --foo',
     );
   });
 });

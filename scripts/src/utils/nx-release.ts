@@ -25,7 +25,7 @@ export async function getProjectsToVersion({
     listProjectsCommandArgs.push(
       `--projects=${tag ? `tag:${tag}` : ''}${
         projects?.length ? ` ${projects.join(' ')}` : ''
-      }`
+      }`,
     );
   }
 

@@ -31,7 +31,7 @@ if (import.meta.vitest) {
     const { baseElement } = render(
       <BrowserRouter>
         <App />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
     expect(baseElement).toBeTruthy();
   });
@@ -40,11 +40,11 @@ if (import.meta.vitest) {
     const { getAllByText } = render(
       <BrowserRouter>
         <App />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
     expect(
       getAllByText(new RegExp('Welcome @thdk/react-router-app-1', 'gi'))
-        .length > 0
+        .length > 0,
     ).toBeTruthy();
   });
 }

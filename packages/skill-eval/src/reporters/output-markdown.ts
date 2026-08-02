@@ -9,10 +9,10 @@ function pct(n: number): string {
 function statsRow(label: string, stats: ConfigurationStats): string {
   const pr = `${pct(stats.pass_rate.mean)} ± ${pct(stats.pass_rate.stddev)}`;
   const time = `${stats.time_seconds.mean.toFixed(
-    1
+    1,
   )}s ± ${stats.time_seconds.stddev.toFixed(1)}s`;
   const tokens = `${stats.tokens.mean.toFixed(
-    0
+    0,
   )} ± ${stats.tokens.stddev.toFixed(0)}`;
   return `| ${label} | ${pr} | ${time} | ${tokens} |`;
 }
@@ -32,11 +32,11 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
     '## Summary',
     '',
     '| Configuration | Pass rate | Time | Tokens |',
-    '|---|---:|---:|---:|'
+    '|---|---:|---:|---:|',
   );
 
   for (const [config, stats] of Object.entries(
-    benchmark.run_summary.configurations
+    benchmark.run_summary.configurations,
   )) {
     lines.push(statsRow(config.replace(/_/g, ' '), stats));
   }
@@ -45,7 +45,7 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
   if (delta) {
     lines.push(
       '',
-      `**Delta (with_skill − without_skill)**: pass_rate ${delta.pass_rate}, time ${delta.time_seconds}s, tokens ${delta.tokens}`
+      `**Delta (with_skill − without_skill)**: pass_rate ${delta.pass_rate}, time ${delta.time_seconds}s, tokens ${delta.tokens}`,
     );
   }
 
@@ -67,7 +67,7 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
       lines.push(
         `**${run.configuration} · run ${run.run_number}** — ${(
           run.execution.duration_ms / 1000
-        ).toFixed(1)}s, ${run.execution.usage.total_tokens} tokens`
+        ).toFixed(1)}s, ${run.execution.usage.total_tokens} tokens`,
       );
 
       if (!run.execution.ok) {
@@ -84,7 +84,7 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
         `  → ${run.grading.summary.passed}/${
           run.grading.summary.total
         } expectations passed (${pct(run.grading.summary.pass_rate)})`,
-        ''
+        '',
       );
       for (const exp of run.grading.expectations) {
         const mark = exp.passed ? '✓' : '✗';
@@ -100,7 +100,7 @@ export function renderOutputMarkdown(benchmark: OutputBenchmark): string {
 
 export function writeOutputMarkdownReport(
   path: string,
-  benchmark: OutputBenchmark
+  benchmark: OutputBenchmark,
 ): void {
   writeFileSync(path, renderOutputMarkdown(benchmark));
 }

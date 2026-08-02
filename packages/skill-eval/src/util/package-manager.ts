@@ -11,7 +11,7 @@ export type PackageManager = 'pnpm' | 'yarn' | 'bun' | 'npm';
 
 /** Returns the detected PM, or null if no user-agent env var is set. */
 export function detectPackageManager(
-  env: NodeJS.ProcessEnv = process.env
+  env: NodeJS.ProcessEnv = process.env,
 ): PackageManager | null {
   const ua = env['npm_config_user_agent'];
   if (!ua) return null;
@@ -50,7 +50,7 @@ export function execPrefix(env: NodeJS.ProcessEnv = process.env): string {
 export function execHint(
   bin: string,
   args: string,
-  env: NodeJS.ProcessEnv = process.env
+  env: NodeJS.ProcessEnv = process.env,
 ): string {
   const prefix = execPrefix(env);
   return prefix ? `${prefix} ${bin} ${args}` : `${bin} ${args}`;

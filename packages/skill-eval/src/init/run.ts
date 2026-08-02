@@ -48,7 +48,7 @@ function findSchemaPath(): string | null {
       '..',
       '..',
       'schema',
-      'eval-set.schema.json'
+      'eval-set.schema.json',
     );
     if (existsSync(candidate)) return candidate;
   } catch {
@@ -85,7 +85,7 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
 
   if (existsSync(outPath) && !force) {
     throw new Error(
-      `${outPath} already exists. Pass --force to overwrite, or remove the file and re-run.`
+      `${outPath} already exists. Pass --force to overwrite, or remove the file and re-run.`,
     );
   }
 
@@ -112,7 +112,7 @@ export async function initEvalSet(options: InitOptions): Promise<InitResult> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(
-      `init: model did not return a parsable JSON object: ${message}`
+      `init: model did not return a parsable JSON object: ${message}`,
     );
   }
 

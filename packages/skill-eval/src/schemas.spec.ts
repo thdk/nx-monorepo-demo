@@ -31,7 +31,7 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_naem: 'oops', // typo
         evals: [{ query: 'x', should_trigger: true }],
-      })
+      }),
     ).toThrow();
   });
 
@@ -40,13 +40,13 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_name: 'x',
         evals: [{ query: 'x', should_triger: true }], // typo
-      })
+      }),
     ).toThrow();
   });
 
   it('rejects missing skill_name', () => {
     expect(() =>
-      evalSetSchema.parse({ evals: [{ query: 'x', should_trigger: true }] })
+      evalSetSchema.parse({ evals: [{ query: 'x', should_trigger: true }] }),
     ).toThrow();
   });
 
@@ -59,7 +59,7 @@ describe('evalSetSchema', () => {
       evalSetSchema.parse({
         skill_name: 'x',
         evals: [{ query: 'x', should_trigger: 'yes' }],
-      })
+      }),
     ).toThrow();
   });
 });

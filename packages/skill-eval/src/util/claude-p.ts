@@ -37,7 +37,7 @@ function formatStderrTail(stderr: unknown): string {
  */
 export async function runClaudeP(
   prompt: string,
-  options: RunClaudePOptions
+  options: RunClaudePOptions,
 ): Promise<string> {
   const {
     model,

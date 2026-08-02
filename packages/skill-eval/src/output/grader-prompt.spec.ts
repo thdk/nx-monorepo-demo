@@ -10,7 +10,7 @@ import {
 } from './grader-prompt.js';
 
 function makeExecution(
-  overrides: Partial<ExecutionResult> = {}
+  overrides: Partial<ExecutionResult> = {},
 ): ExecutionResult {
   return {
     final_text: 'Place the file at app/routes/admin/users/list.route.tsx',
@@ -55,7 +55,7 @@ describe('buildUserMessage', () => {
         expectations: ['exp-1'],
         execution: makeExecution({ final_text: longText }),
       },
-      1_000
+      1_000,
     );
     expect(msg).toContain('[... transcript truncated ...]');
     expect(msg).toContain('1. exp-1');
@@ -133,7 +133,7 @@ describe('extractJsonObject', () => {
 
   it('throws when no JSON object is present', () => {
     expect(() => extractJsonObject('no braces here at all')).toThrow(
-      /No JSON object/
+      /No JSON object/,
     );
   });
 });

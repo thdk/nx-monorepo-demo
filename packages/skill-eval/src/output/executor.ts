@@ -62,7 +62,7 @@ function collectOutputFiles(workdir: string): string[] {
 }
 
 export async function executeQuery(
-  options: ExecutorOptions
+  options: ExecutorOptions,
 ): Promise<ExecutionResult> {
   const {
     query,
@@ -174,7 +174,7 @@ export async function executeQuery(
             reject(
               Object.assign(new Error(`claude exited with code ${code}`), {
                 code: 'CLAUDE_NONZERO_EXIT',
-              })
+              }),
             );
             return;
           }
@@ -194,11 +194,11 @@ export async function executeQuery(
       mkdirSync(artifactsDir, { recursive: true });
       writeFileSync(
         join(artifactsDir, 'transcript.jsonl'),
-        transcriptLines.join('\n') + '\n'
+        transcriptLines.join('\n') + '\n',
       );
       writeFileSync(
         join(artifactsDir, 'transcript.md'),
-        summary.final_text + '\n'
+        summary.final_text + '\n',
       );
       writeFileSync(
         join(artifactsDir, 'timing.json'),
@@ -210,8 +210,8 @@ export async function executeQuery(
             total_tokens: summary.usage.total_tokens,
           },
           null,
-          2
-        )
+          2,
+        ),
       );
       if (outputFiles.length > 0) {
         const outDir = join(artifactsDir, 'outputs');

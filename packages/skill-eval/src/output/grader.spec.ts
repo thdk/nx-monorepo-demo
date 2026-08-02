@@ -39,7 +39,7 @@ describe('gradeExecution dispatcher', () => {
             evidence: 'output contains it',
           },
         ],
-      })
+      }),
     );
     const result = await gradeExecution({
       query: 'q',
@@ -61,7 +61,7 @@ describe('gradeExecution dispatcher', () => {
   it('coerces a grader response that wraps JSON in a ```json fence', async () => {
     const runClaudeP = vi.fn(
       async () =>
-        '```json\n{"expectations":[{"text":"x","passed":false,"evidence":"missing"}]}\n```'
+        '```json\n{"expectations":[{"text":"x","passed":false,"evidence":"missing"}]}\n```',
     );
     const result = await gradeExecution({
       query: 'q',
@@ -105,7 +105,7 @@ describe('gradeExecution dispatcher', () => {
         graderModel: 'claude-sonnet-4-6',
         mode: 'claude-p',
         runClaudeP,
-      })
+      }),
     ).rejects.toThrow(/Grader \(claude-p\)/);
   });
 

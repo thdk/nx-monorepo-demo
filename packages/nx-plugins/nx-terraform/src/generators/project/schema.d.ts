@@ -12,13 +12,13 @@ export type ProjectGeneratorSchema = {
 };
 
 export function isS3Backend(
-  schema: ProjectGeneratorSchema
+  schema: ProjectGeneratorSchema,
 ): schema is Extract<ProjectGeneratorSchema, { backend: 's3' }> {
   return schema.backend === 's3';
 }
 
 export function isGCSBackend(
-  schema: ProjectGeneratorSchema
+  schema: ProjectGeneratorSchema,
 ): schema is Extract<ProjectGeneratorSchema, { backend: 'gcs' }> {
   return schema.backend === 'gcs';
 }

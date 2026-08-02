@@ -231,14 +231,14 @@ function resolveSkillPath(override: string | undefined): string {
       'Error: --skill-path is required.',
       'Pass --skill-path <dir>, or run from a directory that contains a SKILL.md.',
       '',
-    ].join('\n')
+    ].join('\n'),
   );
   process.exit(2);
 }
 
 function resolveEvalSetPath(
   skillPath: string,
-  override: string | undefined
+  override: string | undefined,
 ): string {
   if (override) {
     const resolved = abs(override);
@@ -256,7 +256,7 @@ function resolveEvalSetPath(
         `Pass --eval-set, or place one at the default location:`,
         `  ${fallback}`,
         '',
-      ].join('\n')
+      ].join('\n'),
     );
     process.exit(2);
   }
@@ -265,20 +265,18 @@ function resolveEvalSetPath(
 
 function applyEvalSelection(
   evalSet: EvalSet,
-  filters: readonly string[]
+  filters: readonly string[],
 ): EvalSelection {
   const selection = selectEvals(evalSet, filters);
   if (selection.unmatchedFilters.length > 0) {
     const quoted = selection.unmatchedFilters
       .map((f) => JSON.stringify(f))
       .join(', ');
-    process.stderr.write(
-      `Warning: --filter matched nothing for: ${quoted}\n`
-    );
+    process.stderr.write(`Warning: --filter matched nothing for: ${quoted}\n`);
   }
   if (filters.length > 0 && selection.evalSet.evals.length === 0) {
     process.stderr.write(
-      'Error: --filter excluded all evals (nothing to run).\n'
+      'Error: --filter excluded all evals (nothing to run).\n',
     );
     process.exit(2);
   }
@@ -312,7 +310,7 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   const fullEvalSet = evalSetSchema.parse(raw);
   const { evalSet, originalIndices } = applyEvalSelection(
     fullEvalSet,
-    args.filter
+    args.filter,
   );
 
   mkdirSync(outDir, { recursive: true });
@@ -322,18 +320,19 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
   const totalRuns = evalCount * runCount;
   process.stderr.write(
     `Running ${evalCount} queries × ${runCount} = ${totalRuns} total runs ` +
-      `(concurrency=${args.concurrency})\n`
+      `(concurrency=${args.concurrency})\n`,
   );
 
   // One row per query (not per run). Each run lights up an icon in the
   // `runs` column:  ✓ = expected outcome,  ✗ = unexpected,  ! = errored,
   // · = not yet run. Re-rendered after every progress event.
-  const maxDisplayedPosition = originalIndices.length > 0
-    ? (originalIndices[originalIndices.length - 1] ?? 0) + 1
-    : evalCount;
+  const maxDisplayedPosition =
+    originalIndices.length > 0
+      ? (originalIndices[originalIndices.length - 1] ?? 0) + 1
+      : evalCount;
   const evalColWidth = Math.max(
     'eval'.length,
-    String(maxDisplayedPosition).length
+    String(maxDisplayedPosition).length,
   );
   const runsColWidth = Math.max('runs'.length, runCount);
   const rateColWidth = 4; // "100%"
@@ -341,10 +340,10 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
 
   process.stderr.write(
     `  ${'eval'.padStart(evalColWidth)}  ${'runs'.padStart(
-      runsColWidth
+      runsColWidth,
     )}  ${'rate'.padStart(rateColWidth)}  ${'verdict'.padEnd(
-      verdictColWidth
-    )}  query\n`
+      verdictColWidth,
+    )}  query\n`,
   );
 
   type RunBucket = { outcome: 'trigger' | 'miss' | 'error' };
@@ -375,7 +374,7 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
       const successes = bucket.filter(
         (r) =>
           r.outcome !== 'error' &&
-          (r.outcome === 'trigger') === item.should_trigger
+          (r.outcome === 'trigger') === item.should_trigger,
       ).length;
       rate = decided > 0 ? `${Math.round((successes / decided) * 100)}%` : '—';
       if (decided === 0) {
@@ -444,7 +443,7 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
       `(precision=${(summary.precision * 100).toFixed(0)}% recall=${(
         summary.recall * 100
       ).toFixed(0)}% ` +
-      `accuracy=${(summary.accuracy * 100).toFixed(0)}%)`
+      `accuracy=${(summary.accuracy * 100).toFixed(0)}%)`,
   );
   if (summary.errored > 0) {
     process.stderr.write(` — ${summary.errored} query(ies) had errored runs`);
@@ -458,7 +457,7 @@ async function triggerCommand(args: TriggerArgs): Promise<void> {
 
 function writeComparisonSummary(
   benchmark: import('./types.js').OutputBenchmark,
-  stream: NodeJS.WriteStream
+  stream: NodeJS.WriteStream,
 ): void {
   const configs = benchmark.run_summary.configurations;
   const withSkill = configs['with_skill'];
@@ -481,7 +480,7 @@ function writeComparisonSummary(
       `  with_skill: pass=${fmtPct(withSkill?.pass_rate.mean)}  ` +
         `exec=${fmtSec(withSkill?.time_seconds.mean)}  ` +
         `tokens=${fmtTok(withSkill?.tokens.mean)}\n` +
-        `  (run with --baseline to see whether the skill is worth its token cost)\n`
+        `  (run with --baseline to see whether the skill is worth its token cost)\n`,
     );
     return;
   }
@@ -501,17 +500,17 @@ function writeComparisonSummary(
   stream.write(
     `                  with_skill     without_skill  Δ\n` +
       `  pass_rate       ${fmtPct(withSkill?.pass_rate.mean).padEnd(13)}  ${fmtPct(
-        withoutSkill?.pass_rate.mean
+        withoutSkill?.pass_rate.mean,
       ).padEnd(13)}  ${sign(passDeltaPp * 100, (n) => `${n.toFixed(0)}pp`)}\n` +
       `  exec time       ${fmtSec(withSkill?.time_seconds.mean).padEnd(
-        13
+        13,
       )}  ${fmtSec(withoutSkill?.time_seconds.mean).padEnd(13)}  ${sign(
         timeDelta,
-        (n) => `${n.toFixed(1)}s`
+        (n) => `${n.toFixed(1)}s`,
       )}\n` +
       `  tokens / run    ${fmtTok(withSkill?.tokens.mean).padEnd(13)}  ${fmtTok(
-        withoutSkill?.tokens.mean
-      ).padEnd(13)}  ${sign(tokenDelta, fmtTok)}\n`
+        withoutSkill?.tokens.mean,
+      ).padEnd(13)}  ${sign(tokenDelta, fmtTok)}\n`,
   );
 
   // Verdict line — was the skill worth it?
@@ -551,7 +550,7 @@ function assertApiGraderAuth(): void {
       'Or drop --grader-mode api (or pass --grader-mode claude-p) to use your existing Claude Code',
       'login. That mode loses prompt caching + forced structured output but needs no extra auth.',
       '',
-    ].join('\n')
+    ].join('\n'),
   );
   process.exit(2);
 }
@@ -574,7 +573,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const fullEvalSet = evalSetSchema.parse(raw);
   const { evalSet, originalIndices } = applyEvalSelection(
     fullEvalSet,
-    args.filter
+    args.filter,
   );
 
   // Preserve original indices so the eval column matches what's in evals.json
@@ -588,14 +587,13 @@ async function outputCommand(args: OutputArgs): Promise<void> {
       originalIndex: originalIndices[index] ?? index,
     }))
     .filter(
-      ({ item }) =>
-        item.should_trigger && (item.expectations?.length ?? 0) > 0
+      ({ item }) => item.should_trigger && (item.expectations?.length ?? 0) > 0,
     );
   if (toRun.length === 0) {
     process.stderr.write(
       args.filter.length > 0
         ? 'No eval items with expectations matched --filter. Add `expectations: [...]` or broaden the filter.\n'
-        : 'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n'
+        : 'No eval items with expectations found. Add `expectations: [...]` to items you want to grade.\n',
     );
     process.exit(2);
   }
@@ -609,7 +607,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   process.stderr.write(
     `Running ${toRun.length} evals × ${configs.length} config × ${runCount} runs = ${
       toRun.length * configs.length * runCount
-    } executions (concurrency=${args.concurrency})\n`
+    } executions (concurrency=${args.concurrency})\n`,
   );
 
   // ---------------- live table setup ----------------
@@ -639,7 +637,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const NAME_MAX = 40;
   const nameColWidth = Math.min(
     NAME_MAX,
-    Math.max('name'.length, ...toRun.map((e) => displayName(e).length))
+    Math.max('name'.length, ...toRun.map((e) => displayName(e).length)),
   );
   const runColWidth = Math.max('run'.length, `${runCount}/${runCount}`.length);
 
@@ -660,7 +658,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const slotIndex = (
     evalIndex: number,
     configuration: 'with_skill' | 'without_skill',
-    runNumber: number
+    runNumber: number,
   ): number => {
     const evalOrder = evalOrderByIndex.get(evalIndex) ?? 0;
     const configIdx = configs.indexOf(configuration);
@@ -670,8 +668,14 @@ async function outputCommand(args: OutputArgs): Promise<void> {
       (runNumber - 1)
     );
   };
-  const slotFor = (evalOrder: number, configIdx: number, runIdx: number): SlotState | undefined =>
-    slots[evalOrder * configs.length * runCount + configIdx * runCount + runIdx];
+  const slotFor = (
+    evalOrder: number,
+    configIdx: number,
+    runIdx: number,
+  ): SlotState | undefined =>
+    slots[
+      evalOrder * configs.length * runCount + configIdx * runCount + runIdx
+    ];
 
   const truncate = (s: string, width: number): string =>
     s.length > width ? `${s.slice(0, width - 1)}…` : s.padEnd(width);
@@ -689,9 +693,12 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   // Compact-mode "verdict + grade" cell: "✓ 100%", "✗  33%", or a status word.
   const compactCell = (state: SlotState): string => {
     if (state.status === 'pass' || state.status === 'FAIL') {
-      const pct = state.passRate != null
-        ? `${Math.round(state.passRate * 100).toString().padStart(3)}%`
-        : '  —';
+      const pct =
+        state.passRate != null
+          ? `${Math.round(state.passRate * 100)
+              .toString()
+              .padStart(3)}%`
+          : '  —';
       return `${state.status === 'pass' ? '✓' : '✗'} ${pct}`;
     }
     return state.status; // wait, exec…, grade…, ERROR — left-aligned word
@@ -707,7 +714,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
   const fmtDelta = (
     value: number | undefined,
     epsilon: number,
-    formatter: (n: number) => string
+    formatter: (n: number) => string,
   ): string => {
     if (value == null) return '—';
     if (Math.abs(value) < epsilon) return '±0';
@@ -785,15 +792,15 @@ async function outputCommand(args: OutputArgs): Promise<void> {
             : undefined;
         cols.push(
           fmtDelta(deltaGrade, 0.5, (n) => `${n.toFixed(0)}pp`).padStart(
-            compactDeltaGradeWidth
-          )
+            compactDeltaGradeWidth,
+          ),
         );
         const deltaTok =
           withState.tokens != null && baseState.tokens != null
             ? withState.tokens - baseState.tokens
             : undefined;
         cols.push(
-          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth)
+          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth),
         );
       }
     } else {
@@ -811,15 +818,15 @@ async function outputCommand(args: OutputArgs): Promise<void> {
             : undefined;
         cols.push(
           fmtDelta(deltaGrade, 0.5, (n) => `${n.toFixed(0)}pp`).padStart(
-            compactDeltaGradeWidth
-          )
+            compactDeltaGradeWidth,
+          ),
         );
         const deltaTok =
           withState.tokens != null && baseState.tokens != null
             ? withState.tokens - baseState.tokens
             : undefined;
         cols.push(
-          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth)
+          fmtDelta(deltaTok, 0.5, formatTokens).padStart(compactDeltaTokWidth),
         );
       }
     }
@@ -850,7 +857,11 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     executorTimeoutMs: args['executor-timeout'] * 1000,
     claudeBin,
     onProgress: (event) => {
-      const idx = slotIndex(event.evalIndex, event.configuration, event.runNumber);
+      const idx = slotIndex(
+        event.evalIndex,
+        event.configuration,
+        event.runNumber,
+      );
       const state = slots[idx];
       if (!state) return;
 
@@ -859,7 +870,8 @@ async function outputCommand(args: OutputArgs): Promise<void> {
           state.status = 'exec…';
           break;
         case 'execute-end':
-          if (event.durationMs != null) state.execTimeS = event.durationMs / 1000;
+          if (event.durationMs != null)
+            state.execTimeS = event.durationMs / 1000;
           if (event.tokens != null) state.tokens = event.tokens;
           if (event.error) {
             state.status = 'ERROR';
@@ -902,7 +914,7 @@ async function outputCommand(args: OutputArgs): Promise<void> {
     (r) =>
       !r.execution.ok ||
       (r.grading?.summary.failed ?? 0) > 0 ||
-      r.grading === null
+      r.grading === null,
   );
   if (hasFailures) process.exitCode = 1;
 }
@@ -919,7 +931,7 @@ async function initCommand(args: InitArgs): Promise<void> {
       args.negative
     } negative${
       args.expectations > 0 ? `, +${args.expectations} expectations/case` : ''
-    })…\n`
+    })…\n`,
   );
 
   try {
@@ -937,11 +949,11 @@ async function initCommand(args: InitArgs): Promise<void> {
     process.stderr.write(
       `\nWrote ${result.evalSet.evals.length} evals to ${result.outPath} (${(
         result.durationMs / 1000
-      ).toFixed(1)}s)\n`
+      ).toFixed(1)}s)\n`,
     );
     process.stderr.write(
       `\nReview, refine the queries / expectations, then commit the file and run:\n` +
-        `  ${execHint('skill-eval', `trigger --skill-path ${skillPath}`)}\n`
+        `  ${execHint('skill-eval', `trigger --skill-path ${skillPath}`)}\n`,
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -960,7 +972,7 @@ async function main(): Promise<void> {
       (y) => y.options(initOptions),
       async (argv) => {
         await initCommand(argv as unknown as InitArgs);
-      }
+      },
     )
     .command(
       'trigger',
@@ -968,7 +980,7 @@ async function main(): Promise<void> {
       (y) => y.options(triggerOptions),
       async (argv) => {
         await triggerCommand(argv as unknown as TriggerArgs);
-      }
+      },
     )
     .command(
       'output',
@@ -976,7 +988,7 @@ async function main(): Promise<void> {
       (y) => y.options(outputOptions),
       async (argv) => {
         await outputCommand(argv as unknown as OutputArgs);
-      }
+      },
     )
     .demandCommand(1)
     .strict()
@@ -986,7 +998,7 @@ async function main(): Promise<void> {
 
 main().catch((err: unknown) => {
   process.stderr.write(
-    `${err instanceof Error ? err.stack ?? err.message : String(err)}\n`
+    `${err instanceof Error ? (err.stack ?? err.message) : String(err)}\n`,
   );
   process.exit(1);
 });

@@ -39,11 +39,10 @@ export interface CreateTableRendererOptions {
 }
 
 export function createTableRenderer(
-  options: CreateTableRendererOptions = {}
+  options: CreateTableRendererOptions = {},
 ): TableRenderer {
   const stream = options.stream ?? process.stderr;
-  const mode =
-    options.force ?? (stream.isTTY === true ? 'live' : 'append');
+  const mode = options.force ?? (stream.isTTY === true ? 'live' : 'append');
   return mode === 'live' ? createLive(stream) : createAppend(stream);
 }
 
@@ -66,10 +65,7 @@ function createAppend(stream: NodeJS.WritableStream): TableRenderer {
   let nextToPrint = 0;
   return {
     render(rows) {
-      while (
-        nextToPrint < rows.length &&
-        rows[nextToPrint]?.final === true
-      ) {
+      while (nextToPrint < rows.length && rows[nextToPrint]?.final === true) {
         stream.write(`${rows[nextToPrint]?.content ?? ''}\n`);
         nextToPrint++;
       }

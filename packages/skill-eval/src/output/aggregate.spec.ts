@@ -8,7 +8,7 @@ function fakeRun(
   configuration: 'with_skill' | 'without_skill',
   passRate: number,
   durationMs: number,
-  totalTokens: number
+  totalTokens: number,
 ): OutputEvalRun {
   return {
     eval_id: 1,

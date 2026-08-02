@@ -11,7 +11,7 @@ import { GeneratorOptions } from '../_common/generator-options';
 
 export const configurationGenerator = (
   tree: Tree,
-  options: GeneratorOptions<ConfigurationGeneratorSchema>
+  options: GeneratorOptions<ConfigurationGeneratorSchema>,
 ) => {
   if (!/^[a-zA-Z0-9-_]+$/.test(options.name)) {
     throw new Error('Configuration name contains invalid characters.');
@@ -29,7 +29,7 @@ export const configurationGenerator = (
 
   return () => {
     logger.info(
-      `Configuration ${options.name} generated for project ${options.project}`
+      `Configuration ${options.name} generated for project ${options.project}`,
     );
   };
 };

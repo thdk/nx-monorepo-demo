@@ -4,7 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 import { createTableRenderer } from './live-table.js';
 
-function collect(stream: PassThrough): { chunks: string[]; text: () => string } {
+function collect(stream: PassThrough): {
+  chunks: string[];
+  text: () => string;
+} {
   const chunks: string[] = [];
   stream.on('data', (c: Buffer | string) => chunks.push(c.toString()));
   return { chunks, text: () => chunks.join('') };
@@ -16,19 +19,31 @@ describe('createTableRenderer (append mode)', () => {
     const sink = collect(stream);
     const r = createTableRenderer({ stream, force: 'append' });
 
-    r.render([{ content: 'a', final: false }, { content: 'b', final: false }]);
+    r.render([
+      { content: 'a', final: false },
+      { content: 'b', final: false },
+    ]);
     expect(sink.text()).toBe('');
 
     // Row 1 finishes before row 0 — must still wait for row 0.
-    r.render([{ content: 'a', final: false }, { content: 'b', final: true }]);
+    r.render([
+      { content: 'a', final: false },
+      { content: 'b', final: true },
+    ]);
     expect(sink.text()).toBe('');
 
     // Row 0 finishes — both flush in order.
-    r.render([{ content: 'a', final: true }, { content: 'b', final: true }]);
+    r.render([
+      { content: 'a', final: true },
+      { content: 'b', final: true },
+    ]);
     expect(sink.text()).toBe('a\nb\n');
 
     // Subsequent renders are a no-op.
-    r.render([{ content: 'a', final: true }, { content: 'b', final: true }]);
+    r.render([
+      { content: 'a', final: true },
+      { content: 'b', final: true },
+    ]);
     expect(sink.text()).toBe('a\nb\n');
   });
 

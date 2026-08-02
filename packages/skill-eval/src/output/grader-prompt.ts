@@ -74,7 +74,7 @@ function truncate(text: string, maxChars: number): string {
 
 export function buildUserMessage(
   inputs: GraderInputs,
-  transcriptMaxChars = 30_000
+  transcriptMaxChars = 30_000,
 ): string {
   const { query, expectations, execution } = inputs;
   return [
@@ -107,7 +107,7 @@ export function buildUserMessage(
  */
 export function buildClaudePGraderPrompt(
   inputs: GraderInputs,
-  transcriptMaxChars = 30_000
+  transcriptMaxChars = 30_000,
 ): string {
   return [
     GRADER_SYSTEM_PROMPT,
@@ -162,7 +162,7 @@ export function extractJsonObject(text: string): unknown {
   const lastBrace = candidate.lastIndexOf('}');
   if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
     throw new Error(
-      `No JSON object found in grader response: ${candidate.slice(0, 200)}`
+      `No JSON object found in grader response: ${candidate.slice(0, 200)}`,
     );
   }
   return JSON.parse(candidate.slice(firstBrace, lastBrace + 1));

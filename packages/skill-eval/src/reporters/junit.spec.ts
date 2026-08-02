@@ -68,10 +68,10 @@ describe('renderJunit', () => {
   it('emits a passing testcase with no failure child and a real wall time', () => {
     const xml = renderJunit(makeOutput());
     expect(xml).toContain(
-      '[should-trigger] where does my admin/users page go?'
+      '[should-trigger] where does my admin/users page go?',
     );
     const passLine = xml.match(
-      /<testcase[^>]*should-trigger[^>]*time="3\.200"[^>]*\/>/
+      /<testcase[^>]*should-trigger[^>]*time="3\.200"[^>]*\/>/,
     );
     expect(passLine).not.toBeNull();
   });

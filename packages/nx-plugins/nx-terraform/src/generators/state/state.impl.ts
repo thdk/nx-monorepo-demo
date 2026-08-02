@@ -10,7 +10,7 @@ import { GeneratorOptions } from '../_common/generator-options';
 
 export const stateGenerator = async function generator(
   tree: Tree,
-  options: GeneratorOptions<StateGeneratorSchema>
+  options: GeneratorOptions<StateGeneratorSchema>,
 ) {
   const { root: projectRoot } = readProjectConfiguration(tree, options.project);
 
@@ -18,7 +18,7 @@ export const stateGenerator = async function generator(
     tree,
     joinPathFragments(__dirname, './files'),
     projectRoot,
-    options
+    options,
   );
 
   if (!options.skipFormat) {

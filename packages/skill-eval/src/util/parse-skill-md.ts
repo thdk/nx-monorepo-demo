@@ -53,12 +53,12 @@ export function parseSkillMd(skillPath: string): SkillMeta {
 
   if (!name) {
     throw new Error(
-      `SKILL.md at ${skillFile} is missing a 'name' frontmatter field`
+      `SKILL.md at ${skillFile} is missing a 'name' frontmatter field`,
     );
   }
   if (!description) {
     throw new Error(
-      `SKILL.md at ${skillFile} is missing a 'description' frontmatter field`
+      `SKILL.md at ${skillFile} is missing a 'description' frontmatter field`,
     );
   }
 

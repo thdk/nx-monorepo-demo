@@ -41,7 +41,7 @@ describe('initEvalSet', () => {
           },
           { id: 2, name: 'neg-1', query: 'a near-miss', should_trigger: false },
         ],
-      })
+      }),
     );
 
     const result = await initEvalSet({
@@ -67,7 +67,7 @@ describe('initEvalSet', () => {
       JSON.stringify({
         skill_name: 'wrong-name-from-model',
         evals: [{ query: 'q', should_trigger: true }],
-      })
+      }),
     );
 
     const result = await initEvalSet({ skillPath: tmp, runClaudeP });
@@ -79,25 +79,25 @@ describe('initEvalSet', () => {
       JSON.stringify({
         skill_name: 'example-skill',
         evals: [{ query: 'q', should_trigger: true }],
-      })
+      }),
     );
 
     const outPath = join(tmp, 'evals.json');
     await initEvalSet({ skillPath: tmp, outPath, runClaudeP });
     // Second call without --force should throw
     await expect(
-      initEvalSet({ skillPath: tmp, outPath, runClaudeP })
+      initEvalSet({ skillPath: tmp, outPath, runClaudeP }),
     ).rejects.toThrow(/already exists/);
     // With --force it should succeed
     await expect(
-      initEvalSet({ skillPath: tmp, outPath, runClaudeP, force: true })
+      initEvalSet({ skillPath: tmp, outPath, runClaudeP, force: true }),
     ).resolves.toBeDefined();
   });
 
   it('handles a response wrapped in a ```json fence', async () => {
     const runClaudeP = vi.fn(
       async () =>
-        '```json\n{"skill_name":"example-skill","evals":[{"query":"q","should_trigger":true}]}\n```'
+        '```json\n{"skill_name":"example-skill","evals":[{"query":"q","should_trigger":true}]}\n```',
     );
     const result = await initEvalSet({ skillPath: tmp, runClaudeP });
     expect(result.evalSet.evals).toHaveLength(1);
@@ -106,13 +106,13 @@ describe('initEvalSet', () => {
   it('surfaces a clear error when the model returns unparseable text', async () => {
     const runClaudeP = vi.fn(async () => 'sorry I cannot do that');
     await expect(initEvalSet({ skillPath: tmp, runClaudeP })).rejects.toThrow(
-      /did not return a parsable JSON/
+      /did not return a parsable JSON/,
     );
   });
 
   it('surfaces a clear error when the JSON is parsable but the shape is wrong', async () => {
     const runClaudeP = vi.fn(async () =>
-      JSON.stringify({ skill_name: 'example-skill', evals: [] })
+      JSON.stringify({ skill_name: 'example-skill', evals: [] }),
     );
     // empty evals[] is rejected by zod (min length 1)
     await expect(initEvalSet({ skillPath: tmp, runClaudeP })).rejects.toThrow();

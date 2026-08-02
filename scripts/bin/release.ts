@@ -125,7 +125,7 @@ const program = async () => {
       output.logSingleLine(
         `Version applications. ${
           options.dryRun ? `${output.colors.red('[dry-run]')}` : ''
-        }`
+        }`,
       );
 
       const versionResult = await releaseVersion({
@@ -172,7 +172,7 @@ const program = async () => {
     }
   } else {
     output.logSingleLine(
-      `Version applications: ${output.colors.gray('[skipped]')}`
+      `Version applications: ${output.colors.gray('[skipped]')}`,
     );
   }
 
@@ -232,7 +232,7 @@ const program = async () => {
       // publishResults contains a map of project names and their exit codes
       if (!Object.values(publishResults).every((result) => result.code === 0)) {
         throw new Error(
-          `Error publishing packages. Some packages failed to publish. See the logs for more details.`
+          `Error publishing packages. Some packages failed to publish. See the logs for more details.`,
         );
       }
     }

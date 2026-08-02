@@ -17,7 +17,7 @@ function suiteTime(run: OutputEvalRun): string {
 
 function renderRunSuite(
   run: OutputEvalRun,
-  skillName: string
+  skillName: string,
 ): {
   xml: string;
   tests: number;
@@ -29,13 +29,13 @@ function renderRunSuite(
 
   if (!run.execution.ok) {
     const msg = escapeXml(
-      `executor failed: ${run.execution.error ?? 'unknown error'}`
+      `executor failed: ${run.execution.error ?? 'unknown error'}`,
     );
     const xml = `  <testsuite name="${escapeXml(
-      `${run.eval_name}/${run.configuration}/run-${run.run_number}`
+      `${run.eval_name}/${run.configuration}/run-${run.run_number}`,
     )}" tests="1" failures="0" errors="1" time="${time}">
     <testcase classname="${escapeXml(
-      className
+      className,
     )}" name="execution" time="${time}">
       <error message="${msg}">${msg}</error>
     </testcase>
@@ -45,7 +45,7 @@ function renderRunSuite(
 
   if (!run.grading) {
     const xml = `  <testsuite name="${escapeXml(
-      `${run.eval_name}/${run.configuration}/run-${run.run_number}`
+      `${run.eval_name}/${run.configuration}/run-${run.run_number}`,
     )}" tests="1" failures="0" errors="1" time="${time}">
     <testcase classname="${escapeXml(className)}" name="grading" time="${time}">
       <error message="grader did not run">grader did not run — see transcript for the executor output</error>
@@ -58,12 +58,12 @@ function renderRunSuite(
     const name = escapeXml(exp.text.slice(0, 200));
     if (exp.passed) {
       return `    <testcase classname="${escapeXml(
-        className
+        className,
       )}" name="${name}" time="0"/>`;
     }
     const msg = escapeXml(exp.evidence || 'expectation failed');
     return `    <testcase classname="${escapeXml(
-      className
+      className,
     )}" name="${name}" time="0">
       <failure message="${msg}">${msg}</failure>
     </testcase>`;
@@ -73,7 +73,7 @@ function renderRunSuite(
   const tests = run.grading.summary.total;
 
   const xml = `  <testsuite name="${escapeXml(
-    `${run.eval_name}/${run.configuration}/run-${run.run_number}`
+    `${run.eval_name}/${run.configuration}/run-${run.run_number}`,
   )}" tests="${tests}" failures="${failures}" errors="0" time="${time}">
 ${cases.join('\n')}
   </testsuite>`;
@@ -89,7 +89,7 @@ export function renderOutputJunit(benchmark: OutputBenchmark): string {
       failures: acc.failures + s.failures,
       errors: acc.errors + s.errors,
     }),
-    { tests: 0, failures: 0, errors: 0 }
+    { tests: 0, failures: 0, errors: 0 },
   );
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -103,7 +103,7 @@ ${suites.map((s) => s.xml).join('\n')}
 
 export function writeOutputJunitReport(
   path: string,
-  benchmark: OutputBenchmark
+  benchmark: OutputBenchmark,
 ): void {
   writeFileSync(path, renderOutputJunit(benchmark));
 }

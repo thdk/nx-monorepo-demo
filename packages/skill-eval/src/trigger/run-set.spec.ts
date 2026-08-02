@@ -19,7 +19,7 @@ description: a fake skill for testing
 ---
 
 body
-`
+`,
   );
   return dir;
 }

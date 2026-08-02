@@ -24,11 +24,11 @@ scripts/                         Workspace utility scripts
 
 **Tags**
 
-| Scope               | Folder                               | Published                       |
-| ------------------- | ------------------------------------ | ------------------------------- |
-| `scope:nx-demo`     | `apps/nx-demo/`, `packages/nx-demo/`, `terraform/nx-demo/` | `lib-c` only (showcase) |
-| `scope:nx-plugins`  | `packages/nx-plugins/`               | private (for now)               |
-| `scope:skill-eval`  | `packages/skill-eval/`               | yes                             |
+| Scope              | Folder                                                     | Published               |
+| ------------------ | ---------------------------------------------------------- | ----------------------- |
+| `scope:nx-demo`    | `apps/nx-demo/`, `packages/nx-demo/`, `terraform/nx-demo/` | `lib-c` only (showcase) |
+| `scope:nx-plugins` | `packages/nx-plugins/`                                     | private (for now)       |
+| `scope:skill-eval` | `packages/skill-eval/`                                     | yes                     |
 
 Apps that get a Docker image also carry `deployable:docker`. Published packages carry `npm:public` (auto-inferred from `package.json` `private` flag).
 

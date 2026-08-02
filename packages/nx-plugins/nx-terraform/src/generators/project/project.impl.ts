@@ -19,7 +19,7 @@ import {
 import { logShowProjectCommand } from '../_common/log-show-project-command';
 export const projectGenerator = async (
   tree: Tree,
-  options: GeneratorOptions<ProjectGeneratorSchema>
+  options: GeneratorOptions<ProjectGeneratorSchema>,
 ) => {
   const tasks: GeneratorCallback[] = [];
   if (!/^[a-zA-Z0-9-_]+$/.test(options.name)) {
@@ -54,7 +54,7 @@ export const projectGenerator = async (
         backend: options.backend,
         bucket: options.terraformStateBucketName,
         project: options.name,
-      })
+      }),
     );
   }
 
@@ -68,9 +68,9 @@ export const projectGenerator = async (
           name: env,
           project: options.name,
           skipFormat: true,
-        })
-      )
-    )
+        }),
+      ),
+    ),
   );
 
   // Add terraform providers
@@ -81,8 +81,8 @@ export const projectGenerator = async (
         getMergedGeneratorOptions('@thdk/nx-terraform:provider', tree, {
           project: options.name,
           provider: 'aws',
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -93,8 +93,8 @@ export const projectGenerator = async (
         getMergedGeneratorOptions('@thdk/nx-terraform:provider', tree, {
           project: options.name,
           provider: 'google',
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -119,7 +119,7 @@ async function resolveSuggestedTerraformVersion({
   // look for a lines that starts with "terraform ", use node fs to read the file
   const toolVersionsContent = await fs.readFile(toolVersionsPath, 'utf-8');
   const terraformVersionMatch = toolVersionsContent.match(
-    /terraform\s+([0-9]+\.[0-9]+\.[0-9]+)/
+    /terraform\s+([0-9]+\.[0-9]+\.[0-9]+)/,
   );
   return terraformVersionMatch ? terraformVersionMatch[1] : undefined;
 }

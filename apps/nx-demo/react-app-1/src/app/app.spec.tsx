@@ -8,7 +8,7 @@ describe('App', () => {
     const { baseElement } = render(
       <BrowserRouter>
         <App />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
     expect(baseElement).toBeTruthy();
   });
@@ -17,10 +17,10 @@ describe('App', () => {
     const { getAllByText } = render(
       <BrowserRouter>
         <App />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
     expect(
-      getAllByText(new RegExp('Welcome @thdk/react-app-1', 'gi')).length > 0
+      getAllByText(new RegExp('Welcome @thdk/react-app-1', 'gi')).length > 0,
     ).toBeTruthy();
   });
 });
