@@ -29,6 +29,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          filter: tree:0
           ref: ${{ github.head_ref }}
 
       - name: Setup git
@@ -44,10 +45,11 @@ jobs:
       - name: Setup node, install dependencies and configure nx
         uses: ./.github/actions/nx-setup-node
 
-      - name: Setup Playwright
-        uses: ./.github/actions/setup-playwright
-        with:
-          browsers: chromium
+      - name: Format check
+        run: pnpm exec nx format:check
+
+      - name: Sync check
+        run: pnpm exec nx sync:check
 
       - name: Lint package configurations
         run: pnpm exec nx syncpack
@@ -57,7 +59,7 @@ jobs:
       # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
 
       - name: Build lint test affected projects and prepare apps for containerization
-        run: pnpm exec nx affected --targets lint test build e2e
+        run: pnpm exec nx affected --targets lint test build
 
       - name: Version
         run: |
@@ -98,8 +100,43 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  # e2e runs in parallel with build. Splitting it out means a flaky e2e retry
+  # re-runs only this job, not the build/version/publish work, and shortens
+  # wall-clock. Playwright is only installed when an e2e project is affected.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          filter: tree:0
+          ref: ${{ github.head_ref }}
+
+      - name: Setup git
+        uses: ./.github/actions/setup-git
+
+      - name: Setup node, install dependencies and configure nx
+        uses: ./.github/actions/nx-setup-node
+
+      - name: Check for affected e2e projects
+        id: affected
+        uses: ./.github/actions/nx-affected-projects
+        with:
+          target: e2e
+
+      - name: Setup Playwright
+        if: steps.affected.outputs.has-projects == 'true'
+        uses: ./.github/actions/setup-playwright
+        with:
+          browsers: chromium
+
+      - name: Run affected e2e tests
+        if: steps.affected.outputs.has-projects == 'true'
+        run: pnpm exec nx affected -t e2e
+
   deploy:
-    needs: [build]
+    needs: [build, e2e]
     uses: ./.github/workflows/cd.yml
     if: ${{ github.event_name == 'pull_request' || (github.ref == 'refs/heads/main' && github.event_name == 'push') }}
     with:

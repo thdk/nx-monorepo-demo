@@ -6,10 +6,10 @@ inputs:
     description: 'If dry-run is enabled we will not apply any changes to the infrastructure'
     required: true
   affected-only:
-    description: 'If enabled, use nx affected, otherwise use nx run-many'
+    description: 'If enabled, restrict to nx affected projects, otherwise run for every terraform project'
     required: true
   configuration:
-    description: 'The configuration of the nx terraform targets to use when running the commands. Usually this matched the environment name.'
+    description: 'The configuration of the nx terraform targets to use when running the commands. Usually this matches the environment name.'
     required: true
 
 runs:
@@ -20,39 +20,121 @@ runs:
       with:
         terraform_version: '1.12.1'
 
-    - name: Verify Terraform version
+    # Resolve the concrete set of infra projects up front so every step below can
+    # early-exit when nothing is affected — otherwise Terraform spins up for a
+    # no-op run. Projects are selected by the terraform-plan target so only infra
+    # projects match. Stored space-separated for `--projects $VAR` and the comment loop.
+    - name: Determine terraform projects
       shell: bash
-      run: terraform --version
+      env:
+        AFFECTED_ONLY: ${{ inputs.affected-only }}
+      run: |
+        ARGS=(--with-target terraform-plan)
+        if [ "$AFFECTED_ONLY" = "true" ]; then
+          ARGS+=(--affected)
+        fi
+        # nx 23 prints a JSON array from `nx show projects`; jq-join into a CSV
+        # that `nx run-many --projects=` accepts (empty string when nothing matches).
+        PROJECTS=$(pnpm exec nx show projects "${ARGS[@]}" | jq -r 'join(",")')
+        echo "TERRAFORM_PROJECTS=$PROJECTS" >> "$GITHUB_ENV"
+        if [ -z "$PROJECTS" ]; then
+          echo "HAS_TERRAFORM_PROJECTS=false" >> "$GITHUB_ENV"
+          echo "No affected Terraform projects — skipping Terraform steps."
+        else
+          echo "HAS_TERRAFORM_PROJECTS=true" >> "$GITHUB_ENV"
+          echo "Terraform projects: $PROJECTS"
+        fi
 
     - name: Terraform init
+      if: env.HAS_TERRAFORM_PROJECTS == 'true'
       shell: bash
       run: |
-        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx run-many \
           --target terraform-init \
+          --projects="$TERRAFORM_PROJECTS" \
           --configuration "${{ inputs.configuration }}" \
-          --exclude-task-dependencies
+          --exclude-task-dependencies \
+          --no-tui \
+          --parallel 1
 
     - name: Terraform format, validate & plan
+      if: env.HAS_TERRAFORM_PROJECTS == 'true'
       shell: bash
       run: |
-        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
-          --target terraform-format:check terraform-plan terraform-validate \
+        pnpm exec nx run-many \
+          --target terraform-format:check terraform-validate terraform-plan \
+          --projects="$TERRAFORM_PROJECTS" \
           --configuration "${{ inputs.configuration }}" \
-          --exclude-task-dependencies
+          --exclude-task-dependencies \
+          --no-tui \
+          --parallel 1
 
     - name: Terraform show plan
+      if: ${{ inputs.dry-run == 'true' && env.HAS_TERRAFORM_PROJECTS == 'true' }}
       shell: bash
       run: |
-        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx run-many \
           --target terraform-show \
+          --projects="$TERRAFORM_PROJECTS" \
           --configuration "${{ inputs.configuration }}" \
-          --exclude-task-dependencies
+          --exclude-task-dependencies \
+          --no-tui \
+          --parallel 1
+
+    - name: Generate Terraform plan comment
+      if: ${{ github.event_name == 'pull_request' && env.HAS_TERRAFORM_PROJECTS == 'true' }}
+      shell: bash
+      run: |
+        COMMENT_FILE="${{ runner.temp }}/terraform-comment.md"
+
+        echo "## Terraform Plan Results (Configuration: ${{ inputs.configuration }})" > "$COMMENT_FILE"
+        echo "" >> "$COMMENT_FILE"
+
+        for project in $(echo "$TERRAFORM_PROJECTS" | tr ',' ' '); do
+          echo "### Project: \`$project\`" >> "$COMMENT_FILE"
+          echo "" >> "$COMMENT_FILE"
+
+          # Find the project root
+          PROJECT_ROOT=$(pnpm exec nx show project $project --json 2>&1 | grep -E '^\{' | jq -r '.root')
+          TFPLAN="$PROJECT_ROOT/tfplan"
+
+          if [ -f "$TFPLAN" ]; then
+            echo "<details>" >> "$COMMENT_FILE"
+            echo "<summary>Show plan output</summary>" >> "$COMMENT_FILE"
+            echo "" >> "$COMMENT_FILE"
+            echo '```terraform' >> "$COMMENT_FILE"
+            terraform -chdir="$PROJECT_ROOT" show -no-color tfplan >> "$COMMENT_FILE" 2>&1
+            echo '```' >> "$COMMENT_FILE"
+            echo "" >> "$COMMENT_FILE"
+            echo "</details>" >> "$COMMENT_FILE"
+            echo "" >> "$COMMENT_FILE"
+          else
+            echo "⚠️ No plan file found" >> "$COMMENT_FILE"
+            echo "" >> "$COMMENT_FILE"
+          fi
+        done
+
+        echo "---" >> "$COMMENT_FILE"
+        echo "_Plan generated for workspace projects: \`$TERRAFORM_PROJECTS\`_" >> "$COMMENT_FILE"
+
+    - name: Post Terraform plan comment
+      if: ${{ github.event_name == 'pull_request' && env.HAS_TERRAFORM_PROJECTS == 'true' }}
+      uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body-path: ${{ runner.temp }}/terraform-comment.md
+        edit-mode: replace
 
     - name: Terraform apply
+      if: ${{ inputs.dry-run == 'false' && env.HAS_TERRAFORM_PROJECTS == 'true' }}
       shell: bash
-      if: ${{ inputs.dry-run == 'false' }}
+      env:
+        TF_IN_AUTOMATION: true
       run: |
-        pnpm exec nx ${{ inputs.affected-only == 'true' && 'affected' || 'run-many' }} \
+        pnpm exec nx run-many \
           --target terraform-apply \
+          --projects="$TERRAFORM_PROJECTS" \
           --configuration "${{ inputs.configuration }}" \
-          --exclude-task-dependencies
+          --exclude-task-dependencies \
+          --no-tui \
+          --parallel 1

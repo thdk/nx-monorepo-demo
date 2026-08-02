@@ -46,6 +46,7 @@ permissions:
   contents: write
   actions: read
   id-token: write
+  pull-requests: write # Required for posting Terraform plan comments on PRs
 
 jobs:
   plan:
@@ -57,6 +58,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          filter: tree:0
           ref: ${{ inputs.ref }}
 
       - uses: ./.github/actions/deploy
@@ -76,6 +78,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          filter: tree:0
           ref: ${{ inputs.ref }}
 
       - uses: ./.github/actions/deploy

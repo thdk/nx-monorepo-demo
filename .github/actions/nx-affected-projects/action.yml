@@ -1,0 +1,65 @@
+name: 'Nx affected projects'
+description: 'Resolves Nx projects matching the given filters, narrowed to --affected by default. Use the outputs to gate downstream steps so jobs return early when nothing matches.'
+
+inputs:
+  projects:
+    description: 'Comma-separated --projects filter for `nx show projects` (e.g. `tag:docker`, `apps/*`, `pkg-1,pkg-2`). Leave empty to consider every project.'
+    required: false
+    default: ''
+  target:
+    description: 'Optional target name. When set, only projects that have this target configured are returned (`--with-target`). Useful as an early-exit gate before expensive setup steps.'
+    required: false
+    default: ''
+  force-all:
+    description: 'If "true", bypass affected detection and return every project matching the filters.'
+    required: false
+    default: 'false'
+
+outputs:
+  list:
+    description: 'Comma-separated list of resolved projects. Empty when nothing matches.'
+    value: ${{ steps.resolve.outputs.list }}
+  count:
+    description: 'Number of resolved projects.'
+    value: ${{ steps.resolve.outputs.count }}
+  has-projects:
+    description: '"true" when at least one project matched, otherwise "false". Convenience flag for `if:` conditions.'
+    value: ${{ steps.resolve.outputs.has-projects }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: resolve
+      shell: bash
+      env:
+        FILTER: ${{ inputs.projects }}
+        TARGET: ${{ inputs.target }}
+        FORCE_ALL: ${{ inputs.force-all }}
+      run: |
+        ARGS=()
+        if [ "$FORCE_ALL" != "true" ]; then
+          ARGS+=(--affected)
+        fi
+        if [ -n "$FILTER" ]; then
+          ARGS+=(--projects="$FILTER")
+        fi
+        if [ -n "$TARGET" ]; then
+          ARGS+=(--with-target="$TARGET")
+        fi
+
+        # nx 23 prints a JSON array from `nx show projects`; jq-join into a CSV
+        # (empty string when nothing matches).
+        LIST=$(pnpm exec nx show projects "${ARGS[@]}" | jq -r 'join(",")')
+
+        if [ -z "$LIST" ]; then
+          COUNT=0
+          HAS=false
+        else
+          COUNT=$(echo "$LIST" | tr ',' '\n' | wc -l | xargs)
+          HAS=true
+        fi
+
+        echo "list=$LIST" >> "$GITHUB_OUTPUT"
+        echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+        echo "has-projects=$HAS" >> "$GITHUB_OUTPUT"
+        echo "Resolved $COUNT project(s) (projects='${FILTER:-*}' target='${TARGET:-*}' force-all=$FORCE_ALL): ${LIST:-<none>}"
