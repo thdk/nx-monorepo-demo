@@ -11,6 +11,7 @@ permissions:
   contents: write
   packages: write
   id-token: write
+  pull-requests: write # Passed through to cd.yml, which posts Terraform plan comments on PRs
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
