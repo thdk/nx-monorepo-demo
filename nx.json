@@ -168,6 +168,9 @@
     }
   ],
   "targetDefaults": {
+    "e2e": {
+      "dependsOn": ["^build-deps"]
+    },
     "lint": {
       "dependsOn": ["build"]
     },
