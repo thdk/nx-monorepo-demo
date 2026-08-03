@@ -14,6 +14,7 @@ import { basename, dirname, join } from 'path';
 import { CLAUDE_PLUGIN_TAG } from './release-group';
 import { parsePluginDependencies } from './plugin-manifest';
 import { isUnderPluginsRoot, normalizePluginsRoot } from './plugins-root';
+import { LINT_CONFIG_FILENAME } from './lint/config';
 
 export interface NxClaudePluginOptions {
   /** Name of the inferred lint target on plugin projects. Default: "lint". */
@@ -136,11 +137,15 @@ function pluginProject(
     // Keep plugin.json dependencies in sync with plugin:skill references before linting.
     syncGenerators: ['@thdk/nx-claude:sync-deps'],
     inputs: [
+      // Covers the project-root lint config (.nx-claude-lint.config.js) too.
       '{projectRoot}/**/*',
       // The single repo-root marketplace holds this plugin's entry — re-lint on changes.
       '{workspaceRoot}/.claude-plugin/marketplace.json',
       // Lint validates the claude-plugins release group config — re-lint on changes.
       '{workspaceRoot}/nx.json',
+      // Workspace-root lint config overrides rule levels — re-lint when a rule changes
+      // (the project-root config is already covered by the {projectRoot} glob above).
+      `{workspaceRoot}/${LINT_CONFIG_FILENAME}`,
     ],
     options: {},
     metadata: {

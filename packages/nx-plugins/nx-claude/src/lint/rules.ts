@@ -25,6 +25,9 @@ import {
 } from '../release-group';
 import { parsePluginDependencies } from '../plugin-manifest';
 import { skillNameProblems } from '../skill-name';
+// Re-exported below so existing importers of rules.ts keep working; defined in its
+// own module so index.ts (createNodes) can use it without loading this runtime.
+import { LINT_CONFIG_FILENAME } from './config';
 
 export type Severity = 'error' | 'warning';
 /** Configurable level for a rule. `off` suppresses it entirely (never becomes an Issue). */
@@ -167,17 +170,7 @@ function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, 'utf8'));
 }
 
-/**
- * Config file (looked up at both workspace root and project root) that overrides
- * default rule levels. Project-root config wins over workspace-root config, which
- * wins over the built-in {@link SEVERITY} defaults.
- *
- * ```js
- * // .nx-claude-lint.config.js
- * module.exports = { rules: { F008: 'off', F011: 'error' } };
- * ```
- */
-export const LINT_CONFIG_FILENAME = '.nx-claude-lint.config.js';
+export { LINT_CONFIG_FILENAME };
 
 const RULE_LEVELS: readonly RuleLevel[] = ['off', 'warning', 'error'];
 
