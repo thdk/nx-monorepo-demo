@@ -1,3 +1,7 @@
+## 0.0.8 (2026-08-03)
+
+This was a version bump only for react-components-css-vite to align it with other projects, there were no code changes.
+
 ## 0.0.7 (2026-08-02)
 
 This was a version bump only for react-components-css-vite to align it with other projects, there were no code changes.

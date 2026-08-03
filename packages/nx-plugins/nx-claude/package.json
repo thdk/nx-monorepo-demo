@@ -1,7 +1,7 @@
 {
   "name": "@thdk/nx-claude",
   "description": "Nx plugin: generators, executors, and version actions for managing Claude/agent configuration in an Nx workspace.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "author": "Thomas Dekiere",
   "license": "MIT",
